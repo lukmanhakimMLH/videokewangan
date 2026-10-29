@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="ms" data-resolution="portrait" data-composition-variables="[
+    {&quot;id&quot;:&quot;accent&quot;,&quot;type&quot;:&quot;color&quot;,&quot;label&quot;:&quot;Accent&quot;,&quot;default&quot;:&quot;#C8FF2E&quot;},
+    {&quot;id&quot;:&quot;danger&quot;,&quot;type&quot;:&quot;color&quot;,&quot;label&quot;:&quot;Danger&quot;,&quot;default&quot;:&quot;#FF3B3B&quot;}
+  ]">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=1080, height=1920">
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <style>
+      :root {
+        --ground: #050505;
+        --accent: #c8ff2e;
+        --danger: #ff3b3b;
+      }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        margin: 0;
+        width: 1080px;
+        height: 1920px;
+        overflow: hidden;
+        background: var(--ground);
+      }
+      #root {
+        width: 100%;
+        height: 100%;
+        position: relative;
+        overflow: hidden;
+        background: var(--ground);
+      }
+      #cam {
+        position: absolute;
+        inset: 0;
+        transform-origin: 50% 42%;
+      }
+      #cam video,
+      #cam img {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 1080px;
+        height: 1920px;
+        object-fit: cover;
+      }
+      .fx {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 1080px;
+        height: 1920px;
+        pointer-events: none;
+        opacity: 0;
+      }
+      #fx-sad {
+        background: #1d2f55;
+        mix-blend-mode: color;
+        z-index: 3;
+      }
+      #fx-sad-dim {
+        background: radial-gradient(ellipse at 50% 40%, rgba(0, 0, 0, 0) 30%, rgba(0, 8, 30, 0.75) 100%);
+        z-index: 3;
+      }
+      #fx-shock {
+        background: radial-gradient(ellipse at 50% 42%, rgba(255, 0, 0, 0) 40%, rgba(255, 30, 30, 0.55) 100%);
+        z-index: 3;
+      }
+      #fx-flash {
+        background: #ffffff;
+        z-index: 8;
+      }
+      #fx-flash-red {
+        background: #ff2a2a;
+        mix-blend-mode: screen;
+        z-index: 8;
+      }
+      .scene {
+        position: absolute;
+        inset: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <div data-hf-id="hf-1lpu" id="root" data-composition-id="main" data-start="0" data-duration="64.2" data-width="1080" data-height="1920">
+      <!-- Footage: pre-tightened (pauses + "Jadi..." false start removed, see src2/edl.json) -->
+      <div data-hf-id="hf-ftaq" id="cam">
+        <video data-color-grading="{&quot;preset&quot;:&quot;skin-soft&quot;,&quot;intensity&quot;:0.7,&quot;adjust&quot;:{&quot;exposure&quot;:0.12,&quot;contrast&quot;:0.1,&quot;highlights&quot;:-0.24,&quot;shadows&quot;:0.16,&quot;whites&quot;:0,&quot;blacks&quot;:-0.06,&quot;temperature&quot;:0.08,&quot;tint&quot;:0.02,&quot;vibrance&quot;:0.06,&quot;saturation&quot;:0.02},&quot;details&quot;:{&quot;vignette&quot;:0.14,&quot;vignetteMidpoint&quot;:0.5,&quot;vignetteRoundness&quot;:0,&quot;vignetteFeather&quot;:0.65,&quot;grain&quot;:0,&quot;grainSize&quot;:0.25,&quot;grainRoughness&quot;:0.5},&quot;effects&quot;:{&quot;blur&quot;:0,&quot;pixelate&quot;:0,&quot;chromaBleed&quot;:0,&quot;tapeDamage&quot;:0,&quot;tapeTracking&quot;:0,&quot;tapeNoise&quot;:1,&quot;tapeSpeed&quot;:0.5,&quot;filmArtifacts&quot;:0,&quot;halftone&quot;:0,&quot;halftoneSize&quot;:0,&quot;twoInkPrint&quot;:0,&quot;twoInkPrintSize&quot;:0,&quot;ascii&quot;:0,&quot;asciiSize&quot;:0.06578947368421052,&quot;asciiInvert&quot;:0,&quot;asciiStyle&quot;:0,&quot;asciiColor&quot;:1,&quot;asciiRotation&quot;:0,&quot;dither&quot;:0,&quot;ditherSize&quot;:0,&quot;bloom&quot;:0,&quot;bloomRadius&quot;:8,&quot;monoScreen&quot;:0,&quot;monoScreenSize&quot;:0,&quot;monoScreenAngle&quot;:0,&quot;monoScreenSpread&quot;:0,&quot;monoScreenShape&quot;:0,&quot;monoScreenInvert&quot;:0,&quot;scanlines&quot;:0,&quot;scanlineCount&quot;:0,&quot;scanlineSoftness&quot;:0,&quot;chromaticAberration&quot;:0,&quot;chromaticAngle&quot;:0,&quot;crtCurvature&quot;:0,&quot;digitalGlitch&quot;:0,&quot;digitalGlitchColorSplit&quot;:0,&quot;digitalGlitchLineTear&quot;:0,&quot;digitalGlitchPixelate&quot;:0,&quot;digitalGlitchBlockAmount&quot;:0,&quot;digitalGlitchBlockDisplacement&quot;:0,&quot;digitalGlitchBlockOpacity&quot;:0,&quot;digitalGlitchSpeed&quot;:0,&quot;engraving&quot;:0,&quot;engravingSpacing&quot;:0.4117647058823529,&quot;engravingMinThickness&quot;:0.2,&quot;engravingMaxThickness&quot;:0.4571428571428572,&quot;engravingAngle&quot;:0.25,&quot;engravingContrast&quot;:0.4666666666666667,&quot;engravingSharpness&quot;:0.59,&quot;engravingWave&quot;:0.2,&quot;engravingWaveFrequency&quot;:0.2222222222222222,&quot;crosshatch&quot;:0,&quot;crosshatchSpacing&quot;:0.28,&quot;crosshatchThickness&quot;:0.25,&quot;crosshatchAngle&quot;:0.25,&quot;crosshatchContrast&quot;:0.3333333333333333,&quot;crosshatchEdges&quot;:0.5,&quot;crosshatchLineWeight&quot;:0,&quot;crosshatchWave&quot;:0.33,&quot;crosshatchWaveFrequency&quot;:0.2222222222222222,&quot;kuwahara&quot;:0,&quot;kuwaharaRadius&quot;:0.14285714285714285,&quot;kuwaharaSharpness&quot;:0.3125,&quot;kuwaharaSaturation&quot;:0.5},&quot;lut&quot;:null,&quot;colorSpace&quot;:&quot;rec709&quot;}" data-hf-id="hf-c4kb" id="footage" class="clip" src="assets/footage.mp4" data-start="0" data-duration="62.67" data-track-index="0" data-has-audio="true" data-fade-out="0.1" playsinline style="z-index: 1"></video>
+        <img data-color-grading="{&quot;preset&quot;:&quot;skin-soft&quot;,&quot;intensity&quot;:0.7,&quot;adjust&quot;:{&quot;exposure&quot;:0.12,&quot;contrast&quot;:0.1,&quot;highlights&quot;:-0.24,&quot;shadows&quot;:0.16,&quot;whites&quot;:0,&quot;blacks&quot;:-0.06,&quot;temperature&quot;:0.08,&quot;tint&quot;:0.02,&quot;vibrance&quot;:0.06,&quot;saturation&quot;:0.02},&quot;details&quot;:{&quot;vignette&quot;:0.14,&quot;vignetteMidpoint&quot;:0.5,&quot;vignetteRoundness&quot;:0,&quot;vignetteFeather&quot;:0.65,&quot;grain&quot;:0,&quot;grainSize&quot;:0.25,&quot;grainRoughness&quot;:0.5},&quot;effects&quot;:{&quot;blur&quot;:0,&quot;pixelate&quot;:0,&quot;chromaBleed&quot;:0,&quot;tapeDamage&quot;:0,&quot;tapeTracking&quot;:0,&quot;tapeNoise&quot;:1,&quot;tapeSpeed&quot;:0.5,&quot;filmArtifacts&quot;:0,&quot;halftone&quot;:0,&quot;halftoneSize&quot;:0,&quot;twoInkPrint&quot;:0,&quot;twoInkPrintSize&quot;:0,&quot;ascii&quot;:0,&quot;asciiSize&quot;:0.06578947368421052,&quot;asciiInvert&quot;:0,&quot;asciiStyle&quot;:0,&quot;asciiColor&quot;:1,&quot;asciiRotation&quot;:0,&quot;dither&quot;:0,&quot;ditherSize&quot;:0,&quot;bloom&quot;:0,&quot;bloomRadius&quot;:8,&quot;monoScreen&quot;:0,&quot;monoScreenSize&quot;:0,&quot;monoScreenAngle&quot;:0,&quot;monoScreenSpread&quot;:0,&quot;monoScreenShape&quot;:0,&quot;monoScreenInvert&quot;:0,&quot;scanlines&quot;:0,&quot;scanlineCount&quot;:0,&quot;scanlineSoftness&quot;:0,&quot;chromaticAberration&quot;:0,&quot;chromaticAngle&quot;:0,&quot;crtCurvature&quot;:0,&quot;digitalGlitch&quot;:0,&quot;digitalGlitchColorSplit&quot;:0,&quot;digitalGlitchLineTear&quot;:0,&quot;digitalGlitchPixelate&quot;:0,&quot;digitalGlitchBlockAmount&quot;:0,&quot;digitalGlitchBlockDisplacement&quot;:0,&quot;digitalGlitchBlockOpacity&quot;:0,&quot;digitalGlitchSpeed&quot;:0,&quot;engraving&quot;:0,&quot;engravingSpacing&quot;:0.4117647058823529,&quot;engravingMinThickness&quot;:0.2,&quot;engravingMaxThickness&quot;:0.4571428571428572,&quot;engravingAngle&quot;:0.25,&quot;engravingContrast&quot;:0.4666666666666667,&quot;engravingSharpness&quot;:0.59,&quot;engravingWave&quot;:0.2,&quot;engravingWaveFrequency&quot;:0.2222222222222222,&quot;crosshatch&quot;:0,&quot;crosshatchSpacing&quot;:0.28,&quot;crosshatchThickness&quot;:0.25,&quot;crosshatchAngle&quot;:0.25,&quot;crosshatchContrast&quot;:0.3333333333333333,&quot;crosshatchEdges&quot;:0.5,&quot;crosshatchLineWeight&quot;:0,&quot;crosshatchWave&quot;:0.33,&quot;crosshatchWaveFrequency&quot;:0.2222222222222222,&quot;kuwahara&quot;:0,&quot;kuwaharaRadius&quot;:0.14285714285714285,&quot;kuwaharaSharpness&quot;:0.3125,&quot;kuwaharaSaturation&quot;:0.5},&quot;lut&quot;:null,&quot;colorSpace&quot;:&quot;rec709&quot;}" data-hf-id="hf-xjsc" id="freeze" class="clip" src="assets/freeze.png" alt="" data-start="62.67" data-duration="1.53" data-track-index="0" style="z-index: 1">
+      </div>
+
+      <!-- Emotion overlays (untimed, driven by the root timeline) -->
+      <div data-hf-id="hf-w6b5" id="fx-sad" class="fx"></div>
+      <div data-hf-id="hf-jet8" id="fx-sad-dim" class="fx"></div>
+      <div data-hf-id="hf-r6fb" id="fx-shock" class="fx"></div>
+      <div data-hf-id="hf-m2lb" id="fx-flash" class="fx"></div>
+      <div data-hf-id="hf-zrfp" id="fx-flash-red" class="fx"></div>
+
+      <!-- Graphics -->
+      <div data-hf-id="hf-cssd" id="hook" class="scene" data-composition-id="hook" data-composition-src="compositions/hook.html" data-start="0" data-duration="5.94" data-track-index="1" data-track-kind="graphics" data-width="1080" data-height="1920" style="z-index: 5"></div>
+      <div data-hf-id="hf-rn33" id="problem" class="scene" data-composition-id="problem" data-composition-src="compositions/problem.html" data-start="6.76" data-duration="8.85" data-track-index="1" data-track-kind="graphics" data-width="1080" data-height="1920" style="z-index: 5"></div>
+      <div data-hf-id="hf-39uc" id="three" class="scene" data-composition-id="three" data-composition-src="compositions/three.html" data-start="15.61" data-duration="5.46" data-track-index="1" data-track-kind="graphics" data-width="1080" data-height="1920" style="z-index: 5"></div>
+      <div data-hf-id="hf-mnyk" id="step1" class="scene" data-composition-id="step1" data-composition-src="compositions/step1.html" data-start="21.07" data-duration="7.37" data-track-index="1" data-track-kind="graphics" data-width="1080" data-height="1920" style="z-index: 5"></div>
+      <div data-hf-id="hf-jn8i" id="step2" class="scene" data-composition-id="step2" data-composition-src="compositions/step2.html" data-start="28.44" data-duration="9.32" data-track-index="1" data-track-kind="graphics" data-width="1080" data-height="1920" style="z-index: 5"></div>
+      <div data-hf-id="hf-037c" id="step3" class="scene" data-composition-id="step3" data-composition-src="compositions/step3.html" data-start="37.76" data-duration="9.85" data-track-index="1" data-track-kind="graphics" data-width="1080" data-height="1920" style="z-index: 5"></div>
+      <div data-hf-id="hf-tlw8" id="recap" class="scene" data-composition-id="recap" data-composition-src="compositions/recap.html" data-start="47.61" data-duration="10.3" data-track-index="1" data-track-kind="graphics" data-width="1080" data-height="1920" style="z-index: 5"></div>
+      <div data-hf-id="hf-r9g6" id="cta" class="scene" data-composition-id="cta" data-composition-src="compositions/cta.html" data-start="57.91" data-duration="6.29" data-track-index="1" data-track-kind="graphics" data-width="1080" data-height="1920" style="z-index: 5"></div>
+      <div data-hf-id="hf-dmvo" id="captions" class="scene" data-composition-id="captions" data-composition-src="compositions/captions.html" data-start="0" data-duration="62.67" data-track-index="2" data-track-kind="captions" data-width="1080" data-height="1920" style="z-index: 6"></div>
+
+      <!-- Sound effects: each peak lands one frame after its picture -->
+      <audio data-hf-id="hf-2u5g" id="sfx-hook" class="clip" src="assets/sfx/impact-bass-1.mp3" data-start="0" data-duration="2.1" data-track-index="3" data-volume="0.5"></audio>
+      <audio data-hf-id="hf-7viu" id="sfx-cal-in" class="clip" src="assets/sfx/whoosh.mp3" data-start="0.96" data-duration="0.57" data-track-index="4" data-volume="0.45"></audio>
+      <audio data-hf-id="hf-hb5z" id="sfx-cal-flip" class="clip" src="assets/sfx/whoosh-short.mp3" data-start="2.8" data-duration="0.57" data-track-index="4" data-volume="0.35"></audio>
+      <audio data-hf-id="hf-nli3" id="sfx-rm50-glitch" class="clip" src="assets/sfx/glitch-1.mp3" data-start="4.13" data-duration="2.6" data-track-index="5" data-volume="0.3"></audio>
+      <audio data-hf-id="hf-x7fm" id="sfx-rm50" class="clip" src="assets/sfx/impact-bass-1.mp3" data-start="4.54" data-duration="2.1" data-track-index="3" data-volume="0.5"></audio>
+      <audio data-hf-id="hf-ldfq" id="sfx-bukan-x" class="clip" src="assets/sfx/pop.mp3" data-start="8.2" data-duration="0.7" data-track-index="4" data-volume="0.55"></audio>
+      <audio data-hf-id="hf-d075" id="sfx-chip-belanja" class="clip" src="assets/sfx/pop.mp3" data-start="10.39" data-duration="0.7" data-track-index="4" data-volume="0.55"></audio>
+      <audio data-hf-id="hf-k8yl" id="sfx-chip-simpan" class="clip" src="assets/sfx/pop.mp3" data-start="11.57" data-duration="0.7" data-track-index="4" data-volume="0.55"></audio>
+      <audio data-hf-id="hf-7itb" id="sfx-rm0" class="clip" src="assets/sfx/impact-bass-2.mp3" data-start="12.84" data-duration="2.59" data-track-index="3" data-volume="0.45"></audio>
+      <audio data-hf-id="hf-8nc5" id="sfx-rm0-glitch" class="clip" src="assets/sfx/glitch-3.mp3" data-start="14.8" data-duration="1.2" data-track-index="5" data-fade-out="0.3" data-volume="0.35"></audio>
+      <audio data-hf-id="hf-s6us" id="sfx-three-in" class="clip" src="assets/sfx/whoosh.mp3" data-start="16.3" data-duration="0.57" data-track-index="4" data-volume="0.35"></audio>
+      <audio data-hf-id="hf-gb3t" id="sfx-three" class="clip" src="assets/sfx/impact-bass-1.mp3" data-start="17.8" data-duration="2.1" data-track-index="3" data-volume="0.5"></audio>
+      <audio data-hf-id="hf-2lnf" id="sfx-step1" class="clip" src="assets/sfx/whoosh.mp3" data-start="20.96" data-duration="0.57" data-track-index="4" data-volume="0.45"></audio>
+      <audio data-hf-id="hf-zdli" id="sfx-coin" class="clip" src="assets/sfx/whoosh-short.mp3" data-start="22.9" data-duration="0.57" data-track-index="5" data-volume="0.35"></audio>
+      <audio data-hf-id="hf-87ai" id="sfx-debit" class="clip" src="assets/sfx/pop.mp3" data-start="25.56" data-duration="0.7" data-track-index="4" data-volume="0.55"></audio>
+      <audio data-hf-id="hf-o5qs" id="sfx-lock" class="clip" src="assets/sfx/click.mp3" data-start="27.65" data-duration="0.37" data-track-index="5" data-volume="0.6"></audio>
+      <audio data-hf-id="hf-vtxh" id="sfx-step2" class="clip" src="assets/sfx/whoosh.mp3" data-start="28.33" data-duration="0.57" data-track-index="4" data-volume="0.45"></audio>
+      <audio data-hf-id="hf-j5on" id="sfx-chip-sewa" class="clip" src="assets/sfx/pop.mp3" data-start="32.9" data-duration="0.7" data-track-index="4" data-volume="0.55"></audio>
+      <audio data-hf-id="hf-0pwl" id="sfx-chip-kereta" class="clip" src="assets/sfx/pop.mp3" data-start="33.72" data-duration="0.7" data-track-index="5" data-volume="0.55"></audio>
+      <audio data-hf-id="hf-5f83" id="sfx-chip-phone" class="clip" src="assets/sfx/pop.mp3" data-start="34.54" data-duration="0.7" data-track-index="4" data-volume="0.55"></audio>
+      <audio data-hf-id="hf-i4cw" id="sfx-chip-lain" class="clip" src="assets/sfx/pop.mp3" data-start="35.02" data-duration="0.7" data-track-index="5" data-volume="0.55"></audio>
+      <audio data-hf-id="hf-cf7q" id="sfx-stamp" class="clip" src="assets/sfx/impact-bass-1.mp3" data-start="36.65" data-duration="2.1" data-track-index="3" data-volume="0.4"></audio>
+      <audio data-hf-id="hf-45gb" id="sfx-step3" class="clip" src="assets/sfx/whoosh.mp3" data-start="37.65" data-duration="0.57" data-track-index="4" data-volume="0.45"></audio>
+      <audio data-hf-id="hf-k8pg" id="sfx-bar" class="clip" src="assets/sfx/whoosh-short.mp3" data-start="39.94" data-duration="0.57" data-track-index="5" data-volume="0.35"></audio>
+      <audio data-hf-id="hf-prud" id="sfx-split" class="clip" src="assets/sfx/pop.mp3" data-start="41.8" data-duration="0.7" data-track-index="4" data-volume="0.55"></audio>
+      <audio data-hf-id="hf-6cc8" id="sfx-week2" class="clip" src="assets/sfx/pop.mp3" data-start="46.74" data-duration="0.7" data-track-index="4" data-volume="0.5"></audio>
+      <audio data-hf-id="hf-wu0q" id="sfx-r1" class="clip" src="assets/sfx/pop.mp3" data-start="48.85" data-duration="0.7" data-track-index="4" data-volume="0.55"></audio>
+      <audio data-hf-id="hf-k7wg" id="sfx-r2" class="clip" src="assets/sfx/pop.mp3" data-start="49.79" data-duration="0.7" data-track-index="5" data-volume="0.55"></audio>
+      <audio data-hf-id="hf-168r" id="sfx-r3" class="clip" src="assets/sfx/pop.mp3" data-start="50.81" data-duration="0.7" data-track-index="4" data-volume="0.55"></audio>
+      <audio data-hf-id="hf-xmds" id="sfx-strike" class="clip" src="assets/sfx/whoosh-short.mp3" data-start="55.11" data-duration="0.57" data-track-index="5" data-volume="0.35"></audio>
+      <audio data-hf-id="hf-xguj" id="sfx-riser" class="clip" src="assets/sfx/riser.mp3" data-start="53.53" data-duration="3.5" data-track-index="6" data-fade-in="0.6" data-volume="0.3"></audio>
+      <audio data-hf-id="hf-o0rd" id="sfx-terbalik" class="clip" src="assets/sfx/impact-bass-1.mp3" data-start="56.92" data-duration="2.1" data-track-index="3" data-volume="0.5"></audio>
+      <audio data-hf-id="hf-24eh" id="sfx-cta" class="clip" src="assets/sfx/whoosh.mp3" data-start="57.8" data-duration="0.57" data-track-index="4" data-volume="0.4"></audio>
+      <audio data-hf-id="hf-k4qh" id="sfx-slot" class="clip" src="assets/sfx/pop.mp3" data-start="60.27" data-duration="0.7" data-track-index="5" data-volume="0.5"></audio>
+      <audio data-hf-id="hf-b8ak" id="sfx-comment" class="clip" src="assets/sfx/notification.mp3" data-start="60.79" data-duration="2.4" data-track-index="4" data-volume="0.35"></audio>
+    </div>
+    <script>
+      const tl = gsap.timeline({ paused: true });
+      const shake = (t, amp = 1) =>
+        tl.fromTo(
+          "#cam",
+          { x: 0, rotation: 0 },
+          {
+            keyframes: [
+              { x: -16 * amp, rotation: -0.7 * amp, duration: 0.04 },
+              { x: 14 * amp, rotation: 0.6 * amp, duration: 0.04 },
+              { x: -9 * amp, rotation: -0.35 * amp, duration: 0.04 },
+              { x: 5 * amp, rotation: 0.2 * amp, duration: 0.04 },
+              { x: 0, rotation: 0, duration: 0.05 },
+            ],
+          },
+          t,
+        );
+      const flash = (sel, t, peak = 0.8) =>
+        tl.fromTo(sel, { opacity: 0 }, { keyframes: [{ opacity: peak, duration: 0.04 }, { opacity: 0, duration: 0.28, ease: "power2.out" }] }, t);
+
+      // Hook: open punched in, settle onto the face
+      tl.fromTo("#cam", { scale: 1.25 }, { scale: 1, duration: 0.6, ease: "expo.out" }, 0);
+      // RM50 — SHOCK: snap zoom, shake, red flash and red edges
+      tl.to("#cam", { scale: 1.32, duration: 0.1, ease: "power4.out" }, 4.6);
+      shake(4.6, 1.2);
+      flash("#fx-flash-red", 4.6, 0.55);
+      tl.fromTo("#fx-shock", { opacity: 0 }, { opacity: 1, duration: 0.15 }, 4.6);
+      tl.to("#fx-shock", { opacity: 0, duration: 0.4 }, 5.5);
+      tl.to("#cam", { scale: 1.4, duration: 1.2, ease: "power1.out" }, 4.74);
+      // "Mesti pernah." — SAD: drained blue, slow push
+      tl.set("#cam", { scale: 1.12 }, 5.94);
+      tl.fromTo(["#fx-sad", "#fx-sad-dim"], { opacity: 0 }, { opacity: 0.85, duration: 0.25, ease: "power2.out" }, 5.94);
+      tl.to("#cam", { scale: 1.22, duration: 0.82, ease: "power1.inOut" }, 5.94);
+      tl.to(["#fx-sad", "#fx-sad-dim"], { opacity: 0, duration: 0.2 }, 6.7);
+      // Problem
+      tl.set("#cam", { scale: 1 }, 6.76);
+      tl.to("#cam", { scale: 1.08, duration: 6, ease: "none" }, 8.0);
+      // "Tak akan ada" — punch + white flash on RM0
+      tl.to("#cam", { scale: 1.28, duration: 0.1, ease: "power4.out" }, 14.82);
+      shake(14.82, 1);
+      flash("#fx-flash", 14.82, 0.7);
+      // 3 perkara
+      tl.set("#cam", { scale: 1 }, 15.61);
+      tl.to("#cam", { scale: 1.14, duration: 0.12, ease: "power4.out" }, 17.85);
+      shake(17.85, 0.6);
+      flash("#fx-flash", 17.85, 0.45);
+      // Steps: alternate framing on every cut so jump cuts read as intentional
+      tl.set("#cam", { scale: 1 }, 21.07);
+      tl.set("#cam", { scale: 1.1 }, 25.54);
+      tl.set("#cam", { scale: 1 }, 28.44);
+      tl.set("#cam", { scale: 1.09 }, 29.39);
+      tl.set("#cam", { scale: 1 }, 32.06);
+      tl.to("#cam", { scale: 1.16, duration: 1.4, ease: "power2.inOut" }, 35.88);
+      tl.set("#cam", { scale: 1 }, 37.76);
+      tl.set("#cam", { scale: 1.1 }, 38.86);
+      tl.to("#cam", { scale: 1.2, duration: 0.12, ease: "power4.out" }, 44.89);
+      tl.set("#cam", { scale: 1 }, 47.61);
+      // "Bukan gaji kurang... urutan kita terbalik" — build, then SHOCK
+      tl.to("#cam", { scale: 1.12, duration: 2.8, ease: "power1.in" }, 54.17);
+      tl.to("#cam", { scale: 1.32, duration: 0.1, ease: "power4.out" }, 56.99);
+      shake(56.99, 1.2);
+      flash("#fx-flash-red", 56.99, 0.5);
+      // CTA
+      tl.set("#cam", { scale: 1 }, 57.91);
+      tl.to("#cam", { scale: 1.08, duration: 6.2, ease: "none" }, 57.95);
+
+      window.__timelines["main"] = tl;
+    </script>
+  </body>
+</html>

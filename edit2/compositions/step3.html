@@ -1,0 +1,170 @@
+<template>
+  <style>
+    #root {
+      position: absolute;
+      inset: 0;
+    }
+    #s3-scrim {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 1080px;
+      height: 900px;
+      background: linear-gradient(180deg, rgba(0, 0, 0, 0.78) 0%, rgba(0, 0, 0, 0.45) 60%, rgba(0, 0, 0, 0) 100%);
+    }
+    .st-head {
+      position: absolute;
+      left: 0;
+      top: 200px;
+      width: 1080px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 22px;
+      font-family: "Archivo Black", sans-serif;
+      text-transform: uppercase;
+    }
+    .st-num {
+      width: 104px;
+      height: 104px;
+      border-radius: 26px;
+      background: var(--accent, #c8ff2e);
+      color: #0a0a0a;
+      font-size: 60px;
+      line-height: 104px;
+      text-align: center;
+    }
+    .st-title {
+      font-size: 70px;
+      color: #ffffff;
+    }
+    #s3-label {
+      position: absolute;
+      left: 0;
+      top: 370px;
+      width: 1080px;
+      text-align: center;
+      font-family: "Inter", sans-serif;
+      font-weight: 900;
+      font-size: 38px;
+      letter-spacing: 0.1em;
+      color: rgba(255, 255, 255, 0.8);
+    }
+    #s3-bar {
+      position: absolute;
+      left: 120px;
+      top: 440px;
+      width: 840px;
+      height: 150px;
+    }
+    #s3-whole {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 840px;
+      height: 150px;
+      border-radius: 24px;
+      background: var(--accent, #c8ff2e);
+      transform-origin: 0% 50%;
+    }
+    .s3-wk {
+      position: absolute;
+      top: 0;
+      width: 195px;
+      height: 150px;
+      border-radius: 22px;
+      background: var(--accent, #c8ff2e);
+      overflow: hidden;
+      text-align: center;
+      font-family: "Archivo Black", sans-serif;
+      font-size: 46px;
+      line-height: 150px;
+      color: #0a0a0a;
+    }
+    #s3-w1 {
+      left: 0;
+    }
+    #s3-w2 {
+      left: 215px;
+    }
+    #s3-w3 {
+      left: 430px;
+    }
+    #s3-w4 {
+      left: 645px;
+    }
+    #s3-drain {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 195px;
+      height: 150px;
+      background: rgba(255, 59, 59, 0.95);
+      transform-origin: 50% 100%;
+    }
+    .s3-wk span {
+      position: relative;
+    }
+    #s3-pointer {
+      position: absolute;
+      left: 72px;
+      top: 166px;
+      width: 0;
+      height: 0;
+      border-left: 26px solid transparent;
+      border-right: 26px solid transparent;
+      border-bottom: 34px solid #ffffff;
+    }
+    #s3-note {
+      position: absolute;
+      left: 0;
+      top: 680px;
+      width: 1080px;
+      text-align: center;
+      font-family: "Inter", sans-serif;
+      font-weight: 900;
+      font-size: 40px;
+      color: #ffffff;
+    }
+  </style>
+  <div id="root" data-composition-id="step3" data-width="1080" data-height="1920">
+    <div id="s3-scrim"></div>
+    <div id="s3-head" class="st-head">
+      <div class="st-num">03</div>
+      <div class="st-title">Belanja mingguan</div>
+    </div>
+    <div id="s3-label">BAKI = DUIT BELANJA</div>
+    <div id="s3-bar" data-layout-allow-overlap>
+      <div id="s3-whole"></div>
+      <div id="s3-w1" class="s3-wk"><div id="s3-drain"></div><span>M1</span></div>
+      <div id="s3-w2" class="s3-wk"><span>M2</span></div>
+      <div id="s3-w3" class="s3-wk"><span>M3</span></div>
+      <div id="s3-w4" class="s3-wk"><span>M4</span></div>
+      <div id="s3-pointer"></div>
+    </div>
+    <div id="s3-note">Habis minggu ni? Tunggu minggu depan.</div>
+  </div>
+  <script>
+    const tl = gsap.timeline({ paused: true });
+    // Scene clock: 0 = comp 37.76. "duit belanja" 2.33, "pecahkan" 4.15, "4 minggu" 6.39, "habis" 7.13, "minggu depan" 9.09
+    tl.fromTo("#s3-scrim", { opacity: 0 }, { opacity: 1, duration: 0.3, ease: "power2.out" }, 0);
+    tl.fromTo("#s3-head .st-num", { opacity: 0, scale: 0.3, rotation: -30 }, { opacity: 1, scale: 1, rotation: 0, duration: 0.45, ease: "back.out(2.2)" }, 0.05);
+    tl.fromTo("#s3-head .st-title", { opacity: 0, x: -40, filter: "blur(8px)" }, { opacity: 1, x: 0, filter: "blur(0px)", duration: 0.3, ease: "power4.out" }, 0.4);
+    tl.fromTo("#s3-label", { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.3, ease: "power3.out" }, 2.2);
+    tl.fromTo("#s3-whole", { opacity: 1, scaleX: 0 }, { opacity: 1, scaleX: 1, duration: 0.6, ease: "expo.out" }, 2.33);
+    // Split into four weeks on "pecahkan"
+    tl.to("#s3-whole", { opacity: 0, duration: 0.05 }, 4.15);
+    tl.fromTo(".s3-wk", { opacity: 0, scale: 1.04 }, { opacity: 1, scale: 1, duration: 0.4, ease: "back.out(2)", stagger: 0.07 }, 4.15);
+    tl.to("#s3-label", { opacity: 0, duration: 0.15 }, 4.1);
+    tl.fromTo("#s3-pointer", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.3, ease: "power3.out" }, 6.39);
+    // Week 1 drains on "habis duit minggu ni"
+    tl.fromTo("#s3-drain", { scaleY: 0 }, { scaleY: 1, duration: 1.0, ease: "power2.in" }, 7.13);
+    tl.fromTo("#s3-note", { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.3, ease: "power3.out" }, 7.4);
+    // Pointer steps to week 2 on "minggu depan"
+    tl.to("#s3-pointer", { x: 215, duration: 0.4, ease: "back.out(1.8)" }, 9.0);
+    tl.fromTo("#s3-w2", { scale: 1 }, { keyframes: [{ scale: 1.1, duration: 0.1 }, { scale: 1, duration: 0.25 }] }, 9.1);
+    tl.to(["#s3-head", "#s3-bar", "#s3-note"], { opacity: 0, filter: "blur(10px)", duration: 0.18, ease: "power3.in" }, 9.65);
+    tl.to("#s3-scrim", { opacity: 0, duration: 0.18 }, 9.65);
+    window.__timelines["step3"] = tl;
+  </script>
+</template>

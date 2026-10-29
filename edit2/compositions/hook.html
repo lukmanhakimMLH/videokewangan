@@ -1,0 +1,181 @@
+<template>
+  <style>
+    #root {
+      position: absolute;
+      inset: 0;
+    }
+    #hk-scrim {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 1080px;
+      height: 900px;
+      background: linear-gradient(180deg, rgba(0, 0, 0, 0.78) 0%, rgba(0, 0, 0, 0.5) 55%, rgba(0, 0, 0, 0) 100%);
+    }
+    #hk-title {
+      position: absolute;
+      left: 0;
+      top: 230px;
+      width: 1080px;
+      text-align: center;
+      font-family: "Archivo Black", sans-serif;
+      text-transform: uppercase;
+      line-height: 0.96;
+    }
+    #hk-l1 {
+      display: block;
+      font-size: 108px;
+      color: #ffffff;
+    }
+    #hk-l2 {
+      display: block;
+      font-size: 150px;
+      color: var(--danger, #ff3b3b);
+      text-shadow: 0 0 60px rgba(255, 59, 59, 0.5);
+    }
+    #hk-row {
+      position: absolute;
+      left: 0;
+      top: 250px;
+      width: 1080px;
+      display: flex;
+      justify-content: center;
+      gap: 36px;
+    }
+    #hk-cal {
+      width: 300px;
+      border-radius: 28px;
+      overflow: hidden;
+      background: #ffffff;
+      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.5);
+      text-align: center;
+    }
+    #hk-cal-top {
+      height: 70px;
+      background: var(--danger, #ff3b3b);
+      font-family: "Inter", sans-serif;
+      font-weight: 900;
+      font-size: 34px;
+      letter-spacing: 0.16em;
+      line-height: 70px;
+      color: #ffffff;
+    }
+    #hk-cal-day {
+      position: relative;
+      height: 200px;
+      font-family: "Archivo Black", sans-serif;
+      font-size: 130px;
+      line-height: 200px;
+      color: #111111;
+    }
+    .hk-day {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 300px;
+    }
+    #hk-bal {
+      width: 520px;
+      padding: 34px 40px;
+      border-radius: 28px;
+      background: rgba(15, 16, 22, 0.82);
+      border: 2px solid rgba(255, 255, 255, 0.12);
+      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.5);
+    }
+    #hk-bal-label {
+      font-family: "Inter", sans-serif;
+      font-weight: 700;
+      font-size: 32px;
+      letter-spacing: 0.12em;
+      color: rgba(255, 255, 255, 0.7);
+    }
+    #hk-bal-amt {
+      margin-top: 14px;
+      font-family: "Archivo Black", sans-serif;
+      font-size: 104px;
+      line-height: 1;
+      color: var(--accent, #c8ff2e);
+      font-variant-numeric: tabular-nums;
+    }
+    #hk-bal-bar {
+      margin-top: 24px;
+      height: 16px;
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.12);
+      overflow: hidden;
+    }
+    #hk-bal-fill {
+      width: 100%;
+      height: 100%;
+      background: var(--accent, #c8ff2e);
+      transform-origin: 0% 50%;
+    }
+  </style>
+  <div id="root" data-composition-id="hook" data-width="1080" data-height="1920">
+    <div id="hk-scrim"></div>
+    <div id="hk-title">
+      <span id="hk-l1">Gaji habis dalam</span>
+      <span id="hk-l2">3 hari?!</span>
+    </div>
+    <div id="hk-row">
+      <div id="hk-cal">
+        <div id="hk-cal-top">HARI</div>
+        <div id="hk-cal-day">
+          <span id="hk-d25" class="hk-day">25</span>
+          <span id="hk-d28" class="hk-day">28</span>
+        </div>
+      </div>
+      <div id="hk-bal">
+        <div id="hk-bal-label">BAKI AKAUN</div>
+        <div id="hk-bal-amt">RM3,500</div>
+        <div id="hk-bal-bar"><div id="hk-bal-fill"></div></div>
+      </div>
+    </div>
+  </div>
+  <script>
+    const tl = gsap.timeline({ paused: true });
+    // Frame 0: the title is already on screen (thumbnail), then slams and settles
+    tl.fromTo("#hk-title", { scale: 1.15 }, { scale: 1, duration: 0.5, ease: "expo.out" }, 0);
+    tl.fromTo("#hk-l2", { rotation: -4 }, { rotation: 0, duration: 0.5, ease: "back.out(2.5)" }, 0);
+    tl.to("#hk-title", { opacity: 0, y: -50, filter: "blur(12px)", duration: 0.2, ease: "power3.in" }, 1.0);
+
+    // Calendar + balance land on "25 haribulan"
+    tl.fromTo("#hk-cal", { opacity: 0, y: 80, rotation: -8 }, { opacity: 1, y: 0, rotation: 0, duration: 0.45, ease: "back.out(1.6)" }, 1.1);
+    tl.fromTo("#hk-bal", { opacity: 0, y: 80 }, { opacity: 1, y: 0, duration: 0.45, ease: "back.out(1.6)" }, 1.2);
+    tl.fromTo("#hk-d28", { opacity: 0, y: 120 }, { opacity: 0, y: 120, duration: 0.01 }, 0);
+    // Page flips to 28 on "28 haribulan"
+    tl.to("#hk-d25", { opacity: 0, y: -120, duration: 0.25, ease: "power3.in" }, 2.95);
+    tl.to("#hk-d28", { opacity: 1, y: 0, duration: 0.3, ease: "power3.out" }, 3.05);
+
+    // Balance drains from RM3,500 to RM50 between "3 hari" and "RM50"
+    const bal = { v: 3500 };
+    const amt = document.querySelector("#hk-bal-amt");
+    tl.fromTo(
+      bal,
+      { v: 3500 },
+      {
+        v: 50,
+        duration: 2.3,
+        ease: "power2.in",
+        onUpdate: () => {
+          amt.textContent = "RM" + Math.round(bal.v).toLocaleString("en-US");
+        },
+      },
+      2.3,
+    );
+    tl.fromTo("#hk-bal-fill", { scaleX: 1 }, { scaleX: 0.015, duration: 2.3, ease: "power2.in" }, 2.3);
+    tl.to("#hk-bal-amt", { color: "#FF3B3B", duration: 0.2 }, 4.0);
+    tl.to("#hk-bal-fill", { backgroundColor: "#FF3B3B", duration: 0.2 }, 4.0);
+    // RM50 shock: card jolts
+    tl.fromTo(
+      "#hk-bal",
+      { x: 0 },
+      { keyframes: [{ x: -22, duration: 0.04 }, { x: 18, duration: 0.04 }, { x: -12, duration: 0.04 }, { x: 6, duration: 0.04 }, { x: 0, duration: 0.05 }] },
+      4.6,
+    );
+    tl.fromTo("#hk-bal-amt", { scale: 1 }, { keyframes: [{ scale: 1.25, duration: 0.08 }, { scale: 1, duration: 0.25 }] }, 4.6);
+    tl.to("#hk-row", { opacity: 0, y: -40, filter: "blur(10px)", duration: 0.2, ease: "power3.in" }, 5.7);
+    tl.to("#hk-scrim", { opacity: 0, duration: 0.2 }, 5.7);
+    window.__timelines["hook"] = tl;
+  </script>
+</template>

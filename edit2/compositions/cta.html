@@ -1,0 +1,142 @@
+<template>
+  <style>
+    #root {
+      position: absolute;
+      inset: 0;
+    }
+    #ct-scrim {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 1080px;
+      height: 960px;
+      background: linear-gradient(180deg, rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0.5) 60%, rgba(0, 0, 0, 0) 100%);
+    }
+    #ct-q {
+      position: absolute;
+      left: 0;
+      top: 220px;
+      width: 1080px;
+      text-align: center;
+      font-family: "Archivo Black", sans-serif;
+      text-transform: uppercase;
+      line-height: 1.02;
+    }
+    #ct-q1 {
+      display: block;
+      font-size: 72px;
+      color: #ffffff;
+    }
+    #ct-q2 {
+      display: block;
+      font-size: 72px;
+      color: #ffffff;
+    }
+    #ct-day {
+      display: inline-block;
+      position: relative;
+      width: 200px;
+      height: 150px;
+      margin-top: 10px;
+      overflow: hidden;
+      vertical-align: top;
+    }
+    .ct-n {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 200px;
+      font-size: 150px;
+      line-height: 150px;
+      color: var(--accent, #c8ff2e);
+    }
+    #ct-qmark {
+      display: inline-block;
+      font-size: 150px;
+      line-height: 150px;
+      margin-top: 10px;
+      color: var(--accent, #c8ff2e);
+      vertical-align: top;
+    }
+    #ct-bubble {
+      position: absolute;
+      left: 170px;
+      top: 650px;
+      width: 740px;
+      padding: 26px 34px;
+      border-radius: 34px 34px 34px 8px;
+      background: #ffffff;
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.45);
+    }
+    #ct-avatar {
+      width: 74px;
+      height: 74px;
+      flex: none;
+      border-radius: 50%;
+      background: var(--accent, #c8ff2e);
+    }
+    #ct-text {
+      font-family: "Inter", sans-serif;
+      font-weight: 900;
+      font-size: 42px;
+      color: #111111;
+    }
+    #ct-dots {
+      display: flex;
+      gap: 10px;
+      margin-left: auto;
+    }
+    .ct-dot {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: #9a9a9a;
+    }
+  </style>
+  <div id="root" data-composition-id="cta" data-width="1080" data-height="1920">
+    <div id="ct-scrim"></div>
+    <div id="ct-q">
+      <span id="ct-q1">Gaji korang tahan</span>
+      <span id="ct-q2">sampai hari ke-</span>
+      <span id="ct-day" data-layout-allow-overflow data-layout-allow-overlap>
+        <span id="ct-n1" class="ct-n">5</span>
+        <span id="ct-n2" class="ct-n">12</span>
+        <span id="ct-n3" class="ct-n">20</span>
+        <span id="ct-n4" class="ct-n">28</span>
+      </span><span id="ct-qmark">?</span>
+    </div>
+    <div id="ct-bubble">
+      <div id="ct-avatar"></div>
+      <div id="ct-text">Komen nombor korang</div>
+      <div id="ct-dots"><span class="ct-dot"></span><span class="ct-dot"></span><span class="ct-dot"></span></div>
+    </div>
+  </div>
+  <script>
+    const tl = gsap.timeline({ paused: true });
+    // Scene clock: 0 = comp 57.6. "keberapa" 2.05, "komen nombor" 2.91, "saya nak tengok" 4.23
+    tl.fromTo("#ct-scrim", { opacity: 0 }, { opacity: 1, duration: 0.3, ease: "power2.out" }, 0);
+    tl.fromTo("#ct-q1", { opacity: 0, y: 30, filter: "blur(8px)" }, { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.3, ease: "power4.out" }, 0.15);
+    tl.fromTo("#ct-q2", { opacity: 0, y: 30, filter: "blur(8px)" }, { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.3, ease: "power4.out" }, 1.2);
+    tl.fromTo(["#ct-day", "#ct-qmark"], { opacity: 0 }, { opacity: 1, duration: 0.2 }, 1.9);
+    // Slot-machine roll through the day numbers
+    const ids = ["#ct-n1", "#ct-n2", "#ct-n3", "#ct-n4"];
+    ids.forEach((id, i) => {
+      tl.fromTo(id, { y: 150 }, { y: 150, duration: 0.01 }, 0);
+      const t = 2.0 + i * 0.12;
+      tl.to(id, { y: 0, duration: 0.1, ease: "none" }, t);
+      if (i < ids.length - 1) tl.to(id, { y: -150, duration: 0.1, ease: "none" }, t + 0.12);
+    });
+    tl.fromTo("#ct-n4", { scale: 1 }, { keyframes: [{ scale: 1.2, duration: 0.1 }, { scale: 1, duration: 0.2 }] }, 2.48);
+    tl.fromTo("#ct-bubble", { opacity: 0, y: 60, scale: 0.8 }, { opacity: 1, y: 0, scale: 1, duration: 0.45, ease: "back.out(1.8)" }, 2.88);
+    // Typing dots
+    [0, 1, 2].forEach((i) => {
+      for (let k = 0; k < 6; k++) {
+        tl.fromTo(`#ct-dots .ct-dot:nth-child(${i + 1})`, { y: 0 }, { keyframes: [{ y: -10, duration: 0.15 }, { y: 0, duration: 0.15 }] }, 3.3 + k * 0.5 + i * 0.12);
+      }
+    });
+    window.__timelines["cta"] = tl;
+  </script>
+</template>

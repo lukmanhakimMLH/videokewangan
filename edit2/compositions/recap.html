@@ -1,0 +1,156 @@
+<template>
+  <style>
+    #root {
+      position: absolute;
+      inset: 0;
+    }
+    #rc-scrim {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 1080px;
+      height: 960px;
+      background: linear-gradient(180deg, rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0.5) 60%, rgba(0, 0, 0, 0) 100%);
+    }
+    #rc-kicker {
+      position: absolute;
+      left: 0;
+      top: 190px;
+      width: 1080px;
+      text-align: center;
+      font-family: "Inter", sans-serif;
+      font-weight: 900;
+      font-size: 40px;
+      letter-spacing: 0.2em;
+      color: rgba(255, 255, 255, 0.8);
+    }
+    #rc-stack {
+      position: absolute;
+      left: 230px;
+      top: 260px;
+      width: 620px;
+    }
+    .rc-row {
+      height: 112px;
+      margin-bottom: 18px;
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      padding: 0 28px;
+      border-radius: 24px;
+      background: rgba(15, 16, 22, 0.85);
+      border: 2px solid rgba(200, 255, 46, 0.5);
+      font-family: "Archivo Black", sans-serif;
+      font-size: 56px;
+      text-transform: uppercase;
+      color: #ffffff;
+    }
+    .rc-row b {
+      width: 68px;
+      height: 68px;
+      border-radius: 18px;
+      background: var(--accent, #c8ff2e);
+      color: #0a0a0a;
+      font-size: 40px;
+      line-height: 68px;
+      text-align: center;
+      font-weight: normal;
+    }
+    #rc-not {
+      position: absolute;
+      left: 0;
+      top: 270px;
+      width: 1080px;
+      text-align: center;
+      font-family: "Archivo Black", sans-serif;
+      text-transform: uppercase;
+      line-height: 1;
+    }
+    #rc-not-a {
+      display: block;
+      font-size: 56px;
+      color: rgba(255, 255, 255, 0.8);
+    }
+    #rc-not-b {
+      position: relative;
+      display: inline-block;
+      margin-top: 14px;
+      font-size: 120px;
+      color: #ffffff;
+    }
+    #rc-not-strike {
+      position: absolute;
+      left: -20px;
+      top: 50%;
+      width: calc(100% + 40px);
+      height: 16px;
+      margin-top: -8px;
+      border-radius: 8px;
+      background: var(--danger, #ff3b3b);
+      transform-origin: 0% 50%;
+    }
+    #rc-flip {
+      position: absolute;
+      left: 0;
+      top: 260px;
+      width: 1080px;
+      text-align: center;
+      font-family: "Archivo Black", sans-serif;
+      text-transform: uppercase;
+      line-height: 1;
+    }
+    #rc-flip-a {
+      display: block;
+      font-size: 72px;
+      color: #ffffff;
+    }
+    #rc-flip-b {
+      display: inline-block;
+      margin-top: 20px;
+      font-size: 170px;
+      color: var(--danger, #ff3b3b);
+      text-shadow: 0 0 70px rgba(255, 59, 59, 0.5);
+    }
+  </style>
+  <div id="root" data-composition-id="recap" data-width="1080" data-height="1920">
+    <div id="rc-scrim"></div>
+    <div id="rc-kicker">IKUT URUTAN NI</div>
+    <div id="rc-stack">
+      <div id="rc-r1" class="rc-row"><b>1</b>Simpan</div>
+      <div id="rc-r2" class="rc-row"><b>2</b>Komitmen</div>
+      <div id="rc-r3" class="rc-row"><b>3</b>Belanja</div>
+    </div>
+    <div id="rc-not">
+      <span id="rc-not-a">Selalunya bukan</span>
+      <span id="rc-not-b">Gaji kurang<span id="rc-not-strike"></span></span>
+    </div>
+    <div id="rc-flip">
+      <span id="rc-flip-a">Tapi urutan kita</span>
+      <span id="rc-flip-b">Terbalik</span>
+    </div>
+  </div>
+  <script>
+    const tl = gsap.timeline({ paused: true });
+    // Scene clock: 0 = comp 47.61. "simpan" 1.38, "komitmen" 2.32, "belanja" 3.34, "ikut urutan" 3.98,
+    // "bukan gaji" 6.56, "kurang" 7.66, "urutan" 8.24, "terbalik" 9.38
+    tl.fromTo("#rc-scrim", { opacity: 0 }, { opacity: 1, duration: 0.3, ease: "power2.out" }, 0.9);
+    tl.fromTo("#rc-r1", { opacity: 0, x: -80 }, { opacity: 1, x: 0, duration: 0.35, ease: "back.out(1.8)" }, 1.36);
+    tl.fromTo("#rc-r2", { opacity: 0, x: -80 }, { opacity: 1, x: 0, duration: 0.35, ease: "back.out(1.8)" }, 2.3);
+    tl.fromTo("#rc-r3", { opacity: 0, x: -80 }, { opacity: 1, x: 0, duration: 0.35, ease: "back.out(1.8)" }, 3.32);
+    tl.fromTo("#rc-kicker", { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.3, ease: "power3.out" }, 3.95);
+    tl.to(["#rc-kicker", "#rc-stack"], { opacity: 0, filter: "blur(10px)", duration: 0.2, ease: "power3.in" }, 5.35);
+
+    tl.fromTo("#rc-not-a", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.3, ease: "power3.out" }, 5.6);
+    tl.fromTo("#rc-not-b", { opacity: 0, scale: 1.4, filter: "blur(10px)" }, { opacity: 1, scale: 1, filter: "blur(0px)", duration: 0.22, ease: "power4.out" }, 6.84);
+    tl.fromTo("#rc-not-strike", { scaleX: 0 }, { scaleX: 1, duration: 0.18, ease: "power3.out" }, 7.66);
+    tl.to("#rc-not", { opacity: 0, filter: "blur(10px)", duration: 0.18, ease: "power3.in" }, 8.05);
+
+    tl.fromTo("#rc-flip-a", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.3, ease: "power3.out" }, 8.24);
+    tl.fromTo("#rc-flip-b", { opacity: 0, scale: 1.6 }, { opacity: 1, scale: 1, duration: 0.2, ease: "power4.out" }, 9.0);
+    // The word itself flips upside down on "terbalik"
+    tl.fromTo("#rc-flip-b", { rotation: 0 }, { rotation: 180, duration: 0.3, ease: "back.out(1.6)" }, 9.38);
+    tl.to("#rc-flip", { opacity: 0, filter: "blur(10px)", duration: 0.18, ease: "power3.in" }, 10.1);
+    tl.to("#rc-scrim", { opacity: 0, duration: 0.18 }, 10.1);
+    window.__timelines["recap"] = tl;
+  </script>
+</template>

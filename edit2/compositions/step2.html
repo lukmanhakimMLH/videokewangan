@@ -1,0 +1,147 @@
+<template>
+  <style>
+    #root {
+      position: absolute;
+      inset: 0;
+    }
+    #s2-scrim {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 1080px;
+      height: 940px;
+      background: linear-gradient(180deg, rgba(0, 0, 0, 0.78) 0%, rgba(0, 0, 0, 0.45) 60%, rgba(0, 0, 0, 0) 100%);
+    }
+    .st-head {
+      position: absolute;
+      left: 0;
+      top: 200px;
+      width: 1080px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 22px;
+      font-family: "Archivo Black", sans-serif;
+      text-transform: uppercase;
+    }
+    .st-num {
+      width: 104px;
+      height: 104px;
+      border-radius: 26px;
+      background: var(--accent, #c8ff2e);
+      color: #0a0a0a;
+      font-size: 60px;
+      line-height: 104px;
+      text-align: center;
+    }
+    .st-title {
+      font-size: 70px;
+      color: #ffffff;
+    }
+    #s2-grid {
+      position: absolute;
+      left: 140px;
+      top: 370px;
+      width: 800px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+    .s2-chip {
+      position: relative;
+      height: 120px;
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      padding: 0 28px;
+      border-radius: 24px;
+      background: rgba(15, 16, 22, 0.85);
+      border: 2px solid rgba(255, 255, 255, 0.16);
+      font-family: "Archivo Black", sans-serif;
+      font-size: 44px;
+      text-transform: uppercase;
+      color: #ffffff;
+    }
+    .s2-chip svg {
+      width: 56px;
+      height: 56px;
+      flex: none;
+    }
+    #s2-sub {
+      position: absolute;
+      left: 0;
+      top: 330px;
+      width: 1080px;
+      text-align: center;
+      font-family: "Inter", sans-serif;
+      font-weight: 900;
+      font-size: 40px;
+      letter-spacing: 0.08em;
+      color: var(--accent, #c8ff2e);
+    }
+    #s2-stamp {
+      position: absolute;
+      left: 0;
+      top: 470px;
+      width: 1080px;
+      text-align: center;
+    }
+    #s2-stamp span {
+      display: inline-block;
+      padding: 14px 34px;
+      border: 8px solid var(--danger, #ff3b3b);
+      border-radius: 16px;
+      background: rgba(10, 10, 10, 0.6);
+      font-family: "Archivo Black", sans-serif;
+      font-size: 72px;
+      text-transform: uppercase;
+      color: var(--danger, #ff3b3b);
+    }
+  </style>
+  <div id="root" data-composition-id="step2" data-width="1080" data-height="1920">
+    <div id="s2-scrim"></div>
+    <div id="s2-head" class="st-head">
+      <div class="st-num">02</div>
+      <div class="st-title">Asingkan bil</div>
+    </div>
+    <div id="s2-sub">BIL &amp; KOMITMEN SIAP-SIAP</div>
+    <div id="s2-grid">
+      <div id="s2-sewa" class="s2-chip">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#C8FF2E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-7 9 7" /><path d="M5 10v10h14V10" /><path d="M10 20v-6h4v6" /></svg>
+        Sewa
+      </div>
+      <div id="s2-loan" class="s2-chip">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#C8FF2E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 16v-4l2-5h14l2 5v4z" /><circle cx="7.5" cy="16.5" r="2" /><circle cx="16.5" cy="16.5" r="2" /></svg>
+        Kereta
+      </div>
+      <div id="s2-phone" class="s2-chip">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#C8FF2E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="2.5" width="12" height="19" rx="2.5" /><path d="M11 18h2" /></svg>
+        Phone
+      </div>
+      <div id="s2-lain" class="s2-chip">
+        <svg viewBox="0 0 24 24" fill="#C8FF2E"><circle cx="5" cy="12" r="2.2" /><circle cx="12" cy="12" r="2.2" /><circle cx="19" cy="12" r="2.2" /></svg>
+        Lain-lain
+      </div>
+    </div>
+    <div id="s2-stamp" data-layout-allow-occlusion data-layout-allow-overlap><span>Dah tak ada</span></div>
+  </div>
+  <script>
+    const tl = gsap.timeline({ paused: true });
+    // Scene clock: 0 = comp 28.44. "asingkan" 1.24, "bil" 2.58, "sewa" 4.58, "kereta" 5.52, "phone" 6.22, "lain-lain" 6.70, "anggap" 7.44, "tak ada" 8.68
+    tl.fromTo("#s2-scrim", { opacity: 0 }, { opacity: 1, duration: 0.3, ease: "power2.out" }, 0);
+    tl.fromTo("#s2-head .st-num", { opacity: 0, scale: 0.3, rotation: -30 }, { opacity: 1, scale: 1, rotation: 0, duration: 0.45, ease: "back.out(2.2)" }, 0.05);
+    tl.fromTo("#s2-head .st-title", { opacity: 0, x: -40, filter: "blur(8px)" }, { opacity: 1, x: 0, filter: "blur(0px)", duration: 0.3, ease: "power4.out" }, 1.2);
+    tl.fromTo("#s2-sub", { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.3, ease: "power3.out" }, 2.58);
+    tl.to("#s2-sub", { opacity: 0, duration: 0.15 }, 4.3);
+    tl.fromTo("#s2-sewa", { opacity: 0, scale: 0.5 }, { opacity: 1, scale: 1, duration: 0.35, ease: "back.out(2.2)" }, 4.58);
+    tl.fromTo("#s2-loan", { opacity: 0, scale: 0.5 }, { opacity: 1, scale: 1, duration: 0.35, ease: "back.out(2.2)" }, 5.4);
+    tl.fromTo("#s2-phone", { opacity: 0, scale: 0.5 }, { opacity: 1, scale: 1, duration: 0.35, ease: "back.out(2.2)" }, 6.22);
+    tl.fromTo("#s2-lain", { opacity: 0, scale: 0.5 }, { opacity: 1, scale: 1, duration: 0.35, ease: "back.out(2.2)" }, 6.7);
+    // "Anggap duit ni dah tak ada": chips dim, stamp slams
+    tl.to(".s2-chip", { opacity: 0.3, filter: "blur(2px)", duration: 0.3, ease: "power2.out" }, 7.95);
+    tl.fromTo("#s2-stamp span", { opacity: 0, scale: 2.4, rotation: -14 }, { opacity: 1, scale: 1, rotation: -8, duration: 0.2, ease: "power4.in" }, 8.1);
+    tl.to(["#s2-head", "#s2-grid", "#s2-stamp"], { opacity: 0, filter: "blur(10px)", duration: 0.2, ease: "power3.in" }, 9.1);
+    tl.to("#s2-scrim", { opacity: 0, duration: 0.2 }, 9.1);
+    window.__timelines["step2"] = tl;
+  </script>
+</template>

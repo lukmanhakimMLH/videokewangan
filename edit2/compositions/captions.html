@@ -1,0 +1,354 @@
+<template>
+  <style>
+    #root {
+      position: absolute;
+      inset: 0;
+    }
+    .cap {
+      position: absolute;
+      left: 0;
+      top: 1360px;
+      width: 1080px;
+      overflow: visible;
+    }
+    .cap-line {
+      width: 1080px;
+      padding: 0 80px;
+      text-align: center;
+      font-family: "Inter", sans-serif;
+      font-weight: 900;
+      font-size: 80px;
+      line-height: 1.08;
+      letter-spacing: -0.01em;
+      color: #ffffff;
+      -webkit-text-stroke: 3px rgba(0, 0, 0, 0.85);
+      paint-order: stroke fill;
+      text-shadow: 0 6px 22px rgba(0, 0, 0, 0.75);
+    }
+    .w {
+      display: inline-block;
+      margin: 0 0.14em;
+      transform-origin: 50% 70%;
+    }
+    .w-danger {
+      color: var(--danger, #ff3b3b);
+    }
+    .w-accent {
+      color: var(--accent, #c8ff2e);
+    }
+  </style>
+  <div id="root" data-composition-id="captions" data-width="1080" data-height="1920" data-layout-allow-caption-zone>
+    <div id="cap-0" class="clip cap" data-start="0.1" data-duration="1.0" data-track-index="0"><div class="cap-line"><span id="c0-w0" class="w">GAJI</span> <span id="c0-w1" class="w">MASUK</span> <span id="c0-w2" class="w">25</span></div></div>
+    <div id="cap-1" class="clip cap" data-start="1.05" data-duration="1.07" data-track-index="0"><div class="cap-line"><span id="c1-w0" class="w">HARIBULAN,</span></div></div>
+    <div id="cap-2" class="clip cap" data-start="2.09" data-duration="0.71" data-track-index="0"><div class="cap-line"><span id="c2-w0" class="w w-accent">3</span> <span id="c2-w1" class="w">HARI</span> <span id="c2-w2" class="w">SELEPAS</span></div></div>
+    <div id="cap-3" class="clip cap" data-start="2.75" data-duration="1.37" data-track-index="0"><div class="cap-line"><span id="c3-w0" class="w">ITU</span> <span id="c3-w1" class="w">28</span> <span id="c3-w2" class="w">HARIBULAN,</span></div></div>
+    <div id="cap-4" class="clip cap" data-start="4.09" data-duration="1.13" data-track-index="0"><div class="cap-line"><span id="c4-w0" class="w">TINGGAL</span> <span id="c4-w1" class="w w-danger">RM50.</span></div></div>
+    <div id="cap-5" class="clip cap" data-start="5.19" data-duration="0.86" data-track-index="0"><div class="cap-line"><span id="c5-w0" class="w">PERNAH</span> <span id="c5-w1" class="w">RASA</span> <span id="c5-w2" class="w w-danger">TAK?</span></div></div>
+    <div id="cap-6" class="clip cap" data-start="6.02" data-duration="0.96" data-track-index="0"><div class="cap-line"><span id="c6-w0" class="w">MESTI</span> <span id="c6-w1" class="w">PERNAH.</span></div></div>
+    <div id="cap-7" class="clip cap" data-start="6.95" data-duration="0.89" data-track-index="0"><div class="cap-line"><span id="c7-w0" class="w">MASALAH</span> <span id="c7-w1" class="w">DIA</span> <span id="c7-w2" class="w">BUKAN</span></div></div>
+    <div id="cap-8" class="clip cap" data-start="7.79" data-duration="1.07" data-track-index="0"><div class="cap-line"><span id="c8-w0" class="w">GAJI</span> <span id="c8-w1" class="w w-danger">KECIL,</span></div></div>
+    <div id="cap-9" class="clip cap" data-start="8.83" data-duration="1.69" data-track-index="0"><div class="cap-line"><span id="c9-w0" class="w">MASALAH</span> <span id="c9-w1" class="w">DIA</span> <span id="c9-w2" class="w">KORANG</span></div></div>
+    <div id="cap-10" class="clip cap" data-start="10.47" data-duration="1.21" data-track-index="0"><div class="cap-line"><span id="c10-w0" class="w w-accent">BELANJA</span> <span id="c10-w1" class="w">DULU,</span></div></div>
+    <div id="cap-11" class="clip cap" data-start="11.65" data-duration="0.87" data-track-index="0"><div class="cap-line"><span id="c11-w0" class="w w-accent">SIMPAN</span> <span id="c11-w1" class="w">KALAU</span> <span id="c11-w2" class="w">ADA</span></div></div>
+    <div id="cap-12" class="clip cap" data-start="12.47" data-duration="1.45" data-track-index="0"><div class="cap-line"><span id="c12-w0" class="w">BAKI</span> <span id="c12-w1" class="w">DAN</span> <span id="c12-w2" class="w">BAKI</span></div></div>
+    <div id="cap-13" class="clip cap" data-start="13.87" data-duration="1.19" data-track-index="0"><div class="cap-line"><span id="c13-w0" class="w">ITU</span> <span id="c13-w1" class="w">MEMANG</span> <span id="c13-w2" class="w w-danger">TAK</span></div></div>
+    <div id="cap-14" class="clip cap" data-start="15.01" data-duration="0.6" data-track-index="0"><div class="cap-line"><span id="c14-w0" class="w">AKAN</span> <span id="c14-w1" class="w">ADA.</span></div></div>
+    <div id="cap-15" class="clip cap" data-start="15.58" data-duration="0.93" data-track-index="0"><div class="cap-line"><span id="c15-w0" class="w">JADI</span> <span id="c15-w1" class="w">BILA</span> <span id="c15-w2" class="w">SAMPAI</span></div></div>
+    <div id="cap-16" class="clip cap" data-start="16.46" data-duration="1.19" data-track-index="0"><div class="cap-line"><span id="c16-w0" class="w">HARI</span> <span id="c16-w1" class="w">GAJI</span> <span id="c16-w2" class="w">JE,</span></div></div>
+    <div id="cap-17" class="clip cap" data-start="17.62" data-duration="0.99" data-track-index="0"><div class="cap-line"><span id="c17-w0" class="w">BUAT</span> <span id="c17-w1" class="w w-accent">3</span> <span id="c17-w2" class="w">PERKARA</span></div></div>
+    <div id="cap-18" class="clip cap" data-start="18.56" data-duration="1.09" data-track-index="0"><div class="cap-line"><span id="c18-w0" class="w">NI</span> <span id="c18-w1" class="w">SEBELUM</span> <span id="c18-w2" class="w">KORANG</span></div></div>
+    <div id="cap-19" class="clip cap" data-start="19.6" data-duration="0.95" data-track-index="0"><div class="cap-line"><span id="c19-w0" class="w">NAK</span> <span id="c19-w1" class="w">SENTUH</span> <span id="c19-w2" class="w">DUIT</span></div></div>
+    <div id="cap-20" class="clip cap" data-start="20.5" data-duration="0.57" data-track-index="0"><div class="cap-line"><span id="c20-w0" class="w">TERSEBUT.</span></div></div>
+    <div id="cap-21" class="clip cap" data-start="21.02" data-duration="1.45" data-track-index="0"><div class="cap-line"><span id="c21-w0" class="w">YANG</span> <span id="c21-w1" class="w w-accent">PERTAMA,</span></div></div>
+    <div id="cap-22" class="clip cap" data-start="22.44" data-duration="1.51" data-track-index="0"><div class="cap-line"><span id="c22-w0" class="w">TERUS</span> <span id="c22-w1" class="w">PINDAHKAN</span> <span id="c22-w2" class="w">DUIT</span></div></div>
+    <div id="cap-23" class="clip cap" data-start="23.9" data-duration="1.27" data-track-index="0"><div class="cap-line"><span id="c23-w0" class="w w-accent">SIMPANAN</span> <span id="c23-w1" class="w">KE</span> <span id="c23-w2" class="w">AKAUN</span></div></div>
+    <div id="cap-24" class="clip cap" data-start="25.12" data-duration="0.54" data-track-index="0"><div class="cap-line"><span id="c24-w0" class="w">LAIN.</span></div></div>
+    <div id="cap-25" class="clip cap" data-start="25.63" data-duration="0.83" data-track-index="0"><div class="cap-line"><span id="c25-w0" class="w">BUKAN</span> <span id="c25-w1" class="w">AKAUN</span> <span id="c25-w2" class="w">YANG</span></div></div>
+    <div id="cap-26" class="clip cap" data-start="26.41" data-duration="0.87" data-track-index="0"><div class="cap-line"><span id="c26-w0" class="w">ADA</span> <span id="c26-w1" class="w">KAT</span> <span id="c26-w2" class="w w-danger">DEBIT,</span></div></div>
+    <div id="cap-27" class="clip cap" data-start="27.25" data-duration="0.83" data-track-index="0"><div class="cap-line"><span id="c27-w0" class="w">BIAR</span> <span id="c27-w1" class="w">SUSAH</span> <span id="c27-w2" class="w">NAK</span></div></div>
+    <div id="cap-28" class="clip cap" data-start="28.03" data-duration="0.39" data-track-index="0"><div class="cap-line"><span id="c28-w0" class="w w-danger">USIK.</span></div></div>
+    <div id="cap-29" class="clip cap" data-start="28.39" data-duration="1.27" data-track-index="0"><div class="cap-line"><span id="c29-w0" class="w">YANG</span> <span id="c29-w1" class="w w-accent">KEDUA,</span></div></div>
+    <div id="cap-30" class="clip cap" data-start="29.63" data-duration="1.37" data-track-index="0"><div class="cap-line"><span id="c30-w0" class="w">ASINGKAN</span> <span id="c30-w1" class="w">DUIT,</span></div></div>
+    <div id="cap-31" class="clip cap" data-start="30.97" data-duration="0.99" data-track-index="0"><div class="cap-line"><span id="c31-w0" class="w w-accent">BIL</span> <span id="c31-w1" class="w">DAN</span> <span id="c31-w2" class="w w-accent">KOMITMEN</span></div></div>
+    <div id="cap-32" class="clip cap" data-start="31.91" data-duration="1.09" data-track-index="0"><div class="cap-line"><span id="c32-w0" class="w">SIAP</span> <span id="c32-w1" class="w">-SIAP.</span></div></div>
+    <div id="cap-33" class="clip cap" data-start="32.97" data-duration="0.81" data-track-index="0"><div class="cap-line"><span id="c33-w0" class="w">SEWA,</span></div></div>
+    <div id="cap-34" class="clip cap" data-start="33.75" data-duration="0.89" data-track-index="0"><div class="cap-line"><span id="c34-w0" class="w">LOAN</span> <span id="c34-w1" class="w">KERETA,</span></div></div>
+    <div id="cap-35" class="clip cap" data-start="34.61" data-duration="0.77" data-track-index="0"><div class="cap-line"><span id="c35-w0" class="w">PHONE</span> <span id="c35-w1" class="w">DAN</span> <span id="c35-w2" class="w">LAIN</span></div></div>
+    <div id="cap-36" class="clip cap" data-start="35.33" data-duration="0.53" data-track-index="0"><div class="cap-line"><span id="c36-w0" class="w">-LAIN.</span></div></div>
+    <div id="cap-37" class="clip cap" data-start="35.83" data-duration="0.77" data-track-index="0"><div class="cap-line"><span id="c37-w0" class="w">ANGGAP</span> <span id="c37-w1" class="w">DUIT</span> <span id="c37-w2" class="w">NI</span></div></div>
+    <div id="cap-38" class="clip cap" data-start="36.55" data-duration="1.19" data-track-index="0"><div class="cap-line"><span id="c38-w0" class="w">DAH</span> <span id="c38-w1" class="w w-danger">TAK</span> <span id="c38-w2" class="w">ADA.</span></div></div>
+    <div id="cap-39" class="clip cap" data-start="37.71" data-duration="1.5" data-track-index="0"><div class="cap-line"><span id="c39-w0" class="w">YANG</span> <span id="c39-w1" class="w w-accent">KETIGA,</span></div></div>
+    <div id="cap-40" class="clip cap" data-start="39.18" data-duration="0.71" data-track-index="0"><div class="cap-line"><span id="c40-w0" class="w">BARU</span> <span id="c40-w1" class="w">YANG</span> <span id="c40-w2" class="w">TINGGAL</span></div></div>
+    <div id="cap-41" class="clip cap" data-start="39.84" data-duration="1.07" data-track-index="0"><div class="cap-line"><span id="c41-w0" class="w">TU</span> <span id="c41-w1" class="w">DUIT</span> <span id="c41-w2" class="w w-accent">BELANJA</span></div></div>
+    <div id="cap-42" class="clip cap" data-start="40.86" data-duration="1.63" data-track-index="0"><div class="cap-line"><span id="c42-w0" class="w">KORANG</span> <span id="c42-w1" class="w">DAN</span> <span id="c42-w2" class="w">PECAHKAN</span></div></div>
+    <div id="cap-43" class="clip cap" data-start="42.44" data-duration="1.45" data-track-index="0"><div class="cap-line"><span id="c43-w0" class="w">KEPADA</span> <span id="c43-w1" class="w w-accent">MINGGUAN,</span></div></div>
+    <div id="cap-44" class="clip cap" data-start="43.86" data-duration="1.01" data-track-index="0"><div class="cap-line"><span id="c44-w0" class="w">IAITU</span> <span id="c44-w1" class="w w-accent">4</span> <span id="c44-w2" class="w">MINGGU.</span></div></div>
+    <div id="cap-45" class="clip cap" data-start="44.84" data-duration="0.87" data-track-index="0"><div class="cap-line"><span id="c45-w0" class="w w-danger">HABIS</span> <span id="c45-w1" class="w">DUIT</span> <span id="c45-w2" class="w">MINGGU</span></div></div>
+    <div id="cap-46" class="clip cap" data-start="45.66" data-duration="1.17" data-track-index="0"><div class="cap-line"><span id="c46-w0" class="w">NI</span> <span id="c46-w1" class="w">UNTUK</span> <span id="c46-w2" class="w w-accent">BELANJA,</span></div></div>
+    <div id="cap-47" class="clip cap" data-start="46.8" data-duration="1.01" data-track-index="0"><div class="cap-line"><span id="c47-w0" class="w">MINGGU</span> <span id="c47-w1" class="w">DEPAN</span> <span id="c47-w2" class="w">PULA.</span></div></div>
+    <div id="cap-48" class="clip cap" data-start="47.78" data-duration="1.19" data-track-index="0"><div class="cap-line"><span id="c48-w0" class="w">SO</span> <span id="c48-w1" class="w">KENA</span> <span id="c48-w2" class="w">INGAT,</span></div></div>
+    <div id="cap-49" class="clip cap" data-start="48.94" data-duration="0.97" data-track-index="0"><div class="cap-line"><span id="c49-w0" class="w w-accent">SIMPAN,</span></div></div>
+    <div id="cap-50" class="clip cap" data-start="49.88" data-duration="1.69" data-track-index="0"><div class="cap-line"><span id="c50-w0" class="w w-accent">KOMITMEN</span> <span id="c50-w1" class="w">DAN</span> <span id="c50-w2" class="w w-accent">BELANJA.</span></div></div>
+    <div id="cap-51" class="clip cap" data-start="51.54" data-duration="1.61" data-track-index="0"><div class="cap-line"><span id="c51-w0" class="w">IKUT</span> <span id="c51-w1" class="w w-accent">URUTAN</span> <span id="c51-w2" class="w">NI.</span></div></div>
+    <div id="cap-52" class="clip cap" data-start="53.12" data-duration="1.39" data-track-index="0"><div class="cap-line"><span id="c52-w0" class="w">SEBAB</span> <span id="c52-w1" class="w">SELALUNYA</span> <span id="c52-w2" class="w">BUKAN</span></div></div>
+    <div id="cap-53" class="clip cap" data-start="54.46" data-duration="0.81" data-track-index="0"><div class="cap-line"><span id="c53-w0" class="w">GAJI</span> <span id="c53-w1" class="w">KITA</span> <span id="c53-w2" class="w">YANG</span></div></div>
+    <div id="cap-54" class="clip cap" data-start="55.22" data-duration="0.61" data-track-index="0"><div class="cap-line"><span id="c54-w0" class="w w-danger">KURANG,</span></div></div>
+    <div id="cap-55" class="clip cap" data-start="55.8" data-duration="1.19" data-track-index="0"><div class="cap-line"><span id="c55-w0" class="w w-accent">URUTAN</span> <span id="c55-w1" class="w">KITA</span> <span id="c55-w2" class="w">YANG</span></div></div>
+    <div id="cap-56" class="clip cap" data-start="56.94" data-duration="0.81" data-track-index="0"><div class="cap-line"><span id="c56-w0" class="w w-danger">TERBALIK.</span></div></div>
+    <div id="cap-57" class="clip cap" data-start="57.72" data-duration="1.09" data-track-index="0"><div class="cap-line"><span id="c57-w0" class="w">GAJI</span> <span id="c57-w1" class="w">KORANG</span> <span id="c57-w2" class="w">BIASANYA</span></div></div>
+    <div id="cap-58" class="clip cap" data-start="58.76" data-duration="0.89" data-track-index="0"><div class="cap-line"><span id="c58-w0" class="w">TAHAN</span> <span id="c58-w1" class="w">SAMPAI</span> <span id="c58-w2" class="w">HARI</span></div></div>
+    <div id="cap-59" class="clip cap" data-start="59.6" data-duration="0.89" data-track-index="0"><div class="cap-line"><span id="c59-w0" class="w">KEBERAPA.</span></div></div>
+    <div id="cap-60" class="clip cap" data-start="60.46" data-duration="1.35" data-track-index="0"><div class="cap-line"><span id="c60-w0" class="w">CUBA</span> <span id="c60-w1" class="w">KOMEN</span> <span id="c60-w2" class="w w-accent">NOMBOR.</span></div></div>
+    <div id="cap-61" class="clip cap" data-start="61.78" data-duration="0.88" data-track-index="0"><div class="cap-line"><span id="c61-w0" class="w">SAYA</span> <span id="c61-w1" class="w">NAK</span> <span id="c61-w2" class="w">TENGOK.</span></div></div>
+  </div>
+  <script>
+    const tl = gsap.timeline({ paused: true });
+    tl.fromTo("#c0-w0", { opacity: 0, scale: 0.7, y: 18 }, { opacity: 1, scale: 1, y: 0, duration: 0.14, ease: "back.out(2.2)" }, 0.06);
+    tl.fromTo("#c0-w1", { opacity: 0, scale: 0.7, y: 18 }, { opacity: 1, scale: 1, y: 0, duration: 0.14, ease: "back.out(2.2)" }, 0.36);
+    tl.fromTo("#c0-w2", { opacity: 0, scale: 0.7, y: 18 }, { opacity: 1, scale: 1, y: 0, duration: 0.14, ease: "back.out(2.2)" }, 0.64);
+    tl.to("#cap-0 .cap-line", { opacity: 0, duration: 0.06, ease: "power2.in" }, 1.04);
+    tl.fromTo("#c1-w0", { opacity: 0, scale: 0.7, y: 18 }, { opacity: 1, scale: 1, y: 0, duration: 0.14, ease: "back.out(2.2)" }, 1.10);
+    tl.to("#cap-1 .cap-line", { opacity: 0, duration: 0.06, ease: "power2.in" }, 2.06);
+    tl.fromTo("#c2-w0", { opacity: 0, scale: 0.7, y: 18 }, { opacity: 1, scale: 1, y: 0, duration: 0.14, ease: "back.out(2.2)" }, 2.14);
+    tl.to("#c2-w0", { keyframes: [{ scale: 1.16, duration: 0.1 }, { scale: 1, duration: 0.16 }] }, 2.24);
+    tl.fromTo("#c2-w1", { opacity: 0, scale: 0.7, y: 18 }, { opacity: 1, scale: 1, y: 0, duration: 0.14, ease: "back.out(2.2)" }, 2.30);
+    tl.fromTo("#c2-w2", { opacity: 0, scale: 0.7, y: 18 }, { opacity: 1, scale: 1, y: 0, duration: 0.14, ease: "back.out(2.2)" }, 2.52);
+    tl.to("#cap-2 .cap-line", { opacity: 0, duration: 0.06, ease: "power2.in" }, 2.74);
+    tl.fromTo("#c3-w0", { opacity: 0, scale: 0.7, y: 18 }, { opacity: 1, scale: 1, y: 0, duration: 0.14, ease: "back.out(2.2)" }, 2.80);
+    tl.fromTo("#c3-w1", { opacity: 0, scale: 0.7, y: 18 }, { opacity: 1, scale: 1, y: 0, duration: 0.14, ease: "back.out(2.2)" }, 3.02);
+    tl.fromTo("#c3-w2", { opacity: 0, scale: 0.7, y: 18 }, { opacity: 1, scale: 1, y: 0, duration: 0.14, ease: "back.out(2.2)" }, 3.46);
+    tl.to("#cap-3 .cap-line", { opacity: 0, duration: 0.06, ease: "power2.in" }, 4.06);
+    tl.fromTo("#c4-w0", { opacity: 0, scale: 0.7, y: 18 }, { opacity: 1, scale: 1, y: 0, duration: 0.14, ease: "back.out(2.2)" }, 4.14);
+    tl.fromTo("#c4-w1", { opacity: 0, scale: 0.7, y: 18 }, { opacity: 1, scale: 1, y: 0, duration: 0.14, ease: "back.out(2.2)" }, 4.60);
+    tl.to("#c4-w1", { keyframes: [{ scale: 1.16, duration: 0.1 }, { scale: 1, duration: 0.16 }] }, 4.70);
+    tl.to("#cap-4 .cap-line", { opacity: 0, duration: 0.06, ease: "power2.in" }, 5.16);
+    tl.fromTo("#c5-w0", { opacity: 0, scale: 0.7, y: 18 }, { opacity: 1, scale: 1, y: 0, duration: 0.14, ease: "back.out(2.2)" }, 5.24);
+    tl.fromTo("#c5-w1", { opacity: 0, scale: 0.7, y: 18 }, { opacity: 1, scale: 1, y: 0, duration: 0.14, ease: "back.out(2.2)" }, 5.46);
+    tl.fromTo("#c5-w2", { opacity: 0, scale: 0.7, y: 18 }, { opacity: 1, scale: 1, y: 0, duration: 0.14, ease: "back.out(2.2)" }, 5.70);
+    tl.to("#c5-w2", { keyframes: [{ scale: 1.16, duration: 0.1 }, { scale: 1, duration: 0.16 }] }, 5.80);
+    tl.to("#cap-5 .cap-line", { opacity: 0, duration: 0.06, ease: "power2.in" }, 5.99);
+    tl.fromTo("#c6-w0", { opacity: 0, scale: 0.7, y: 18 }, { opacity: 1, scale: 1, y: 0, duration: 0.14, ease: "back.out(2.2)" }, 6.07);
+    tl.fromTo("#c6-w1", { opacity: 0, scale: 0.7, y: 18 }, { opacity: 1, scale: 1, y: 0, duration: 0.14, ease: "back.out(2.2)" }, 6.37);
+    tl.to("#cap-6 .cap-line", { opacity: 0, duration: 0.06, ease: "power2.in" }, 6.92);
+    tl.fromTo("#c7-w0", { opacity: 0, scale: 0.7, y: 18 }, { opacity: 1, scale: 1, y: 0, duration: 0.14, ease: "back.out(2.2)" }, 7.00);
+    tl.fromTo("#c7-w1", { opacity: 0, scale: 0.7, y: 18 }, { opacity: 1, scale: 1, y: 0, duration: 0.14, ease: "back.out(2.2)" }, 7.32);
+    tl.fromTo("#c7-w2", { opacity: 0, scale: 0.7, y: 18 }, { opacity: 1, scale: 1, y: 0, duration: 0.14, ease: "back.out(2.2)" }, 7.54);
+    tl.to("#cap-7 .cap-line", { opacity: 0, duration: 0.06, ease: "power2.in" }, 7.78);
+    tl.fromTo("#c8-w0", { opacity: 0, scale: 0.7, y: 18 }, { opacity: 1, scale: 1, y: 0, duration: 0.14, ease: "back.out(2.2)" }, 7.84);
+    tl.fromTo("#c8-w1", { opacity: 0, scale: 0.7, y: 18 }, { opacity: 1, scale: 1, y: 0, duration: 0.14, ease: "back.out(2.2)" }, 8.16);
+    tl.to("#c8-w1", { keyframes: [{ scale: 1.16, duration: 0.1 }, { scale: 1, duration: 0.16 }] }, 8.26);
+    tl.to("#cap-8 .cap-line", { opacity: 0, duration: 0.06, ease: "power2.in" }, 8.80);
+    tl.fromTo("#c9-w0", { opacity: 0, scale: 0.7, y: 18 }, { opacity: 1, scale: 1, y: 0, duration: 0.14, ease: "back.out(2.2)" }, 8.88);
+    tl.fromTo("#c9-w1", { opacity: 0, scale: 0.7, y: 18 }, { opacity: 1, scale: 1, y: 0, duration: 0.14, ease: "back.out(2.2)" }, 9.30);
+    tl.fromTo("#c9-w2", { opacity: 0, scale: 0.7, y: 18 }, { opacity: 1, scale: 1, y: 0, duration: 0.14, ease: "back.out(2.2)" }, 9.92);
+    tl.to("#cap-9 .cap-line", { opacity: 0, duration: 0.06, ease: "power2.in" }, 10.46);
+    tl.fromTo("#c10-w0", { opacity: 0, scale: 0.7, y: 18 }, { opacity: 1, scale: 1, y: 0, duration: 0.14, ease: "back.out(2.2)" }, 10.52);
+    tl.to("#c10-w0", { keyframes: [{ scale: 1.16, duration: 0.1 }, { scale: 1, duration: 0.16 }] }, 10.62);
+    tl.fromTo("#c10-w1", { opacity: 0, scale: 0.7, y: 18 }, { opacity: 1, scale: 1, y: 0, duration: 0.14, ease: "back.out(2.2)" }, 10.88);
+    tl.to("#cap-10 .cap-line", { opacity: 0, duration: 0.06, ease: "power2.in" }, 11.62);
+    tl.fromTo("#c11-w0", { opacity: 0, scale: 0.7, y: 18 }, { opacity: 1, scale: 1, y: 0, duration: 0.14, ease: "back.out(2.2)" }, 11.70);
+    tl.to("#c11-w0", { keyframes: [{ scale: 1.16, duration: 0.1 }, { scale: 1, duration: 0.16 }] }, 11.80);
+    tl.fromTo("#c11-w1", { opacity: 0, scale: 0.7, y: 18 }, { opacity: 1, scale: 1, y: 0, duration: 0.14, ease: "back.out(2.2)" }, 12.06);
+    tl.fromTo("#c11-w2", { opacity: 0, scale: 0.7, y: 18 }, { opacity: 1, scale: 1, y: 0, duration: 0.14, ease: "back.out(2.2)" }, 12.30);
+    tl.to("#cap-11 .cap-line", { opacity: 0, duration: 0.06, ease: "power2.in" }, 12.46);
+    tl.fromTo("#c12-w0", { opacity: 0, scale: 0.7, y: 18 }, { opacity: 1, scale: 1, y: 0, duration: 0.14, ease: "back.out(2.2)" }, 12.52);
+    tl.fromTo("#c12-w1", { opacity: 0, scale: 0.7, y: 18 }, { opacity: 1, scale: 1, y: 0, duration: 0.14, ease: "back.out(2.2)" }, 12.82);
+    tl.fromTo("#c12-w2", { opacity: 0, scale: 0.7, y: 18 }, { opacity: 1, scale: 1, y: 0, duration: 0.14, ease: "back.out(2.2)" }, 13.44);
+    tl.to("#cap-12 .cap-line", { opacity: 0, duration: 0.06, ease: "power2.in" }, 13.86);
+    tl.fromTo("#c13-w0", { opacity: 0, scale: 0.7, y: 18 }, { opacity: 1, scale: 1, y: 0, duration: 0.14, ease: "back.out(2.2)" }, 13.92);
+    tl.fromTo("#c13-w1", { opacity: 0, scale: 0.7, y: 18 }, { opacity: 1, scale: 1, y: 0, duration: 0.14, ease: "back.out(2.2)" }, 14.28);
+    tl.fromTo("#c13-w2", { opacity: 0, scale: 0.7, y: 18 }, { opacity: 1, scale: 1, y: 0, duration: 0.14, ease: "back.out(2.2)" }, 14.82);
+    tl.to("#c13-w2", { keyframes: [{ scale: 1.16, duration: 0.1 }, { scale: 1, duration: 0.16 }] }, 14.92);
+    tl.to("#cap-13 .cap-line", { opacity: 0, duration: 0.06, ease: "power2.in" }, 15.00);
+    tl.fromTo("#c14-w0", { opacity: 0, scale: 0.7, y: 18 }, { opacity: 1, scale: 1, y: 0, duration: 0.14, ease: "back.out(2.2)" }, 15.06);
+    tl.fromTo("#c14-w1", { opacity: 0, scale: 0.7, y: 18 }, { opacity: 1, scale: 1, y: 0, duration: 0.14, ease: "back.out(2.2)" }, 15.18);
+    tl.to("#cap-14 .cap-line", { opacity: 0, duration: 0.06, ease: "power2.in" }, 15.55);
+    tl.fromTo("#c15-w0", { opacity: 0, scale: 0.7, y: 18 }, { opacity: 1, scale: 1, y: 0, duration: 0.14, ease: "back.out(2.2)" }, 15.63);
+    tl.fromTo("#c15-w1", { opacity: 0, scale: 0.7, y: 18 }, { opacity: 1, scale: 1, y: 0, duration: 0.14, ease: "back.out(2.2)" }, 15.82);
+    tl.fromTo("#c15-w2", { opacity: 0, scale: 0.7, y: 18 }, { opacity: 1, scale: 1, y: 0, duration: 0.14, ease: "back.out(2.2)" }, 16.11);
+    tl.to("#cap-15 .cap-line", { opacity: 0, duration: 0.06, ease: "power2.in" }, 16.45);
+    tl.fromTo("#c16-w0", { opacity: 0, scale: 0.7, y: 18 }, { opacity: 1, scale: 1, y: 0, duration: 0.14, ease: "back.out(2.2)" }, 16.51);
+    tl.fromTo("#c16-w1", { opacity: 0, scale: 0.7, y: 18 }, { opacity: 1, scale: 1, y: 0, duration: 0.14, ease: "back.out(2.2)" }, 16.75);
+    tl.fromTo("#c16-w2", { opacity: 0, scale: 0.7, y: 18 }, { opacity: 1, scale: 1, y: 0, duration: 0.14, ease: "back.out(2.2)" }, 17.01);
+    tl.to("#cap-16 .cap-line", { opacity: 0, duration: 0.06, ease: "power2.in" }, 17.59);
+    tl.fromTo("#c17-w0", { opacity: 0, scale: 0.7, y: 18 }, { opacity: 1, scale: 1, y: 0, duration: 0.14, ease: "back.out(2.2)" }, 17.67);
+    tl.fromTo("#c17-w1", { opacity: 0, scale: 0.7, y: 18 }, { opacity: 1, scale: 1, y: 0, duration: 0.14, ease: "back.out(2.2)" }, 17.87);
+    tl.to("#c17-w1", { keyframes: [{ scale: 1.16, duration: 0.1 }, { scale: 1, duration: 0.16 }] }, 17.97);
+    tl.fromTo("#c17-w2", { opacity: 0, scale: 0.7, y: 18 }, { opacity: 1, scale: 1, y: 0, duration: 0.14, ease: "back.out(2.2)" }, 18.13);
+    tl.to("#cap-17 .cap-line", { opacity: 0, duration: 0.06, ease: "power2.in" }, 18.55);
+    tl.fromTo("#c18-w0", { opacity: 0, scale: 0.7, y: 18 }, { opacity: 1, scale: 1, y: 0, duration: 0.14, ease: "back.out(2.2)" }, 18.61);
+    tl.fromTo("#c18-w1", { opacity: 0, scale: 0.7, y: 18 }, { opacity: 1, scale: 1, y: 0, duration: 0.14, ease: "back.out(2.2)" }, 18.87);
+    tl.fromTo("#c18-w2", { opacity: 0, scale: 0.7, y: 18 }, { opacity: 1, scale: 1, y: 0, duration: 0.14, ease: "back.out(2.2)" }, 19.33);
+    tl.to("#cap-18 .cap-line", { opacity: 0, duration: 0.06, ease: "power2.in" }, 19.59);
+    tl.fromTo("#c19-w0", { opacity: 0, scale: 0.7, y: 18 }, { opacity: 1, scale: 1, y: 0, duration: 0.14, ease: "back.out(2.2)" }, 19.65);
+    tl.fromTo("#c19-w1", { opacity: 0, scale: 0.7, y: 18 }, { opacity: 1, scale: 1, y: 0, duration: 0.14, ease: "back.out(2.2)" }, 19.85);
+    tl.fromTo("#c19-w2", { opacity: 0, scale: 0.7, y: 18 }, { opacity: 1, scale: 1, y: 0, duration: 0.14, ease: "back.out(2.2)" }, 20.33);
+    tl.to("#cap-19 .cap-line", { opacity: 0, duration: 0.06, ease: "power2.in" }, 20.49);
+    tl.fromTo("#c20-w0", { opacity: 0, scale: 0.7, y: 18 }, { opacity: 1, scale: 1, y: 0, duration: 0.14, ease: "back.out(2.2)" }, 20.55);
+    tl.to("#cap-20 .cap-line", { opacity: 0, duration: 0.06, ease: "power2.in" }, 21.01);
+    tl.fromTo("#c21-w0", { opacity: 0, scale: 0.7, y: 18 }, { opacity: 1, scale: 1, y: 0, duration: 0.14, ease: "back.out(2.2)" }, 21.07);
+    tl.fromTo("#c21-w1", { opacity: 0, scale: 0.7, y: 18 }, { opacity: 1, scale: 1, y: 0, duration: 0.14, ease: "back.out(2.2)" }, 21.51);
+    tl.to("#c21-w1", { keyframes: [{ scale: 1.16, duration: 0.1 }, { scale: 1, duration: 0.16 }] }, 21.61);
+    tl.to("#cap-21 .cap-line", { opacity: 0, duration: 0.06, ease: "power2.in" }, 22.41);
+    tl.fromTo("#c22-w0", { opacity: 0, scale: 0.7, y: 18 }, { opacity: 1, scale: 1, y: 0, duration: 0.14, ease: "back.out(2.2)" }, 22.49);
+    tl.fromTo("#c22-w1", { opacity: 0, scale: 0.7, y: 18 }, { opacity: 1, scale: 1, y: 0, duration: 0.14, ease: "back.out(2.2)" }, 22.77);
+    tl.fromTo("#c22-w2", { opacity: 0, scale: 0.7, y: 18 }, { opacity: 1, scale: 1, y: 0, duration: 0.14, ease: "back.out(2.2)" }, 23.45);
+    tl.to("#cap-22 .cap-line", { opacity: 0, duration: 0.06, ease: "power2.in" }, 23.89);
+    tl.fromTo("#c23-w0", { opacity: 0, scale: 0.7, y: 18 }, { opacity: 1, scale: 1, y: 0, duration: 0.14, ease: "back.out(2.2)" }, 23.95);
+    tl.to("#c23-w0", { keyframes: [{ scale: 1.16, duration: 0.1 }, { scale: 1, duration: 0.16 }] }, 24.05);
+    tl.fromTo("#c23-w1", { opacity: 0, scale: 0.7, y: 18 }, { opacity: 1, scale: 1, y: 0, duration: 0.14, ease: "back.out(2.2)" }, 24.57);
+    tl.fromTo("#c23-w2", { opacity: 0, scale: 0.7, y: 18 }, { opacity: 1, scale: 1, y: 0, duration: 0.14, ease: "back.out(2.2)" }, 24.81);
+    tl.to("#cap-23 .cap-line", { opacity: 0, duration: 0.06, ease: "power2.in" }, 25.11);
+    tl.fromTo("#c24-w0", { opacity: 0, scale: 0.7, y: 18 }, { opacity: 1, scale: 1, y: 0, duration: 0.14, ease: "back.out(2.2)" }, 25.17);
+    tl.to("#cap-24 .cap-line", { opacity: 0, duration: 0.06, ease: "power2.in" }, 25.60);
+    tl.fromTo("#c25-w0", { opacity: 0, scale: 0.7, y: 18 }, { opacity: 1, scale: 1, y: 0, duration: 0.14, ease: "back.out(2.2)" }, 25.68);
+    tl.fromTo("#c25-w1", { opacity: 0, scale: 0.7, y: 18 }, { opacity: 1, scale: 1, y: 0, duration: 0.14, ease: "back.out(2.2)" }, 25.96);
+    tl.fromTo("#c25-w2", { opacity: 0, scale: 0.7, y: 18 }, { opacity: 1, scale: 1, y: 0, duration: 0.14, ease: "back.out(2.2)" }, 26.34);
+    tl.to("#cap-25 .cap-line", { opacity: 0, duration: 0.06, ease: "power2.in" }, 26.40);
+    tl.fromTo("#c26-w0", { opacity: 0, scale: 0.7, y: 18 }, { opacity: 1, scale: 1, y: 0, duration: 0.14, ease: "back.out(2.2)" }, 26.46);
+    tl.fromTo("#c26-w1", { opacity: 0, scale: 0.7, y: 18 }, { opacity: 1, scale: 1, y: 0, duration: 0.14, ease: "back.out(2.2)" }, 26.66);
+    tl.fromTo("#c26-w2", { opacity: 0, scale: 0.7, y: 18 }, { opacity: 1, scale: 1, y: 0, duration: 0.14, ease: "back.out(2.2)" }, 26.82);
+    tl.to("#c26-w2", { keyframes: [{ scale: 1.16, duration: 0.1 }, { scale: 1, duration: 0.16 }] }, 26.92);
+    tl.to("#cap-26 .cap-line", { opacity: 0, duration: 0.06, ease: "power2.in" }, 27.22);
+    tl.fromTo("#c27-w0", { opacity: 0, scale: 0.7, y: 18 }, { opacity: 1, scale: 1, y: 0, duration: 0.14, ease: "back.out(2.2)" }, 27.30);
+    tl.fromTo("#c27-w1", { opacity: 0, scale: 0.7, y: 18 }, { opacity: 1, scale: 1, y: 0, duration: 0.14, ease: "back.out(2.2)" }, 27.58);
+    tl.fromTo("#c27-w2", { opacity: 0, scale: 0.7, y: 18 }, { opacity: 1, scale: 1, y: 0, duration: 0.14, ease: "back.out(2.2)" }, 27.92);
+    tl.to("#cap-27 .cap-line", { opacity: 0, duration: 0.06, ease: "power2.in" }, 28.02);
+    tl.fromTo("#c28-w0", { opacity: 0, scale: 0.7, y: 18 }, { opacity: 1, scale: 1, y: 0, duration: 0.14, ease: "back.out(2.2)" }, 28.08);
+    tl.to("#c28-w0", { keyframes: [{ scale: 1.16, duration: 0.1 }, { scale: 1, duration: 0.16 }] }, 28.18);
+    tl.to("#cap-28 .cap-line", { opacity: 0, duration: 0.06, ease: "power2.in" }, 28.36);
+    tl.fromTo("#c29-w0", { opacity: 0, scale: 0.7, y: 18 }, { opacity: 1, scale: 1, y: 0, duration: 0.14, ease: "back.out(2.2)" }, 28.44);
+    tl.fromTo("#c29-w1", { opacity: 0, scale: 0.7, y: 18 }, { opacity: 1, scale: 1, y: 0, duration: 0.14, ease: "back.out(2.2)" }, 28.86);
+    tl.to("#c29-w1", { keyframes: [{ scale: 1.16, duration: 0.1 }, { scale: 1, duration: 0.16 }] }, 28.96);
+    tl.to("#cap-29 .cap-line", { opacity: 0, duration: 0.06, ease: "power2.in" }, 29.60);
+    tl.fromTo("#c30-w0", { opacity: 0, scale: 0.7, y: 18 }, { opacity: 1, scale: 1, y: 0, duration: 0.14, ease: "back.out(2.2)" }, 29.68);
+    tl.fromTo("#c30-w1", { opacity: 0, scale: 0.7, y: 18 }, { opacity: 1, scale: 1, y: 0, duration: 0.14, ease: "back.out(2.2)" }, 30.10);
+    tl.to("#cap-30 .cap-line", { opacity: 0, duration: 0.06, ease: "power2.in" }, 30.94);
+    tl.fromTo("#c31-w0", { opacity: 0, scale: 0.7, y: 18 }, { opacity: 1, scale: 1, y: 0, duration: 0.14, ease: "back.out(2.2)" }, 31.02);
+    tl.to("#c31-w0", { keyframes: [{ scale: 1.16, duration: 0.1 }, { scale: 1, duration: 0.16 }] }, 31.12);
+    tl.fromTo("#c31-w1", { opacity: 0, scale: 0.7, y: 18 }, { opacity: 1, scale: 1, y: 0, duration: 0.14, ease: "back.out(2.2)" }, 31.04);
+    tl.fromTo("#c31-w2", { opacity: 0, scale: 0.7, y: 18 }, { opacity: 1, scale: 1, y: 0, duration: 0.14, ease: "back.out(2.2)" }, 31.30);
+    tl.to("#c31-w2", { keyframes: [{ scale: 1.16, duration: 0.1 }, { scale: 1, duration: 0.16 }] }, 31.40);
+    tl.to("#cap-31 .cap-line", { opacity: 0, duration: 0.06, ease: "power2.in" }, 31.90);
+    tl.fromTo("#c32-w0", { opacity: 0, scale: 0.7, y: 18 }, { opacity: 1, scale: 1, y: 0, duration: 0.14, ease: "back.out(2.2)" }, 31.96);
+    tl.fromTo("#c32-w1", { opacity: 0, scale: 0.7, y: 18 }, { opacity: 1, scale: 1, y: 0, duration: 0.14, ease: "back.out(2.2)" }, 32.42);
+    tl.to("#cap-32 .cap-line", { opacity: 0, duration: 0.06, ease: "power2.in" }, 32.94);
+    tl.fromTo("#c33-w0", { opacity: 0, scale: 0.7, y: 18 }, { opacity: 1, scale: 1, y: 0, duration: 0.14, ease: "back.out(2.2)" }, 33.02);
+    tl.to("#cap-33 .cap-line", { opacity: 0, duration: 0.06, ease: "power2.in" }, 33.72);
+    tl.fromTo("#c34-w0", { opacity: 0, scale: 0.7, y: 18 }, { opacity: 1, scale: 1, y: 0, duration: 0.14, ease: "back.out(2.2)" }, 33.80);
+    tl.fromTo("#c34-w1", { opacity: 0, scale: 0.7, y: 18 }, { opacity: 1, scale: 1, y: 0, duration: 0.14, ease: "back.out(2.2)" }, 33.96);
+    tl.to("#cap-34 .cap-line", { opacity: 0, duration: 0.06, ease: "power2.in" }, 34.58);
+    tl.fromTo("#c35-w0", { opacity: 0, scale: 0.7, y: 18 }, { opacity: 1, scale: 1, y: 0, duration: 0.14, ease: "back.out(2.2)" }, 34.66);
+    tl.fromTo("#c35-w1", { opacity: 0, scale: 0.7, y: 18 }, { opacity: 1, scale: 1, y: 0, duration: 0.14, ease: "back.out(2.2)" }, 34.88);
+    tl.fromTo("#c35-w2", { opacity: 0, scale: 0.7, y: 18 }, { opacity: 1, scale: 1, y: 0, duration: 0.14, ease: "back.out(2.2)" }, 35.14);
+    tl.to("#cap-35 .cap-line", { opacity: 0, duration: 0.06, ease: "power2.in" }, 35.32);
+    tl.fromTo("#c36-w0", { opacity: 0, scale: 0.7, y: 18 }, { opacity: 1, scale: 1, y: 0, duration: 0.14, ease: "back.out(2.2)" }, 35.38);
+    tl.to("#cap-36 .cap-line", { opacity: 0, duration: 0.06, ease: "power2.in" }, 35.80);
+    tl.fromTo("#c37-w0", { opacity: 0, scale: 0.7, y: 18 }, { opacity: 1, scale: 1, y: 0, duration: 0.14, ease: "back.out(2.2)" }, 35.88);
+    tl.fromTo("#c37-w1", { opacity: 0, scale: 0.7, y: 18 }, { opacity: 1, scale: 1, y: 0, duration: 0.14, ease: "back.out(2.2)" }, 36.18);
+    tl.fromTo("#c37-w2", { opacity: 0, scale: 0.7, y: 18 }, { opacity: 1, scale: 1, y: 0, duration: 0.14, ease: "back.out(2.2)" }, 36.44);
+    tl.to("#cap-37 .cap-line", { opacity: 0, duration: 0.06, ease: "power2.in" }, 36.54);
+    tl.fromTo("#c38-w0", { opacity: 0, scale: 0.7, y: 18 }, { opacity: 1, scale: 1, y: 0, duration: 0.14, ease: "back.out(2.2)" }, 36.60);
+    tl.fromTo("#c38-w1", { opacity: 0, scale: 0.7, y: 18 }, { opacity: 1, scale: 1, y: 0, duration: 0.14, ease: "back.out(2.2)" }, 36.86);
+    tl.to("#c38-w1", { keyframes: [{ scale: 1.16, duration: 0.1 }, { scale: 1, duration: 0.16 }] }, 36.96);
+    tl.fromTo("#c38-w2", { opacity: 0, scale: 0.7, y: 18 }, { opacity: 1, scale: 1, y: 0, duration: 0.14, ease: "back.out(2.2)" }, 37.12);
+    tl.to("#cap-38 .cap-line", { opacity: 0, duration: 0.06, ease: "power2.in" }, 37.68);
+    tl.fromTo("#c39-w0", { opacity: 0, scale: 0.7, y: 18 }, { opacity: 1, scale: 1, y: 0, duration: 0.14, ease: "back.out(2.2)" }, 37.76);
+    tl.fromTo("#c39-w1", { opacity: 0, scale: 0.7, y: 18 }, { opacity: 1, scale: 1, y: 0, duration: 0.14, ease: "back.out(2.2)" }, 38.14);
+    tl.to("#c39-w1", { keyframes: [{ scale: 1.16, duration: 0.1 }, { scale: 1, duration: 0.16 }] }, 38.24);
+    tl.to("#cap-39 .cap-line", { opacity: 0, duration: 0.06, ease: "power2.in" }, 39.15);
+    tl.fromTo("#c40-w0", { opacity: 0, scale: 0.7, y: 18 }, { opacity: 1, scale: 1, y: 0, duration: 0.14, ease: "back.out(2.2)" }, 39.23);
+    tl.fromTo("#c40-w1", { opacity: 0, scale: 0.7, y: 18 }, { opacity: 1, scale: 1, y: 0, duration: 0.14, ease: "back.out(2.2)" }, 39.39);
+    tl.fromTo("#c40-w2", { opacity: 0, scale: 0.7, y: 18 }, { opacity: 1, scale: 1, y: 0, duration: 0.14, ease: "back.out(2.2)" }, 39.61);
+    tl.to("#cap-40 .cap-line", { opacity: 0, duration: 0.06, ease: "power2.in" }, 39.83);
+    tl.fromTo("#c41-w0", { opacity: 0, scale: 0.7, y: 18 }, { opacity: 1, scale: 1, y: 0, duration: 0.14, ease: "back.out(2.2)" }, 39.89);
+    tl.fromTo("#c41-w1", { opacity: 0, scale: 0.7, y: 18 }, { opacity: 1, scale: 1, y: 0, duration: 0.14, ease: "back.out(2.2)" }, 40.09);
+    tl.fromTo("#c41-w2", { opacity: 0, scale: 0.7, y: 18 }, { opacity: 1, scale: 1, y: 0, duration: 0.14, ease: "back.out(2.2)" }, 40.49);
+    tl.to("#c41-w2", { keyframes: [{ scale: 1.16, duration: 0.1 }, { scale: 1, duration: 0.16 }] }, 40.59);
+    tl.to("#cap-41 .cap-line", { opacity: 0, duration: 0.06, ease: "power2.in" }, 40.85);
+    tl.fromTo("#c42-w0", { opacity: 0, scale: 0.7, y: 18 }, { opacity: 1, scale: 1, y: 0, duration: 0.14, ease: "back.out(2.2)" }, 40.91);
+    tl.fromTo("#c42-w1", { opacity: 0, scale: 0.7, y: 18 }, { opacity: 1, scale: 1, y: 0, duration: 0.14, ease: "back.out(2.2)" }, 41.49);
+    tl.fromTo("#c42-w2", { opacity: 0, scale: 0.7, y: 18 }, { opacity: 1, scale: 1, y: 0, duration: 0.14, ease: "back.out(2.2)" }, 41.91);
+    tl.to("#cap-42 .cap-line", { opacity: 0, duration: 0.06, ease: "power2.in" }, 42.43);
+    tl.fromTo("#c43-w0", { opacity: 0, scale: 0.7, y: 18 }, { opacity: 1, scale: 1, y: 0, duration: 0.14, ease: "back.out(2.2)" }, 42.49);
+    tl.fromTo("#c43-w1", { opacity: 0, scale: 0.7, y: 18 }, { opacity: 1, scale: 1, y: 0, duration: 0.14, ease: "back.out(2.2)" }, 42.97);
+    tl.to("#c43-w1", { keyframes: [{ scale: 1.16, duration: 0.1 }, { scale: 1, duration: 0.16 }] }, 43.07);
+    tl.to("#cap-43 .cap-line", { opacity: 0, duration: 0.06, ease: "power2.in" }, 43.83);
+    tl.fromTo("#c44-w0", { opacity: 0, scale: 0.7, y: 18 }, { opacity: 1, scale: 1, y: 0, duration: 0.14, ease: "back.out(2.2)" }, 43.91);
+    tl.fromTo("#c44-w1", { opacity: 0, scale: 0.7, y: 18 }, { opacity: 1, scale: 1, y: 0, duration: 0.14, ease: "back.out(2.2)" }, 44.15);
+    tl.to("#c44-w1", { keyframes: [{ scale: 1.16, duration: 0.1 }, { scale: 1, duration: 0.16 }] }, 44.25);
+    tl.fromTo("#c44-w2", { opacity: 0, scale: 0.7, y: 18 }, { opacity: 1, scale: 1, y: 0, duration: 0.14, ease: "back.out(2.2)" }, 44.53);
+    tl.to("#cap-44 .cap-line", { opacity: 0, duration: 0.06, ease: "power2.in" }, 44.81);
+    tl.fromTo("#c45-w0", { opacity: 0, scale: 0.7, y: 18 }, { opacity: 1, scale: 1, y: 0, duration: 0.14, ease: "back.out(2.2)" }, 44.89);
+    tl.to("#c45-w0", { keyframes: [{ scale: 1.16, duration: 0.1 }, { scale: 1, duration: 0.16 }] }, 44.99);
+    tl.fromTo("#c45-w1", { opacity: 0, scale: 0.7, y: 18 }, { opacity: 1, scale: 1, y: 0, duration: 0.14, ease: "back.out(2.2)" }, 45.25);
+    tl.fromTo("#c45-w2", { opacity: 0, scale: 0.7, y: 18 }, { opacity: 1, scale: 1, y: 0, duration: 0.14, ease: "back.out(2.2)" }, 45.51);
+    tl.to("#cap-45 .cap-line", { opacity: 0, duration: 0.06, ease: "power2.in" }, 45.65);
+    tl.fromTo("#c46-w0", { opacity: 0, scale: 0.7, y: 18 }, { opacity: 1, scale: 1, y: 0, duration: 0.14, ease: "back.out(2.2)" }, 45.71);
+    tl.fromTo("#c46-w1", { opacity: 0, scale: 0.7, y: 18 }, { opacity: 1, scale: 1, y: 0, duration: 0.14, ease: "back.out(2.2)" }, 45.87);
+    tl.fromTo("#c46-w2", { opacity: 0, scale: 0.7, y: 18 }, { opacity: 1, scale: 1, y: 0, duration: 0.14, ease: "back.out(2.2)" }, 46.13);
+    tl.to("#c46-w2", { keyframes: [{ scale: 1.16, duration: 0.1 }, { scale: 1, duration: 0.16 }] }, 46.23);
+    tl.to("#cap-46 .cap-line", { opacity: 0, duration: 0.06, ease: "power2.in" }, 46.77);
+    tl.fromTo("#c47-w0", { opacity: 0, scale: 0.7, y: 18 }, { opacity: 1, scale: 1, y: 0, duration: 0.14, ease: "back.out(2.2)" }, 46.85);
+    tl.fromTo("#c47-w1", { opacity: 0, scale: 0.7, y: 18 }, { opacity: 1, scale: 1, y: 0, duration: 0.14, ease: "back.out(2.2)" }, 46.99);
+    tl.fromTo("#c47-w2", { opacity: 0, scale: 0.7, y: 18 }, { opacity: 1, scale: 1, y: 0, duration: 0.14, ease: "back.out(2.2)" }, 47.31);
+    tl.to("#cap-47 .cap-line", { opacity: 0, duration: 0.06, ease: "power2.in" }, 47.75);
+    tl.fromTo("#c48-w0", { opacity: 0, scale: 0.7, y: 18 }, { opacity: 1, scale: 1, y: 0, duration: 0.14, ease: "back.out(2.2)" }, 47.83);
+    tl.fromTo("#c48-w1", { opacity: 0, scale: 0.7, y: 18 }, { opacity: 1, scale: 1, y: 0, duration: 0.14, ease: "back.out(2.2)" }, 48.05);
+    tl.fromTo("#c48-w2", { opacity: 0, scale: 0.7, y: 18 }, { opacity: 1, scale: 1, y: 0, duration: 0.14, ease: "back.out(2.2)" }, 48.29);
+    tl.to("#cap-48 .cap-line", { opacity: 0, duration: 0.06, ease: "power2.in" }, 48.91);
+    tl.fromTo("#c49-w0", { opacity: 0, scale: 0.7, y: 18 }, { opacity: 1, scale: 1, y: 0, duration: 0.14, ease: "back.out(2.2)" }, 48.99);
+    tl.to("#c49-w0", { keyframes: [{ scale: 1.16, duration: 0.1 }, { scale: 1, duration: 0.16 }] }, 49.09);
+    tl.to("#cap-49 .cap-line", { opacity: 0, duration: 0.06, ease: "power2.in" }, 49.85);
+    tl.fromTo("#c50-w0", { opacity: 0, scale: 0.7, y: 18 }, { opacity: 1, scale: 1, y: 0, duration: 0.14, ease: "back.out(2.2)" }, 49.93);
+    tl.to("#c50-w0", { keyframes: [{ scale: 1.16, duration: 0.1 }, { scale: 1, duration: 0.16 }] }, 50.03);
+    tl.fromTo("#c50-w1", { opacity: 0, scale: 0.7, y: 18 }, { opacity: 1, scale: 1, y: 0, duration: 0.14, ease: "back.out(2.2)" }, 50.41);
+    tl.fromTo("#c50-w2", { opacity: 0, scale: 0.7, y: 18 }, { opacity: 1, scale: 1, y: 0, duration: 0.14, ease: "back.out(2.2)" }, 50.95);
+    tl.to("#c50-w2", { keyframes: [{ scale: 1.16, duration: 0.1 }, { scale: 1, duration: 0.16 }] }, 51.05);
+    tl.to("#cap-50 .cap-line", { opacity: 0, duration: 0.06, ease: "power2.in" }, 51.51);
+    tl.fromTo("#c51-w0", { opacity: 0, scale: 0.7, y: 18 }, { opacity: 1, scale: 1, y: 0, duration: 0.14, ease: "back.out(2.2)" }, 51.59);
+    tl.fromTo("#c51-w1", { opacity: 0, scale: 0.7, y: 18 }, { opacity: 1, scale: 1, y: 0, duration: 0.14, ease: "back.out(2.2)" }, 52.19);
+    tl.to("#c51-w1", { keyframes: [{ scale: 1.16, duration: 0.1 }, { scale: 1, duration: 0.16 }] }, 52.29);
+    tl.fromTo("#c51-w2", { opacity: 0, scale: 0.7, y: 18 }, { opacity: 1, scale: 1, y: 0, duration: 0.14, ease: "back.out(2.2)" }, 52.61);
+    tl.to("#cap-51 .cap-line", { opacity: 0, duration: 0.06, ease: "power2.in" }, 53.09);
+    tl.fromTo("#c52-w0", { opacity: 0, scale: 0.7, y: 18 }, { opacity: 1, scale: 1, y: 0, duration: 0.14, ease: "back.out(2.2)" }, 53.17);
+    tl.fromTo("#c52-w1", { opacity: 0, scale: 0.7, y: 18 }, { opacity: 1, scale: 1, y: 0, duration: 0.14, ease: "back.out(2.2)" }, 53.55);
+    tl.fromTo("#c52-w2", { opacity: 0, scale: 0.7, y: 18 }, { opacity: 1, scale: 1, y: 0, duration: 0.14, ease: "back.out(2.2)" }, 54.17);
+    tl.to("#cap-52 .cap-line", { opacity: 0, duration: 0.06, ease: "power2.in" }, 54.45);
+    tl.fromTo("#c53-w0", { opacity: 0, scale: 0.7, y: 18 }, { opacity: 1, scale: 1, y: 0, duration: 0.14, ease: "back.out(2.2)" }, 54.51);
+    tl.fromTo("#c53-w1", { opacity: 0, scale: 0.7, y: 18 }, { opacity: 1, scale: 1, y: 0, duration: 0.14, ease: "back.out(2.2)" }, 54.81);
+    tl.fromTo("#c53-w2", { opacity: 0, scale: 0.7, y: 18 }, { opacity: 1, scale: 1, y: 0, duration: 0.14, ease: "back.out(2.2)" }, 55.07);
+    tl.to("#cap-53 .cap-line", { opacity: 0, duration: 0.06, ease: "power2.in" }, 55.21);
+    tl.fromTo("#c54-w0", { opacity: 0, scale: 0.7, y: 18 }, { opacity: 1, scale: 1, y: 0, duration: 0.14, ease: "back.out(2.2)" }, 55.27);
+    tl.to("#c54-w0", { keyframes: [{ scale: 1.16, duration: 0.1 }, { scale: 1, duration: 0.16 }] }, 55.37);
+    tl.to("#cap-54 .cap-line", { opacity: 0, duration: 0.06, ease: "power2.in" }, 55.77);
+    tl.fromTo("#c55-w0", { opacity: 0, scale: 0.7, y: 18 }, { opacity: 1, scale: 1, y: 0, duration: 0.14, ease: "back.out(2.2)" }, 55.85);
+    tl.to("#c55-w0", { keyframes: [{ scale: 1.16, duration: 0.1 }, { scale: 1, duration: 0.16 }] }, 55.95);
+    tl.fromTo("#c55-w1", { opacity: 0, scale: 0.7, y: 18 }, { opacity: 1, scale: 1, y: 0, duration: 0.14, ease: "back.out(2.2)" }, 56.35);
+    tl.fromTo("#c55-w2", { opacity: 0, scale: 0.7, y: 18 }, { opacity: 1, scale: 1, y: 0, duration: 0.14, ease: "back.out(2.2)" }, 56.75);
+    tl.to("#cap-55 .cap-line", { opacity: 0, duration: 0.06, ease: "power2.in" }, 56.93);
+    tl.fromTo("#c56-w0", { opacity: 0, scale: 0.7, y: 18 }, { opacity: 1, scale: 1, y: 0, duration: 0.14, ease: "back.out(2.2)" }, 56.99);
+    tl.to("#c56-w0", { keyframes: [{ scale: 1.16, duration: 0.1 }, { scale: 1, duration: 0.16 }] }, 57.09);
+    tl.to("#cap-56 .cap-line", { opacity: 0, duration: 0.06, ease: "power2.in" }, 57.69);
+    tl.fromTo("#c57-w0", { opacity: 0, scale: 0.7, y: 18 }, { opacity: 1, scale: 1, y: 0, duration: 0.14, ease: "back.out(2.2)" }, 57.77);
+    tl.fromTo("#c57-w1", { opacity: 0, scale: 0.7, y: 18 }, { opacity: 1, scale: 1, y: 0, duration: 0.14, ease: "back.out(2.2)" }, 58.05);
+    tl.fromTo("#c57-w2", { opacity: 0, scale: 0.7, y: 18 }, { opacity: 1, scale: 1, y: 0, duration: 0.14, ease: "back.out(2.2)" }, 58.41);
+    tl.to("#cap-57 .cap-line", { opacity: 0, duration: 0.06, ease: "power2.in" }, 58.75);
+    tl.fromTo("#c58-w0", { opacity: 0, scale: 0.7, y: 18 }, { opacity: 1, scale: 1, y: 0, duration: 0.14, ease: "back.out(2.2)" }, 58.81);
+    tl.fromTo("#c58-w1", { opacity: 0, scale: 0.7, y: 18 }, { opacity: 1, scale: 1, y: 0, duration: 0.14, ease: "back.out(2.2)" }, 59.11);
+    tl.fromTo("#c58-w2", { opacity: 0, scale: 0.7, y: 18 }, { opacity: 1, scale: 1, y: 0, duration: 0.14, ease: "back.out(2.2)" }, 59.39);
+    tl.to("#cap-58 .cap-line", { opacity: 0, duration: 0.06, ease: "power2.in" }, 59.59);
+    tl.fromTo("#c59-w0", { opacity: 0, scale: 0.7, y: 18 }, { opacity: 1, scale: 1, y: 0, duration: 0.14, ease: "back.out(2.2)" }, 59.65);
+    tl.to("#cap-59 .cap-line", { opacity: 0, duration: 0.06, ease: "power2.in" }, 60.43);
+    tl.fromTo("#c60-w0", { opacity: 0, scale: 0.7, y: 18 }, { opacity: 1, scale: 1, y: 0, duration: 0.14, ease: "back.out(2.2)" }, 60.51);
+    tl.fromTo("#c60-w1", { opacity: 0, scale: 0.7, y: 18 }, { opacity: 1, scale: 1, y: 0, duration: 0.14, ease: "back.out(2.2)" }, 60.73);
+    tl.fromTo("#c60-w2", { opacity: 0, scale: 0.7, y: 18 }, { opacity: 1, scale: 1, y: 0, duration: 0.14, ease: "back.out(2.2)" }, 61.05);
+    tl.to("#c60-w2", { keyframes: [{ scale: 1.16, duration: 0.1 }, { scale: 1, duration: 0.16 }] }, 61.15);
+    tl.to("#cap-60 .cap-line", { opacity: 0, duration: 0.06, ease: "power2.in" }, 61.75);
+    tl.fromTo("#c61-w0", { opacity: 0, scale: 0.7, y: 18 }, { opacity: 1, scale: 1, y: 0, duration: 0.14, ease: "back.out(2.2)" }, 61.83);
+    tl.fromTo("#c61-w1", { opacity: 0, scale: 0.7, y: 18 }, { opacity: 1, scale: 1, y: 0, duration: 0.14, ease: "back.out(2.2)" }, 61.97);
+    tl.fromTo("#c61-w2", { opacity: 0, scale: 0.7, y: 18 }, { opacity: 1, scale: 1, y: 0, duration: 0.14, ease: "back.out(2.2)" }, 62.17);
+    tl.to("#cap-61 .cap-line", { opacity: 0, duration: 0.06, ease: "power2.in" }, 62.60);
+    window.__timelines["captions"] = tl;
+  </script>
+</template>

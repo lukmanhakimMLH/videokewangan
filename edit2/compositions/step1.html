@@ -1,0 +1,198 @@
+<template>
+  <style>
+    #root {
+      position: absolute;
+      inset: 0;
+    }
+    #s1-scrim {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 1080px;
+      height: 900px;
+      background: linear-gradient(180deg, rgba(0, 0, 0, 0.78) 0%, rgba(0, 0, 0, 0.45) 60%, rgba(0, 0, 0, 0) 100%);
+    }
+    .st-head {
+      position: absolute;
+      left: 0;
+      top: 200px;
+      width: 1080px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 22px;
+      font-family: "Archivo Black", sans-serif;
+      text-transform: uppercase;
+    }
+    .st-num {
+      width: 104px;
+      height: 104px;
+      border-radius: 26px;
+      background: var(--accent, #c8ff2e);
+      color: #0a0a0a;
+      font-size: 60px;
+      line-height: 104px;
+      text-align: center;
+    }
+    .st-title {
+      font-size: 78px;
+      color: #ffffff;
+    }
+    #s1-flow {
+      position: absolute;
+      left: 0;
+      top: 380px;
+      width: 1080px;
+      height: 240px;
+    }
+    .s1-node {
+      position: absolute;
+      top: 0;
+      width: 300px;
+      height: 220px;
+      border-radius: 28px;
+      background: rgba(15, 16, 22, 0.82);
+      border: 2px solid rgba(255, 255, 255, 0.14);
+      text-align: center;
+      font-family: "Inter", sans-serif;
+      font-weight: 900;
+      font-size: 34px;
+      letter-spacing: 0.06em;
+      color: #ffffff;
+    }
+    .s1-node svg {
+      display: block;
+      width: 110px;
+      height: 110px;
+      margin: 26px auto 12px;
+    }
+    #s1-gaji {
+      left: 100px;
+    }
+    #s1-save {
+      left: 680px;
+      border-color: rgba(200, 255, 46, 0.7);
+    }
+    #s1-line {
+      position: absolute;
+      left: 420px;
+      top: 104px;
+      width: 240px;
+      height: 10px;
+      border-radius: 5px;
+      background: rgba(255, 255, 255, 0.25);
+    }
+    #s1-line-fill {
+      width: 100%;
+      height: 100%;
+      border-radius: 5px;
+      background: var(--accent, #c8ff2e);
+      transform-origin: 0% 50%;
+    }
+    #s1-coin {
+      position: absolute;
+      left: 400px;
+      top: 74px;
+      width: 70px;
+      height: 70px;
+      border-radius: 50%;
+      background: #ffd23f;
+      border: 5px solid #e0a800;
+      font-family: "Archivo Black", sans-serif;
+      font-size: 30px;
+      line-height: 60px;
+      text-align: center;
+      color: #7a5600;
+    }
+    #s1-tag {
+      position: absolute;
+      left: 0;
+      top: 660px;
+      width: 1080px;
+      text-align: center;
+    }
+    .s1-chip {
+      display: inline-block;
+      padding: 12px 28px;
+      border-radius: 14px;
+      font-family: "Inter", sans-serif;
+      font-weight: 900;
+      font-size: 40px;
+      letter-spacing: 0.06em;
+    }
+    #s1-nodebit {
+      background: rgba(255, 59, 59, 0.92);
+      color: #ffffff;
+    }
+    #s1-hard {
+      position: absolute;
+      left: 0;
+      top: 660px;
+      width: 1080px;
+      text-align: center;
+    }
+    #s1-hard .s1-chip {
+      background: var(--accent, #c8ff2e);
+      color: #0a0a0a;
+    }
+  </style>
+  <div id="root" data-composition-id="step1" data-width="1080" data-height="1920">
+    <div id="s1-scrim"></div>
+    <div id="s1-head" class="st-head">
+      <div class="st-num">01</div>
+      <div class="st-title">Simpan dulu</div>
+    </div>
+    <div id="s1-flow" data-layout-allow-overlap>
+      <div id="s1-gaji" class="s1-node">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="2.5" y="6" width="19" height="13" rx="2.5" />
+          <path d="M2.5 10h19" />
+          <path d="M16 15h2.5" />
+        </svg>
+        GAJI MASUK
+      </div>
+      <div id="s1-line"><div id="s1-line-fill"></div></div>
+      <div id="s1-coin">RM</div>
+      <div id="s1-save" class="s1-node">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#C8FF2E" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <g id="s1-lock">
+            <rect x="5" y="11" width="14" height="10" rx="2" />
+            <path id="s1-shackle" d="M8 11V7.5a4 4 0 0 1 8 0V11" />
+          </g>
+        </svg>
+        AKAUN LAIN
+      </div>
+    </div>
+    <div id="s1-tag"><span id="s1-nodebit" class="s1-chip">✕ BUKAN AKAUN KAD DEBIT</span></div>
+    <div id="s1-hard"><span class="s1-chip">BIAR SUSAH NAK USIK</span></div>
+  </div>
+  <script>
+    const tl = gsap.timeline({ paused: true });
+    // Scene clock: 0 = comp 21.07
+    tl.fromTo("#s1-scrim", { opacity: 0 }, { opacity: 1, duration: 0.3, ease: "power2.out" }, 0);
+    tl.fromTo("#s1-head .st-num", { opacity: 0, scale: 0.3, rotation: -30 }, { opacity: 1, scale: 1, rotation: 0, duration: 0.45, ease: "back.out(2.2)" }, 0.05);
+    tl.fromTo("#s1-head .st-title", { opacity: 0, x: -40, filter: "blur(8px)" }, { opacity: 1, x: 0, filter: "blur(0px)", duration: 0.3, ease: "power4.out" }, 0.3);
+    tl.fromTo("#s1-gaji", { opacity: 0, y: 60 }, { opacity: 1, y: 0, duration: 0.4, ease: "back.out(1.6)" }, 1.3);
+    tl.fromTo("#s1-save", { opacity: 0, y: 60 }, { opacity: 1, y: 0, duration: 0.4, ease: "back.out(1.6)" }, 1.45);
+    tl.fromTo("#s1-line", { opacity: 0 }, { opacity: 1, duration: 0.2 }, 1.5);
+    tl.fromTo("#s1-line-fill", { scaleX: 0 }, { scaleX: 1, duration: 0.8, ease: "power2.inOut" }, 1.7);
+    tl.fromTo("#s1-coin", { opacity: 0, scale: 0.6 }, { opacity: 1, scale: 1, duration: 0.2, ease: "back.out(2)" }, 1.7);
+    tl.to("#s1-coin", { x: 250, duration: 0.8, ease: "power2.inOut" }, 1.75);
+    tl.to("#s1-coin", { opacity: 0, scale: 0.4, duration: 0.15, ease: "power2.in" }, 2.5);
+    tl.fromTo("#s1-save", { scale: 1 }, { keyframes: [{ scale: 1.08, duration: 0.1 }, { scale: 1, duration: 0.25 }] }, 2.6);
+    tl.fromTo("#s1-nodebit", { opacity: 0, scale: 0.6 }, { opacity: 1, scale: 1, duration: 0.35, ease: "back.out(2)" }, 4.6);
+    tl.to("#s1-tag", { opacity: 0, duration: 0.15 }, 6.1);
+    tl.fromTo("#s1-hard", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.3, ease: "power3.out" }, 6.23);
+    // Lock snaps shut and jolts on "usik"
+    tl.fromTo("#s1-shackle", { y: -2.5 }, { y: 0, duration: 0.12, ease: "power4.in" }, 6.5);
+    tl.fromTo(
+      "#s1-save",
+      { rotation: 0 },
+      { keyframes: [{ rotation: -5, duration: 0.05 }, { rotation: 4, duration: 0.05 }, { rotation: -2, duration: 0.05 }, { rotation: 0, duration: 0.06 }] },
+      6.62,
+    );
+    tl.to(["#s1-head", "#s1-flow", "#s1-hard"], { opacity: 0, filter: "blur(10px)", duration: 0.2, ease: "power3.in" }, 7.15);
+    tl.to("#s1-scrim", { opacity: 0, duration: 0.2 }, 7.15);
+    window.__timelines["step1"] = tl;
+  </script>
+</template>

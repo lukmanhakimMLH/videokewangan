@@ -1,0 +1,772 @@
+[
+{
+"text": "Gaji",
+"start": 0.06,
+"end": 0.34
+},
+{
+"text": "masuk",
+"start": 0.36,
+"end": 0.64
+},
+{
+"text": "25",
+"start": 0.64,
+"end": 1.1
+},
+{
+"text": "haribulan,",
+"start": 1.1,
+"end": 1.9
+},
+{
+"text": "3",
+"start": 2.14,
+"end": 2.3
+},
+{
+"text": "hari",
+"start": 2.3,
+"end": 2.52
+},
+{
+"text": "selepas",
+"start": 2.52,
+"end": 2.8
+},
+{
+"text": "itu",
+"start": 2.8,
+"end": 3.02
+},
+{
+"text": "28",
+"start": 3.02,
+"end": 3.46
+},
+{
+"text": "haribulan,",
+"start": 3.46,
+"end": 3.9
+},
+{
+"text": "tinggal",
+"start": 4.14,
+"end": 4.6
+},
+{
+"text": "RM50.",
+"start": 4.6,
+"end": 5.0
+},
+{
+"text": "Pernah",
+"start": 5.24,
+"end": 5.46
+},
+{
+"text": "rasa",
+"start": 5.46,
+"end": 5.7
+},
+{
+"text": "tak?",
+"start": 5.7,
+"end": 5.94
+},
+{
+"text": "Mesti",
+"start": 6.07,
+"end": 6.37
+},
+{
+"text": "pernah.",
+"start": 6.37,
+"end": 6.75
+},
+{
+"text": "Masalah",
+"start": 7.0,
+"end": 7.32
+},
+{
+"text": "dia",
+"start": 7.32,
+"end": 7.54
+},
+{
+"text": "bukan",
+"start": 7.54,
+"end": 7.84
+},
+{
+"text": "gaji",
+"start": 7.84,
+"end": 8.16
+},
+{
+"text": "kecil,",
+"start": 8.16,
+"end": 8.66
+},
+{
+"text": "masalah",
+"start": 8.88,
+"end": 9.3
+},
+{
+"text": "dia",
+"start": 9.3,
+"end": 9.92
+},
+{
+"text": "korang",
+"start": 9.92,
+"end": 10.52
+},
+{
+"text": "belanja",
+"start": 10.52,
+"end": 10.88
+},
+{
+"text": "dulu,",
+"start": 10.88,
+"end": 11.3
+},
+{
+"text": "simpan",
+"start": 11.7,
+"end": 12.06
+},
+{
+"text": "kalau",
+"start": 12.06,
+"end": 12.3
+},
+{
+"text": "ada",
+"start": 12.3,
+"end": 12.52
+},
+{
+"text": "baki",
+"start": 12.52,
+"end": 12.82
+},
+{
+"text": "dan",
+"start": 12.82,
+"end": 13.44
+},
+{
+"text": "baki",
+"start": 13.44,
+"end": 13.92
+},
+{
+"text": "itu",
+"start": 13.92,
+"end": 14.28
+},
+{
+"text": "memang",
+"start": 14.28,
+"end": 14.82
+},
+{
+"text": "tak",
+"start": 14.82,
+"end": 15.06
+},
+{
+"text": "akan",
+"start": 15.06,
+"end": 15.18
+},
+{
+"text": "ada.",
+"start": 15.18,
+"end": 15.54
+},
+{
+"text": "Jadi",
+"start": 15.63,
+"end": 15.82
+},
+{
+"text": "bila",
+"start": 15.82,
+"end": 16.08
+},
+{
+"text": "sampai",
+"start": 16.11,
+"end": 16.51
+},
+{
+"text": "hari",
+"start": 16.51,
+"end": 16.75
+},
+{
+"text": "gaji",
+"start": 16.75,
+"end": 17.01
+},
+{
+"text": "je,",
+"start": 17.01,
+"end": 17.29
+},
+{
+"text": "buat",
+"start": 17.67,
+"end": 17.87
+},
+{
+"text": "3",
+"start": 17.87,
+"end": 18.13
+},
+{
+"text": "perkara",
+"start": 18.13,
+"end": 18.61
+},
+{
+"text": "ni",
+"start": 18.61,
+"end": 18.87
+},
+{
+"text": "sebelum",
+"start": 18.87,
+"end": 19.33
+},
+{
+"text": "korang",
+"start": 19.33,
+"end": 19.65
+},
+{
+"text": "nak",
+"start": 19.65,
+"end": 19.85
+},
+{
+"text": "sentuh",
+"start": 19.85,
+"end": 20.33
+},
+{
+"text": "duit",
+"start": 20.33,
+"end": 20.55
+},
+{
+"text": "tersebut.",
+"start": 20.55,
+"end": 21.07
+},
+{
+"text": "Yang",
+"start": 21.07,
+"end": 21.51
+},
+{
+"text": "pertama,",
+"start": 21.51,
+"end": 22.07
+},
+{
+"text": "terus",
+"start": 22.49,
+"end": 22.77
+},
+{
+"text": "pindahkan",
+"start": 22.77,
+"end": 23.45
+},
+{
+"text": "duit",
+"start": 23.45,
+"end": 23.95
+},
+{
+"text": "simpanan",
+"start": 23.95,
+"end": 24.57
+},
+{
+"text": "ke",
+"start": 24.57,
+"end": 24.81
+},
+{
+"text": "akaun",
+"start": 24.81,
+"end": 25.17
+},
+{
+"text": "lain.",
+"start": 25.17,
+"end": 25.54
+},
+{
+"text": "Bukan",
+"start": 25.68,
+"end": 25.96
+},
+{
+"text": "akaun",
+"start": 25.96,
+"end": 26.34
+},
+{
+"text": "yang",
+"start": 26.34,
+"end": 26.46
+},
+{
+"text": "ada",
+"start": 26.46,
+"end": 26.66
+},
+{
+"text": "kat",
+"start": 26.66,
+"end": 26.82
+},
+{
+"text": "debit,",
+"start": 26.82,
+"end": 27.14
+},
+{
+"text": "biar",
+"start": 27.3,
+"end": 27.58
+},
+{
+"text": "susah",
+"start": 27.58,
+"end": 27.92
+},
+{
+"text": "nak",
+"start": 27.92,
+"end": 28.08
+},
+{
+"text": "usik.",
+"start": 28.08,
+"end": 28.33
+},
+{
+"text": "Yang",
+"start": 28.44,
+"end": 28.86
+},
+{
+"text": "kedua,",
+"start": 28.86,
+"end": 29.39
+},
+{
+"text": "asingkan",
+"start": 29.68,
+"end": 30.1
+},
+{
+"text": "duit,",
+"start": 30.1,
+"end": 30.72
+},
+{
+"text": "bil",
+"start": 31.02,
+"end": 31.04
+},
+{
+"text": "dan",
+"start": 31.04,
+"end": 31.3
+},
+{
+"text": "komitmen",
+"start": 31.3,
+"end": 31.96
+},
+{
+"text": "siap",
+"start": 31.96,
+"end": 32.42
+},
+{
+"text": "-siap.",
+"start": 32.42,
+"end": 32.8
+},
+{
+"text": "Sewa,",
+"start": 33.02,
+"end": 33.6
+},
+{
+"text": "loan",
+"start": 33.8,
+"end": 33.96
+},
+{
+"text": "kereta,",
+"start": 33.96,
+"end": 34.5
+},
+{
+"text": "phone",
+"start": 34.66,
+"end": 34.88
+},
+{
+"text": "dan",
+"start": 34.88,
+"end": 35.14
+},
+{
+"text": "lain",
+"start": 35.14,
+"end": 35.38
+},
+{
+"text": "-lain.",
+"start": 35.38,
+"end": 35.74
+},
+{
+"text": "Anggap",
+"start": 35.88,
+"end": 36.18
+},
+{
+"text": "duit",
+"start": 36.18,
+"end": 36.44
+},
+{
+"text": "ni",
+"start": 36.44,
+"end": 36.6
+},
+{
+"text": "dah",
+"start": 36.6,
+"end": 36.86
+},
+{
+"text": "tak",
+"start": 36.86,
+"end": 37.12
+},
+{
+"text": "ada.",
+"start": 37.12,
+"end": 37.32
+},
+{
+"text": "Yang",
+"start": 37.76,
+"end": 38.14
+},
+{
+"text": "ketiga,",
+"start": 38.14,
+"end": 38.86
+},
+{
+"text": "baru",
+"start": 39.23,
+"end": 39.39
+},
+{
+"text": "yang",
+"start": 39.39,
+"end": 39.61
+},
+{
+"text": "tinggal",
+"start": 39.61,
+"end": 39.89
+},
+{
+"text": "tu",
+"start": 39.89,
+"end": 40.09
+},
+{
+"text": "duit",
+"start": 40.09,
+"end": 40.49
+},
+{
+"text": "belanja",
+"start": 40.49,
+"end": 40.91
+},
+{
+"text": "korang",
+"start": 40.91,
+"end": 41.49
+},
+{
+"text": "dan",
+"start": 41.49,
+"end": 41.91
+},
+{
+"text": "pecahkan",
+"start": 41.91,
+"end": 42.49
+},
+{
+"text": "kepada",
+"start": 42.49,
+"end": 42.97
+},
+{
+"text": "mingguan,",
+"start": 42.97,
+"end": 43.87
+},
+{
+"text": "iaitu",
+"start": 43.91,
+"end": 44.15
+},
+{
+"text": "4",
+"start": 44.15,
+"end": 44.53
+},
+{
+"text": "minggu.",
+"start": 44.53,
+"end": 44.79
+},
+{
+"text": "Habis",
+"start": 44.89,
+"end": 45.25
+},
+{
+"text": "duit",
+"start": 45.25,
+"end": 45.51
+},
+{
+"text": "minggu",
+"start": 45.51,
+"end": 45.71
+},
+{
+"text": "ni",
+"start": 45.71,
+"end": 45.87
+},
+{
+"text": "untuk",
+"start": 45.87,
+"end": 46.13
+},
+{
+"text": "belanja,",
+"start": 46.13,
+"end": 46.57
+},
+{
+"text": "minggu",
+"start": 46.85,
+"end": 46.99
+},
+{
+"text": "depan",
+"start": 46.99,
+"end": 47.31
+},
+{
+"text": "pula.",
+"start": 47.31,
+"end": 47.49
+},
+{
+"text": "So",
+"start": 47.83,
+"end": 48.03
+},
+{
+"text": "kena",
+"start": 48.05,
+"end": 48.29
+},
+{
+"text": "ingat,",
+"start": 48.29,
+"end": 48.79
+},
+{
+"text": "simpan,",
+"start": 48.99,
+"end": 49.73
+},
+{
+"text": "komitmen",
+"start": 49.93,
+"end": 50.41
+},
+{
+"text": "dan",
+"start": 50.41,
+"end": 50.95
+},
+{
+"text": "belanja.",
+"start": 50.95,
+"end": 51.49
+},
+{
+"text": "Ikut",
+"start": 51.59,
+"end": 52.19
+},
+{
+"text": "urutan",
+"start": 52.19,
+"end": 52.61
+},
+{
+"text": "ni.",
+"start": 52.61,
+"end": 53.01
+},
+{
+"text": "Sebab",
+"start": 53.17,
+"end": 53.55
+},
+{
+"text": "selalunya",
+"start": 53.55,
+"end": 54.17
+},
+{
+"text": "bukan",
+"start": 54.17,
+"end": 54.51
+},
+{
+"text": "gaji",
+"start": 54.51,
+"end": 54.81
+},
+{
+"text": "kita",
+"start": 54.81,
+"end": 55.07
+},
+{
+"text": "yang",
+"start": 55.07,
+"end": 55.27
+},
+{
+"text": "kurang,",
+"start": 55.27,
+"end": 55.59
+},
+{
+"text": "urutan",
+"start": 55.85,
+"end": 56.35
+},
+{
+"text": "kita",
+"start": 56.35,
+"end": 56.75
+},
+{
+"text": "yang",
+"start": 56.75,
+"end": 56.99
+},
+{
+"text": "terbalik.",
+"start": 56.99,
+"end": 57.33
+},
+{
+"text": "Gaji",
+"start": 57.77,
+"end": 58.05
+},
+{
+"text": "korang",
+"start": 58.05,
+"end": 58.41
+},
+{
+"text": "biasanya",
+"start": 58.41,
+"end": 58.81
+},
+{
+"text": "tahan",
+"start": 58.81,
+"end": 59.11
+},
+{
+"text": "sampai",
+"start": 59.11,
+"end": 59.39
+},
+{
+"text": "hari",
+"start": 59.39,
+"end": 59.65
+},
+{
+"text": "keberapa.",
+"start": 59.65,
+"end": 60.11
+},
+{
+"text": "Cuba",
+"start": 60.51,
+"end": 60.73
+},
+{
+"text": "komen",
+"start": 60.73,
+"end": 61.05
+},
+{
+"text": "nombor.",
+"start": 61.05,
+"end": 61.63
+},
+{
+"text": "Saya",
+"start": 61.83,
+"end": 61.97
+},
+{
+"text": "nak",
+"start": 61.97,
+"end": 62.17
+},
+{
+"text": "tengok.",
+"start": 62.17,
+"end": 62.61
+}
+]

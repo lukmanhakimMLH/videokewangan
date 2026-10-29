@@ -1,0 +1,175 @@
+<template>
+  <style>
+    #root {
+      position: absolute;
+      inset: 0;
+    }
+    #pb-scrim {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 1080px;
+      height: 860px;
+      background: linear-gradient(180deg, rgba(0, 0, 0, 0.75) 0%, rgba(0, 0, 0, 0.45) 55%, rgba(0, 0, 0, 0) 100%);
+    }
+    .pb-block {
+      position: absolute;
+      left: 0;
+      top: 240px;
+      width: 1080px;
+      text-align: center;
+      font-family: "Archivo Black", sans-serif;
+      text-transform: uppercase;
+      line-height: 1;
+    }
+    .pb-kicker {
+      display: block;
+      font-family: "Inter", sans-serif;
+      font-weight: 900;
+      font-size: 40px;
+      letter-spacing: 0.2em;
+      color: rgba(255, 255, 255, 0.75);
+      margin-bottom: 18px;
+    }
+    #pb-gaji {
+      position: relative;
+      display: inline-block;
+      font-size: 130px;
+      color: #ffffff;
+    }
+    #pb-x {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: 240px;
+      height: 240px;
+      margin: -120px 0 0 -120px;
+    }
+    #pb-chain {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 24px;
+    }
+    .pb-chip {
+      font-size: 66px;
+      padding: 20px 34px 22px;
+      border-radius: 20px;
+    }
+    #pb-c1 {
+      background: var(--danger, #ff3b3b);
+      color: #ffffff;
+      box-shadow: 0 16px 40px rgba(255, 59, 59, 0.4);
+    }
+    #pb-c2 {
+      background: rgba(255, 255, 255, 0.14);
+      color: rgba(255, 255, 255, 0.85);
+      border: 3px dashed rgba(255, 255, 255, 0.45);
+    }
+    #pb-arrow {
+      font-size: 80px;
+      color: #ffffff;
+    }
+    #pb-note {
+      display: block;
+      margin-top: 22px;
+      font-family: "Inter", sans-serif;
+      font-weight: 800;
+      font-size: 38px;
+      text-transform: none;
+      color: rgba(255, 255, 255, 0.8);
+    }
+    #pb-zero {
+      display: block;
+      font-size: 220px;
+      color: var(--danger, #ff3b3b);
+      text-shadow: 0 0 80px rgba(255, 59, 59, 0.55);
+    }
+    #pb-zero-ghost {
+      position: absolute;
+      left: 0;
+      top: 58px;
+      width: 1080px;
+      font-size: 220px;
+      color: #00e5ff;
+      mix-blend-mode: screen;
+      opacity: 0;
+    }
+  </style>
+  <div id="root" data-composition-id="problem" data-width="1080" data-height="1920">
+    <div id="pb-scrim"></div>
+
+    <div id="pb-a" class="pb-block">
+      <span class="pb-kicker">Masalah dia</span>
+      <span id="pb-bukan" class="pb-kicker" style="color: #ffffff; font-size: 52px">BUKAN</span>
+      <span id="pb-gaji">
+        Gaji kecil
+        <svg id="pb-x" viewBox="0 0 100 100" fill="none" stroke="#FF3B3B" stroke-width="12" stroke-linecap="round">
+          <path id="pb-x1" d="M18 18 L82 82" />
+          <path id="pb-x2" d="M82 18 L18 82" />
+        </svg>
+      </span>
+    </div>
+
+    <div id="pb-b" class="pb-block">
+      <span class="pb-kicker">Cara korang sekarang</span>
+      <div id="pb-chain">
+        <div id="pb-c1" class="pb-chip">Belanja</div>
+        <div id="pb-arrow">→</div>
+        <div id="pb-c2" class="pb-chip">Simpan</div>
+      </div>
+      <span id="pb-note">…kalau ada baki</span>
+    </div>
+
+    <div id="pb-c" class="pb-block" data-layout-allow-overlap>
+      <span class="pb-kicker">Baki</span>
+      <span id="pb-zero">RM0</span>
+      <span id="pb-zero-ghost">RM0</span>
+    </div>
+  </div>
+  <script>
+    const tl = gsap.timeline({ paused: true });
+    // Scene clock: 0 = comp 6.76
+    tl.fromTo("#pb-scrim", { opacity: 0 }, { opacity: 1, duration: 0.3, ease: "power2.out" }, 0.1);
+
+    // A: "bukan gaji kecil"
+    tl.fromTo("#pb-a", { opacity: 0 }, { opacity: 1, duration: 0.01 }, 0.2);
+    tl.fromTo("#pb-a .pb-kicker:first-child", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.3, ease: "power3.out" }, 0.25);
+    tl.fromTo("#pb-bukan", { opacity: 0, scale: 1.6 }, { opacity: 1, scale: 1, duration: 0.2, ease: "power4.out" }, 0.78);
+    tl.fromTo("#pb-gaji", { opacity: 0, y: 30, filter: "blur(10px)" }, { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.22, ease: "power4.out" }, 1.08);
+    tl.fromTo("#pb-x1", { strokeDasharray: 91, strokeDashoffset: 91 }, { strokeDashoffset: 0, duration: 0.14, ease: "power3.out" }, 1.55);
+    tl.fromTo("#pb-x2", { strokeDasharray: 91, strokeDashoffset: 91 }, { strokeDashoffset: 0, duration: 0.14, ease: "power3.out" }, 1.68);
+    tl.to("#pb-gaji", { opacity: 0.55, duration: 0.2 }, 1.8);
+    tl.to("#pb-a", { opacity: 0, y: -40, filter: "blur(10px)", duration: 0.2, ease: "power3.in" }, 2.9);
+
+    // B: "korang belanja dulu, simpan kalau ada baki"
+    tl.fromTo("#pb-b", { opacity: 0 }, { opacity: 1, duration: 0.01 }, 3.1);
+    tl.fromTo("#pb-b .pb-kicker", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.3, ease: "power3.out" }, 3.1);
+    tl.fromTo("#pb-c1", { opacity: 0, scale: 0.5 }, { opacity: 1, scale: 1, duration: 0.4, ease: "back.out(2)" }, 3.74);
+    tl.fromTo("#pb-arrow", { opacity: 0, x: -30 }, { opacity: 1, x: 0, duration: 0.3, ease: "power3.out" }, 4.5);
+    tl.fromTo("#pb-c2", { opacity: 0, scale: 0.5 }, { opacity: 1, scale: 1, duration: 0.4, ease: "back.out(2)" }, 4.92);
+    tl.fromTo("#pb-note", { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.3, ease: "power3.out" }, 5.4);
+    tl.to("#pb-b", { opacity: 0, y: -40, filter: "blur(10px)", duration: 0.2, ease: "power3.in" }, 6.4);
+
+    // C: "baki itu memang tak akan ada" -> RM0 with glitch
+    tl.fromTo("#pb-c", { opacity: 0 }, { opacity: 1, duration: 0.01 }, 6.6);
+    tl.fromTo("#pb-c .pb-kicker", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.3, ease: "power3.out" }, 6.62);
+    tl.fromTo("#pb-zero", { opacity: 0, scale: 2.2, filter: "blur(18px)" }, { opacity: 1, scale: 1, filter: "blur(0px)", duration: 0.24, ease: "power4.out" }, 8.06);
+    tl.fromTo(
+      "#pb-zero-ghost",
+      { opacity: 0, x: 0 },
+      {
+        keyframes: [
+          { opacity: 0.8, x: 14, duration: 0.04 },
+          { opacity: 0.6, x: -10, duration: 0.04 },
+          { opacity: 0.7, x: 8, duration: 0.04 },
+          { opacity: 0, x: 0, duration: 0.06 },
+        ],
+      },
+      8.1,
+    );
+    tl.to("#pb-c", { opacity: 0, filter: "blur(10px)", duration: 0.18, ease: "power3.in" }, 8.65);
+    tl.to("#pb-scrim", { opacity: 0, duration: 0.18 }, 8.65);
+    window.__timelines["problem"] = tl;
+  </script>
+</template>
