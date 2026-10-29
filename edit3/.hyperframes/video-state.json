@@ -987,9 +987,9 @@
   },
   "renders": {
     "latest": {
-      "id": "55c3f5c0-d565-42ff-b800-b5b17135c0eb",
-      "completedAt": 1793287727453,
-      "output": "/tmp/claude-0/-home-user-videokewangan/703d39bb-09b9-5300-a0ec-959160a4fad7/scratchpad/PREVIEW3-draft.mp4",
+      "id": "adc59c06-409c-44a0-8a55-113941942949",
+      "completedAt": 1793290529822,
+      "output": "/tmp/claude-0/-home-user-videokewangan/703d39bb-09b9-5300-a0ec-959160a4fad7/scratchpad/render3-raw.mp4",
       "status": "completed",
       "revision": "5f4f197a-f8f9-476b-a88e-7edd16cd2dc0"
     },
