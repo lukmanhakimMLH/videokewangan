@@ -1,0 +1,180 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8" />
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { width: 1080px; height: 1920px; overflow: hidden; background: transparent; }
+  body.bg { background: #0b0806; }
+  #scene { position: absolute; inset: 0; filter: blur(var(--blur, 9px)); }
+  body.mic #scene, body.bg #mic { display: none; }
+
+  /* Back wall: walnut slats */
+  #wall {
+    position: absolute; left: -60px; top: -60px; width: 1200px; height: 1500px;
+    background:
+      repeating-linear-gradient(90deg,
+        #2a170c 0px, #3b2212 10px, #4a2b16 22px, #3a2112 34px, #1a0e06 38px, #120a05 46px),
+      #2a170c;
+  }
+  /* warm downlight scallops */
+  .scallop {
+    position: absolute; top: -40px; width: 420px; height: 900px;
+    background: radial-gradient(ellipse 50% 60% at 50% 0%, rgba(255,190,110,0.55) 0%, rgba(255,150,70,0.18) 45%, rgba(0,0,0,0) 75%);
+    mix-blend-mode: screen;
+  }
+  /* darken the wall towards the bottom */
+  #wallshade {
+    position: absolute; left: 0; top: 0; width: 1080px; height: 1500px;
+    background: linear-gradient(180deg, rgba(0,0,0,0.15) 0%, rgba(0,0,0,0.05) 40%, rgba(0,0,0,0.55) 85%, rgba(0,0,0,0.85) 100%);
+  }
+  /* LED shelf line behind the shoulders */
+  #ledshelf {
+    position: absolute; left: -20px; top: 1150px; width: 1120px; height: 26px;
+    background: #1a120c; box-shadow: 0 0 0 2px #0d0805;
+  }
+  #ledglow {
+    position: absolute; left: -20px; top: 1172px; width: 1120px; height: 160px;
+    background: linear-gradient(180deg, rgba(255,170,80,0.85) 0%, rgba(255,140,60,0.25) 35%, rgba(0,0,0,0) 100%);
+  }
+  #ledglow-up {
+    position: absolute; left: -20px; top: 1040px; width: 1120px; height: 112px;
+    background: linear-gradient(0deg, rgba(255,170,80,0.35) 0%, rgba(0,0,0,0) 100%);
+  }
+  /* ring light halo behind head */
+  #ring {
+    position: absolute; left: 230px; top: 330px; width: 620px; height: 620px; border-radius: 50%;
+    border: 16px solid #ffd9a8;
+    box-shadow: 0 0 40px 10px rgba(255,200,140,0.9), inset 0 0 40px 10px rgba(255,200,140,0.7), 0 0 160px 60px rgba(255,160,80,0.35);
+  }
+  #ringglow {
+    position: absolute; left: 140px; top: 240px; width: 800px; height: 800px; border-radius: 50%;
+    background: radial-gradient(circle, rgba(255,170,90,0.0) 38%, rgba(255,170,90,0.28) 46%, rgba(255,140,60,0.0) 62%);
+  }
+  /* Left floating shelves */
+  .shelf { position: absolute; left: -10px; width: 300px; height: 18px; background: #5a371d; box-shadow: 0 6px 18px rgba(0,0,0,0.6); }
+  .shelf-light { position: absolute; left: -10px; width: 300px; height: 140px;
+    background: radial-gradient(ellipse 60% 100% at 50% 0%, rgba(255,200,130,0.55), rgba(0,0,0,0) 70%); }
+  .book { position: absolute; bottom: 0; border-radius: 3px 3px 0 0; }
+  .books { position: absolute; left: 10px; width: 270px; height: 150px; }
+  #lamp { position: absolute; left: 150px; top: 560px; width: 70px; height: 70px; border-radius: 50%;
+    background: radial-gradient(circle, #fff3d6 0%, #ffc070 40%, rgba(255,150,60,0) 72%); box-shadow: 0 0 80px 40px rgba(255,170,80,0.45); }
+  /* Right: ON AIR neon + framed record */
+  #onair {
+    position: absolute; left: 740px; top: 380px; width: 310px; height: 110px; white-space: nowrap; border-radius: 20px;
+    border: 6px solid #ff3b3b; text-align: center; line-height: 98px;
+    font: 900 64px/98px "Arial Black", Arial, sans-serif; letter-spacing: 4px; color: #ffdede;
+    text-shadow: 0 0 8px #ff4040, 0 0 24px #ff2020, 0 0 48px #ff0000;
+    box-shadow: 0 0 20px #ff2a2a, 0 0 60px rgba(255,0,0,0.7), inset 0 0 20px rgba(255,40,40,0.6);
+  }
+  #frame { position: absolute; left: 820px; top: 600px; width: 200px; height: 250px; background: #111; border: 10px solid #b8893c;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.7); }
+  #record { position: absolute; left: 30px; top: 55px; width: 120px; height: 120px; border-radius: 50%;
+    background: radial-gradient(circle, #d9b45a 0 14%, #111 15% 100%); box-shadow: 0 0 0 4px #d9b45a; }
+  /* Plants */
+  .leaf { position: absolute; background: radial-gradient(ellipse at 30% 30%, #2f5a2a, #11240f 70%); border-radius: 0 70% 0 70%; }
+  /* acoustic panels lower right */
+  .panel { position: absolute; width: 110px; height: 110px; background: #2b1d14; clip-path: polygon(25% 0,75% 0,100% 50%,75% 100%,25% 100%,0 50%); }
+  /* floor/desk dark base */
+  #floor { position: absolute; left: 0; top: 1330px; width: 1080px; height: 600px; background: linear-gradient(180deg, #1a110b, #070504); }
+  /* bokeh */
+  .bk { position: absolute; border-radius: 50%; background: radial-gradient(circle, rgba(255,200,130,0.9), rgba(255,160,80,0.25) 60%, rgba(255,160,80,0) 72%); }
+  #vignette { position: absolute; inset: 0; background: radial-gradient(ellipse 75% 60% at 50% 40%, rgba(0,0,0,0) 40%, rgba(0,0,0,0.55) 100%); }
+
+  /* ---- Microphone (sharp, transparent layer) ---- */
+  #mic { position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; }
+</style>
+</head>
+<body class="bg">
+<div id="scene">
+  <div id="wall"></div>
+  <div class="scallop" style="left:-90px"></div>
+  <div class="scallop" style="left:330px; opacity:.7"></div>
+  <div class="scallop" style="left:750px"></div>
+  <div id="wallshade"></div>
+  <div id="ringglow"></div>
+  <div id="ring"></div>
+
+  <!-- left shelves -->
+  <div class="shelf-light" style="top:388px"></div>
+  <div class="books" style="top:240px">
+    <div class="book" style="left:0;width:28px;height:130px;background:#7d1f1f"></div>
+    <div class="book" style="left:32px;width:22px;height:118px;background:#c9a24a"></div>
+    <div class="book" style="left:58px;width:30px;height:140px;background:#1f3550"></div>
+    <div class="book" style="left:92px;width:24px;height:110px;background:#e8e0cf"></div>
+    <div class="book" style="left:120px;width:26px;height:128px;background:#2f4a2a"></div>
+    <div class="book" style="left:170px;width:80px;height:60px;background:#d6c3a1;border-radius:40px 40px 6px 6px"></div>
+  </div>
+  <div class="shelf" style="top:390px"></div>
+  <div id="lamp"></div>
+  <div class="shelf-light" style="top:688px"></div>
+  <div class="books" style="top:540px">
+    <div class="book" style="left:0;width:26px;height:120px;background:#3a3a3a"></div>
+    <div class="book" style="left:30px;width:30px;height:134px;background:#a03a1e"></div>
+    <div class="book" style="left:64px;width:22px;height:112px;background:#c9a24a"></div>
+  </div>
+  <div class="shelf" style="top:690px"></div>
+  <div class="shelf-light" style="top:948px"></div>
+  <div class="books" style="top:800px">
+    <div class="book" style="left:20px;width:60px;height:90px;background:#b8893c;border-radius:6px"></div>
+    <div class="book" style="left:110px;width:28px;height:126px;background:#1f3550"></div>
+    <div class="book" style="left:142px;width:28px;height:138px;background:#e8e0cf"></div>
+  </div>
+  <div class="shelf" style="top:950px"></div>
+
+  <!-- right wall -->
+  <div id="onair">ON AIR</div>
+  <div id="frame"><div id="record"></div></div>
+  <div class="panel" style="left:800px;top:900px"></div>
+  <div class="panel" style="left:900px;top:960px"></div>
+  <div class="panel" style="left:1000px;top:900px"></div>
+  <div class="panel" style="left:800px;top:1020px;opacity:.8"></div>
+  <div class="panel" style="left:1000px;top:1020px;opacity:.8"></div>
+
+  <!-- plant, left bottom -->
+  <div class="leaf" style="left:-30px;top:1000px;width:220px;height:120px;transform:rotate(-30deg)"></div>
+  <div class="leaf" style="left:20px;top:1080px;width:240px;height:130px;transform:rotate(-10deg)"></div>
+  <div class="leaf" style="left:-40px;top:1150px;width:260px;height:140px;transform:rotate(15deg)"></div>
+  <div class="leaf" style="left:60px;top:930px;width:180px;height:100px;transform:rotate(-55deg)"></div>
+
+  <div id="ledglow-up"></div>
+  <div id="ledshelf"></div>
+  <div id="ledglow"></div>
+  <div id="floor"></div>
+
+  <div class="bk" style="left:60px;top:150px;width:90px;height:90px;opacity:.5"></div>
+  <div class="bk" style="left:940px;top:220px;width:120px;height:120px;opacity:.45"></div>
+  <div class="bk" style="left:880px;top:1250px;width:150px;height:150px;opacity:.35"></div>
+  <div class="bk" style="left:30px;top:1260px;width:110px;height:110px;opacity:.35"></div>
+  <div class="bk" style="left:470px;top:60px;width:70px;height:70px;opacity:.4"></div>
+  <div id="vignette"></div>
+</div>
+
+<!-- Podcast microphone: SM7B-style on a boom arm, entering from the bottom right -->
+<svg id="mic" viewBox="0 0 1080 1920">
+  <defs>
+    <linearGradient id="armg" x1="0" x2="1"><stop offset="0" stop-color="#0c0c0c"/><stop offset=".5" stop-color="#3a3a3a"/><stop offset="1" stop-color="#0c0c0c"/></linearGradient>
+    <linearGradient id="bodyg" x1="0" x2="1"><stop offset="0" stop-color="#050505"/><stop offset=".35" stop-color="#2c2c2c"/><stop offset=".55" stop-color="#3a3a3a"/><stop offset=".8" stop-color="#151515"/><stop offset="1" stop-color="#050505"/></linearGradient>
+    <radialGradient id="foamg" cx=".4" cy=".35" r=".7"><stop offset="0" stop-color="#2a2a2a"/><stop offset=".7" stop-color="#111"/><stop offset="1" stop-color="#050505"/></radialGradient>
+    <linearGradient id="rim" x1="0" x2="1"><stop offset="0" stop-color="rgba(255,190,120,0)"/><stop offset="1" stop-color="rgba(255,190,120,.55)"/></linearGradient>
+  </defs>
+  <!-- boom arm -->
+  <path d="M1120 1980 L990 1700" stroke="url(#armg)" stroke-width="30" stroke-linecap="round" fill="none"/>
+  <path d="M1110 1990 L1000 1730" stroke="#ffb46a" stroke-opacity=".25" stroke-width="4" fill="none"/>
+  <circle cx="990" cy="1700" r="26" fill="#1a1a1a" stroke="#444" stroke-width="4"/>
+  <path d="M990 1700 L960 1570" stroke="url(#armg)" stroke-width="24" stroke-linecap="round" fill="none"/>
+  <g transform="translate(70 170) rotate(-24 860 1300)">
+    <!-- yoke -->
+    <path d="M770 1250 L770 1360 Q770 1395 805 1395 L915 1395 Q950 1395 950 1360 L950 1250" stroke="#1d1d1d" stroke-width="16" fill="none"/>
+    <circle cx="770" cy="1300" r="16" fill="#2a2a2a"/><circle cx="950" cy="1300" r="16" fill="#2a2a2a"/>
+    <!-- body -->
+    <rect x="785" y="1120" width="150" height="260" rx="26" fill="url(#bodyg)"/>
+    <rect x="785" y="1120" width="150" height="260" rx="26" fill="url(#rim)" opacity=".18"/>
+    <rect x="800" y="1330" width="120" height="10" rx="5" fill="#0a0a0a"/>
+    <!-- foam windscreen -->
+    <rect x="770" y="960" width="180" height="200" rx="80" fill="url(#foamg)"/>
+    <rect x="770" y="960" width="180" height="200" rx="80" fill="none" stroke="rgba(255,190,120,.35)" stroke-width="3"/>
+  </g>
+</svg>
+</body>
+</html>

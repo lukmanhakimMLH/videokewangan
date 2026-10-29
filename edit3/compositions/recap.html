@@ -1,0 +1,87 @@
+<template>
+  <style>
+    #root {
+      position: absolute;
+      inset: 0;
+    }
+    #rc-quote {
+      position: absolute;
+      left: 170px;
+      top: 210px;
+      width: 740px;
+      padding: 28px 40px;
+      border-radius: 36px 36px 36px 8px;
+      background: #ffffff;
+      font-family: "Archivo Black", sans-serif;
+      font-size: 64px;
+      text-align: center;
+      color: #111111;
+      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.45);
+    }
+    #rc-eq {
+      position: absolute;
+      left: 0;
+      top: 200px;
+      width: 1080px;
+      text-align: center;
+      font-family: "Archivo Black", sans-serif;
+      text-transform: uppercase;
+      line-height: 1;
+    }
+    #rc-eq-a {
+      display: block;
+      font-size: 54px;
+      color: rgba(255, 255, 255, 0.85);
+    }
+    #rc-eq-b {
+      display: inline-block;
+      margin-top: 16px;
+      padding: 16px 34px;
+      border-radius: 22px;
+      background: var(--gold, #f5c451);
+      font-size: 72px;
+      color: #1a1205;
+      box-shadow: 0 20px 60px rgba(245, 196, 81, 0.35);
+    }
+    #rc-eq-c {
+      display: block;
+      margin-top: 16px;
+      font-size: 54px;
+      color: #ffffff;
+    }
+    #rc-simple {
+      position: absolute;
+      left: 0;
+      top: 260px;
+      width: 1080px;
+      text-align: center;
+      font-family: "Archivo Black", sans-serif;
+      font-size: 140px;
+      text-transform: uppercase;
+      color: #2fd27a;
+      text-shadow: 0 0 60px rgba(47, 210, 122, 0.5);
+    }
+  </style>
+  <div id="root" data-composition-id="recap" data-width="1080" data-height="1920">
+    <div id="rc-quote">"Saya ada saham"</div>
+    <div id="rc-eq">
+      <span id="rc-eq-a">Maksudnya dia ada</span>
+      <span id="rc-eq-b">Hak milik</span>
+      <span id="rc-eq-c">dalam syarikat</span>
+    </div>
+    <div id="rc-simple">Simple!</div>
+  </div>
+  <script>
+    const tl = gsap.timeline({ paused: true });
+    // Scene clock: 0 = comp 56.3. "saya ada saham" 1.78, "maksudnya" 2.84, "hak milik" 4.4, "syarikat" 6.12, "simple kan" 6.84
+    tl.fromTo("#rc-quote", { opacity: 0, scale: 0.6, y: 40 }, { opacity: 1, scale: 1, y: 0, duration: 0.4, ease: "back.out(2)" }, 1.7);
+    tl.to("#rc-quote", { opacity: 0, filter: "blur(10px)", duration: 0.18, ease: "power3.in" }, 2.7);
+    tl.fromTo("#rc-eq-a", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.3, ease: "power3.out" }, 2.85);
+    tl.fromTo("#rc-eq-b", { opacity: 0, scale: 0.5 }, { opacity: 1, scale: 1, duration: 0.4, ease: "back.out(2.2)" }, 4.38);
+    tl.fromTo("#rc-eq-c", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.3, ease: "power3.out" }, 6.0);
+    tl.to("#rc-eq", { opacity: 0, filter: "blur(10px)", duration: 0.18, ease: "power3.in" }, 6.65);
+    tl.fromTo("#rc-simple", { opacity: 0, scale: 1.8, rotation: -8, filter: "blur(14px)" }, { opacity: 1, scale: 1, rotation: -4, filter: "blur(0px)", duration: 0.25, ease: "power4.out" }, 6.84);
+    tl.to("#rc-simple", { opacity: 0, filter: "blur(10px)", duration: 0.18, ease: "power3.in" }, 7.85);
+    window.__timelines["recap"] = tl;
+  </script>
+</template>

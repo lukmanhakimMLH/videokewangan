@@ -1,0 +1,157 @@
+<template>
+  <style>
+    #root {
+      position: absolute;
+      inset: 0;
+    }
+    #bg-card {
+      position: absolute;
+      left: 90px;
+      top: 170px;
+      width: 900px;
+      height: 360px;
+      border-radius: 34px;
+      background: rgba(12, 10, 8, 0.8);
+      border: 2px solid rgba(245, 196, 81, 0.45);
+      backdrop-filter: blur(20px);
+      box-shadow: 0 30px 70px rgba(0, 0, 0, 0.5);
+    }
+    #bg-head {
+      position: absolute;
+      left: 40px;
+      top: 30px;
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      font-family: "Archivo Black", sans-serif;
+      font-size: 54px;
+      text-transform: uppercase;
+      color: #ffffff;
+    }
+    #bg-head svg {
+      width: 74px;
+      height: 74px;
+    }
+    #bg-modal {
+      position: absolute;
+      right: 40px;
+      top: 44px;
+      font-family: "Inter", sans-serif;
+      font-weight: 900;
+      font-size: 40px;
+      color: var(--gold, #f5c451);
+    }
+    #bg-bar {
+      position: absolute;
+      left: 40px;
+      top: 150px;
+      width: 820px;
+      height: 92px;
+      border-radius: 20px;
+      background: rgba(255, 255, 255, 0.08);
+      border: 2px dashed rgba(255, 255, 255, 0.3);
+      overflow: hidden;
+    }
+    .bg-half {
+      position: absolute;
+      top: 0;
+      width: 410px;
+      height: 88px;
+      font-family: "Archivo Black", sans-serif;
+      font-size: 38px;
+      line-height: 88px;
+      text-align: center;
+      text-transform: uppercase;
+    }
+    #bg-friend {
+      left: 0;
+      background: #4da3ff;
+      color: #06213f;
+      transform-origin: 0% 50%;
+    }
+    #bg-you {
+      left: 410px;
+      background: var(--gold, #f5c451);
+      color: #1a1205;
+      transform-origin: 0% 50%;
+    }
+    #bg-labels {
+      position: absolute;
+      left: 40px;
+      top: 262px;
+      width: 820px;
+      display: flex;
+      font-family: "Inter", sans-serif;
+      font-weight: 800;
+      font-size: 32px;
+      color: rgba(255, 255, 255, 0.8);
+    }
+    #bg-labels span {
+      width: 410px;
+      text-align: center;
+    }
+    #bg-owner {
+      position: absolute;
+      left: 0;
+      top: 560px;
+      width: 1080px;
+      text-align: center;
+    }
+    #bg-owner span {
+      display: inline-flex;
+      align-items: center;
+      gap: 20px;
+      padding: 16px 34px;
+      border-radius: 22px;
+      background: var(--gold, #f5c451);
+      font-family: "Archivo Black", sans-serif;
+      font-size: 58px;
+      text-transform: uppercase;
+      color: #1a1205;
+      box-shadow: 0 20px 50px rgba(245, 196, 81, 0.35);
+    }
+    #bg-owner svg {
+      width: 70px;
+      height: 70px;
+    }
+  </style>
+  <div id="root" data-composition-id="burger" data-width="1080" data-height="1920">
+    <div id="bg-card">
+      <div id="bg-head">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#F5C451" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 9l1.5-5h15L21 9" /><path d="M3 9h18v2a3 3 0 0 1-6 0 3 3 0 0 1-6 0 3 3 0 0 1-6 0z" /><path d="M5 13v7h14v-7" /><path d="M10 20v-4h4v4" />
+        </svg>
+        Kedai burger
+      </div>
+      <div id="bg-modal">MODAL RM10,000</div>
+      <div id="bg-bar">
+        <div id="bg-friend" class="bg-half">RM5,000</div>
+        <div id="bg-you" class="bg-half">RM5,000</div>
+      </div>
+      <div id="bg-labels"><span id="bg-l1">KAWAN</span><span id="bg-l2">KAU</span></div>
+    </div>
+    <div id="bg-owner">
+      <span>
+        <svg viewBox="0 0 36 36"><circle cx="18" cy="18" r="16" fill="#1a1205" opacity=".25" /><path d="M18 18 L18 2 A16 16 0 0 1 18 34 Z" fill="#1a1205" /></svg>
+        50% pemilik
+      </span>
+    </div>
+  </div>
+  <script>
+    const tl = gsap.timeline({ paused: true });
+    // Scene clock: 0 = comp 6.69. "kedai burger" 3.20, "modal RM10,000" 4.22/4.56,
+    // "dia ada RM5,000" 6.12, "masuk share" 8.94, "RM5,000 lagi" 10.46, "pemilik" 12.86, "separuh" 14.76
+    tl.fromTo("#bg-card", { opacity: 0, y: 60, scale: 0.92 }, { opacity: 1, y: 0, scale: 1, duration: 0.5, ease: "back.out(1.6)" }, 3.1);
+    tl.fromTo("#bg-head svg", { rotation: -20, scale: 0.5 }, { rotation: 0, scale: 1, duration: 0.5, ease: "back.out(2.4)" }, 3.15);
+    tl.fromTo("#bg-modal", { opacity: 0, x: 30 }, { opacity: 1, x: 0, duration: 0.3, ease: "power3.out" }, 4.4);
+    tl.fromTo("#bg-bar", { opacity: 0 }, { opacity: 1, duration: 0.2 }, 4.5);
+    tl.fromTo("#bg-friend", { scaleX: 0 }, { scaleX: 1, duration: 0.5, ease: "expo.out" }, 6.1);
+    tl.fromTo("#bg-l1", { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.25 }, 6.2);
+    tl.fromTo("#bg-you", { scaleX: 0 }, { scaleX: 1, duration: 0.5, ease: "expo.out" }, 10.45);
+    tl.fromTo("#bg-l2", { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.25 }, 10.55);
+    tl.fromTo("#bg-owner span", { opacity: 0, scale: 0.5, rotation: -6 }, { opacity: 1, scale: 1, rotation: 0, duration: 0.45, ease: "back.out(2.2)" }, 12.86);
+    tl.to("#bg-owner span", { keyframes: [{ scale: 1.1, duration: 0.1 }, { scale: 1, duration: 0.25 }] }, 14.76);
+    tl.to(["#bg-card", "#bg-owner"], { opacity: 0, filter: "blur(10px)", duration: 0.2, ease: "power3.in" }, 15.1);
+    window.__timelines["burger"] = tl;
+  </script>
+</template>

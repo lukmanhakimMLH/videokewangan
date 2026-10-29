@@ -1,0 +1,902 @@
+[
+{
+"text": "Guys,",
+"start": 0,
+"end": 0.39
+},
+{
+"text": "kalau",
+"start": 0.84,
+"end": 0.98
+},
+{
+"text": "kawan",
+"start": 0.98,
+"end": 1.38
+},
+{
+"text": "kau",
+"start": 1.38,
+"end": 1.6
+},
+{
+"text": "orang",
+"start": 1.6,
+"end": 1.7
+},
+{
+"text": "tanya",
+"start": 1.7,
+"end": 2.18
+},
+{
+"text": "saham",
+"start": 2.18,
+"end": 2.62
+},
+{
+"text": "tu",
+"start": 2.62,
+"end": 2.8
+},
+{
+"text": "apa?",
+"start": 2.8,
+"end": 3.05
+},
+{
+"text": "Kau",
+"start": 3.35,
+"end": 3.49
+},
+{
+"text": "orang",
+"start": 3.49,
+"end": 3.61
+},
+{
+"text": "boleh",
+"start": 3.61,
+"end": 3.77
+},
+{
+"text": "jawab",
+"start": 3.77,
+"end": 4.01
+},
+{
+"text": "tak?",
+"start": 4.01,
+"end": 4.26
+},
+{
+"text": "So,",
+"start": 4.44,
+"end": 4.64
+},
+{
+"text": "jom",
+"start": 4.78,
+"end": 4.96
+},
+{
+"text": "saya",
+"start": 4.96,
+"end": 5.3
+},
+{
+"text": "explain",
+"start": 5.3,
+"end": 5.82
+},
+{
+"text": "cara",
+"start": 5.82,
+"end": 6.22
+},
+{
+"text": "mudah.",
+"start": 6.22,
+"end": 6.69
+},
+{
+"text": "Macam",
+"start": 6.81,
+"end": 7.13
+},
+{
+"text": "kita",
+"start": 7.13,
+"end": 7.33
+},
+{
+"text": "tengah",
+"start": 7.33,
+"end": 7.51
+},
+{
+"text": "lepak,",
+"start": 7.51,
+"end": 7.71
+},
+{
+"text": "tiba-tiba",
+"start": 7.89,
+"end": 8.46
+},
+{
+"text": "kawan-kawan",
+"start": 8.46,
+"end": 9.01
+},
+{
+"text": "kata",
+"start": 9.01,
+"end": 9.39
+},
+{
+"text": "nak",
+"start": 9.39,
+"end": 9.61
+},
+{
+"text": "buka",
+"start": 9.61,
+"end": 9.89
+},
+{
+"text": "kedai",
+"start": 9.89,
+"end": 10.17
+},
+{
+"text": "burger.",
+"start": 10.17,
+"end": 10.41
+},
+{
+"text": "Modal",
+"start": 10.91,
+"end": 11.25
+},
+{
+"text": "RM10,000.",
+"start": 11.25,
+"end": 11.83
+},
+{
+"text": "Tapi",
+"start": 12.21,
+"end": 12.45
+},
+{
+"text": "dia",
+"start": 12.45,
+"end": 12.69
+},
+{
+"text": "ada",
+"start": 12.69,
+"end": 12.81
+},
+{
+"text": "RM5,000",
+"start": 12.81,
+"end": 13.23
+},
+{
+"text": "je.",
+"start": 13.23,
+"end": 13.53
+},
+{
+"text": "Then,",
+"start": 13.91,
+"end": 14.31
+},
+{
+"text": "kau",
+"start": 14.53,
+"end": 14.71
+},
+{
+"text": "orang",
+"start": 14.71,
+"end": 14.93
+},
+{
+"text": "sanggup",
+"start": 14.93,
+"end": 15.63
+},
+{
+"text": "masuk",
+"start": 15.63,
+"end": 16.15
+},
+{
+"text": "share",
+"start": 16.15,
+"end": 16.59
+},
+{
+"text": "sebanyak",
+"start": 16.59,
+"end": 17.15
+},
+{
+"text": "RM5,000",
+"start": 17.15,
+"end": 17.79
+},
+{
+"text": "lagi.",
+"start": 17.79,
+"end": 18.09
+},
+{
+"text": "Sekarang,",
+"start": 18.61,
+"end": 18.91
+},
+{
+"text": "kau",
+"start": 18.99,
+"end": 19.13
+},
+{
+"text": "orang",
+"start": 19.13,
+"end": 19.33
+},
+{
+"text": "pun",
+"start": 19.33,
+"end": 19.55
+},
+{
+"text": "pemilik",
+"start": 19.55,
+"end": 19.97
+},
+{
+"text": "kedai",
+"start": 19.97,
+"end": 20.31
+},
+{
+"text": "burger",
+"start": 20.31,
+"end": 20.57
+},
+{
+"text": "tersebut.",
+"start": 20.57,
+"end": 21.11
+},
+{
+"text": "Separuh",
+"start": 21.45,
+"end": 21.67
+},
+{
+"text": "je",
+"start": 21.67,
+"end": 21.81
+},
+{
+"text": "lah.",
+"start": 21.81,
+"end": 22.04
+},
+{
+"text": "So,",
+"start": 22.17,
+"end": 22.41
+},
+{
+"text": "itulah",
+"start": 22.65,
+"end": 22.99
+},
+{
+"text": "bahasa",
+"start": 22.99,
+"end": 23.29
+},
+{
+"text": "mudahnya",
+"start": 23.29,
+"end": 23.71
+},
+{
+"text": "saham.",
+"start": 23.71,
+"end": 24.29
+},
+{
+"text": "Kau",
+"start": 24.29,
+"end": 24.87
+},
+{
+"text": "orang",
+"start": 24.87,
+"end": 25.03
+},
+{
+"text": "beli",
+"start": 25.03,
+"end": 25.99
+},
+{
+"text": "sebahagian",
+"start": 25.99,
+"end": 26.49
+},
+{
+"text": "kecil",
+"start": 26.49,
+"end": 26.99
+},
+{
+"text": "dari",
+"start": 26.99,
+"end": 27.51
+},
+{
+"text": "sesebuah",
+"start": 27.51,
+"end": 28.07
+},
+{
+"text": "syarikat.",
+"start": 28.07,
+"end": 28.35
+},
+{
+"text": "Kalau",
+"start": 29.11,
+"end": 29.35
+},
+{
+"text": "kedai",
+"start": 29.35,
+"end": 29.57
+},
+{
+"text": "burger",
+"start": 29.57,
+"end": 29.79
+},
+{
+"text": "itu",
+"start": 29.79,
+"end": 29.97
+},
+{
+"text": "laku,",
+"start": 29.97,
+"end": 30.41
+},
+{
+"text": "then",
+"start": 30.67,
+"end": 30.79
+},
+{
+"text": "untung.",
+"start": 30.79,
+"end": 31.44
+},
+{
+"text": "Dibahagi",
+"start": 31.77,
+"end": 32.33
+},
+{
+"text": "sebagai",
+"start": 32.33,
+"end": 32.39
+},
+{
+"text": "revenue.",
+"start": 32.39,
+"end": 32.85
+},
+{
+"text": "So,",
+"start": 33.89,
+"end": 34.13
+},
+{
+"text": "kau",
+"start": 34.15,
+"end": 34.35
+},
+{
+"text": "orang",
+"start": 34.35,
+"end": 34.47
+},
+{
+"text": "akan",
+"start": 34.47,
+"end": 34.63
+},
+{
+"text": "dapat",
+"start": 34.63,
+"end": 34.85
+},
+{
+"text": "bahagian",
+"start": 34.85,
+"end": 35.25
+},
+{
+"text": "kau",
+"start": 35.25,
+"end": 35.41
+},
+{
+"text": "orang.",
+"start": 35.41,
+"end": 35.59
+},
+{
+"text": "Itu",
+"start": 35.73,
+"end": 35.91
+},
+{
+"text": "kita",
+"start": 35.91,
+"end": 36.15
+},
+{
+"text": "panggil",
+"start": 36.15,
+"end": 36.43
+},
+{
+"text": "dia",
+"start": 36.43,
+"end": 36.65
+},
+{
+"text": "sebagai",
+"start": 36.65,
+"end": 37.05
+},
+{
+"text": "dividend.",
+"start": 37.05,
+"end": 37.61
+},
+{
+"text": "Kalau",
+"start": 38.13,
+"end": 38.47
+},
+{
+"text": "kedai",
+"start": 38.47,
+"end": 38.73
+},
+{
+"text": "makan",
+"start": 38.73,
+"end": 39.41
+},
+{
+"text": "atau",
+"start": 39.41,
+"end": 39.73
+},
+{
+"text": "kedai",
+"start": 39.73,
+"end": 40.01
+},
+{
+"text": "burger",
+"start": 40.01,
+"end": 40.23
+},
+{
+"text": "itu",
+"start": 40.23,
+"end": 40.51
+},
+{
+"text": "makin",
+"start": 40.51,
+"end": 40.83
+},
+{
+"text": "terkenal.",
+"start": 40.83,
+"end": 41.23
+},
+{
+"text": "Orang",
+"start": 41.31,
+"end": 41.59
+},
+{
+"text": "sanggup",
+"start": 41.59,
+"end": 41.91
+},
+{
+"text": "beli",
+"start": 41.91,
+"end": 42.17
+},
+{
+"text": "bahagian",
+"start": 42.17,
+"end": 42.51
+},
+{
+"text": "kau",
+"start": 42.51,
+"end": 42.69
+},
+{
+"text": "orang.",
+"start": 42.69,
+"end": 43.05
+},
+{
+"text": "Yang",
+"start": 43.39,
+"end": 43.55
+},
+{
+"text": "mana",
+"start": 43.55,
+"end": 43.79
+},
+{
+"text": "lagi",
+"start": 43.79,
+"end": 44.15
+},
+{
+"text": "mahal.",
+"start": 44.15,
+"end": 44.59
+},
+{
+"text": "So,",
+"start": 44.83,
+"end": 45.05
+},
+{
+"text": "itu",
+"start": 45.15,
+"end": 45.27
+},
+{
+"text": "kita",
+"start": 45.27,
+"end": 45.47
+},
+{
+"text": "panggil",
+"start": 45.47,
+"end": 45.69
+},
+{
+"text": "dia",
+"start": 45.69,
+"end": 45.89
+},
+{
+"text": "untung.",
+"start": 45.89,
+"end": 46.51
+},
+{
+"text": "Tapi",
+"start": 46.89,
+"end": 47.25
+},
+{
+"text": "kalau",
+"start": 47.25,
+"end": 47.55
+},
+{
+"text": "kedai",
+"start": 47.55,
+"end": 48.29
+},
+{
+"text": "rugi",
+"start": 48.29,
+"end": 49.49
+},
+{
+"text": "atau",
+"start": 49.49,
+"end": 49.87
+},
+{
+"text": "tutup,",
+"start": 49.87,
+"end": 50.43
+},
+{
+"text": "nilai",
+"start": 50.73,
+"end": 50.93
+},
+{
+"text": "bahagian",
+"start": 50.93,
+"end": 51.23
+},
+{
+"text": "kau",
+"start": 51.23,
+"end": 51.37
+},
+{
+"text": "orang",
+"start": 51.37,
+"end": 51.51
+},
+{
+"text": "pun",
+"start": 51.51,
+"end": 51.67
+},
+{
+"text": "akan",
+"start": 51.67,
+"end": 51.89
+},
+{
+"text": "jatuh.",
+"start": 51.89,
+"end": 52.21
+},
+{
+"text": "Itulah",
+"start": 52.52,
+"end": 53.02
+},
+{
+"text": "risiko",
+"start": 53.02,
+"end": 53.52
+},
+{
+"text": "dia.",
+"start": 53.52,
+"end": 54.06
+},
+{
+"text": "Saham",
+"start": 54.38,
+"end": 54.62
+},
+{
+"text": "bukan",
+"start": 54.62,
+"end": 54.92
+},
+{
+"text": "duit",
+"start": 54.92,
+"end": 55.14
+},
+{
+"text": "percuma.",
+"start": 55.14,
+"end": 55.66
+},
+{
+"text": "Jadi,",
+"start": 56.3,
+"end": 56.36
+},
+{
+"text": "lain",
+"start": 56.56,
+"end": 56.58
+},
+{
+"text": "kali",
+"start": 56.58,
+"end": 57.12
+},
+{
+"text": "dengar",
+"start": 57.12,
+"end": 57.52
+},
+{
+"text": "orang",
+"start": 57.52,
+"end": 57.68
+},
+{
+"text": "cakap,",
+"start": 57.68,
+"end": 57.94
+},
+{
+"text": "saya",
+"start": 58.08,
+"end": 58.22
+},
+{
+"text": "ada",
+"start": 58.22,
+"end": 58.44
+},
+{
+"text": "saham.",
+"start": 58.44,
+"end": 58.9
+},
+{
+"text": "Maksudnya,",
+"start": 59.14,
+"end": 59.58
+},
+{
+"text": "dia",
+"start": 59.62,
+"end": 59.86
+},
+{
+"text": "ada",
+"start": 59.86,
+"end": 60.16
+},
+{
+"text": "sikit",
+"start": 60.16,
+"end": 60.7
+},
+{
+"text": "hak",
+"start": 60.7,
+"end": 61.04
+},
+{
+"text": "milik",
+"start": 61.04,
+"end": 61.54
+},
+{
+"text": "dalam",
+"start": 61.54,
+"end": 61.98
+},
+{
+"text": "sesebuah",
+"start": 61.98,
+"end": 62.42
+},
+{
+"text": "syarikat.",
+"start": 62.42,
+"end": 62.94
+},
+{
+"text": "Simple",
+"start": 63.14,
+"end": 63.46
+},
+{
+"text": "kan?",
+"start": 63.46,
+"end": 63.7
+},
+{
+"text": "So,",
+"start": 64.36,
+"end": 64.76
+},
+{
+"text": "sekarang",
+"start": 64.88,
+"end": 65.08
+},
+{
+"text": "saya",
+"start": 65.08,
+"end": 65.2
+},
+{
+"text": "nak",
+"start": 65.2,
+"end": 65.32
+},
+{
+"text": "tanya.",
+"start": 65.32,
+"end": 65.56
+},
+{
+"text": "Kau",
+"start": 65.68,
+"end": 65.84
+},
+{
+"text": "orang",
+"start": 65.84,
+"end": 65.94
+},
+{
+"text": "dah",
+"start": 65.94,
+"end": 66.02
+},
+{
+"text": "ada",
+"start": 66.02,
+"end": 66.28
+},
+{
+"text": "account",
+"start": 66.28,
+"end": 66.52
+},
+{
+"text": "CDS",
+"start": 66.52,
+"end": 66.94
+},
+{
+"text": "belum?",
+"start": 66.94,
+"end": 67.18
+},
+{
+"text": "Kalau",
+"start": 67.45,
+"end": 67.67
+},
+{
+"text": "dah,",
+"start": 67.67,
+"end": 67.97
+},
+{
+"text": "komen",
+"start": 68.39,
+"end": 68.47
+},
+{
+"text": "dah.",
+"start": 68.47,
+"end": 68.71
+},
+{
+"text": "Kalau",
+"start": 68.87,
+"end": 69.11
+},
+{
+"text": "belum,",
+"start": 69.11,
+"end": 69.45
+},
+{
+"text": "komen",
+"start": 69.93,
+"end": 70.11
+},
+{
+"text": "belum.",
+"start": 70.11,
+"end": 70.39
+}
+]

@@ -12,3 +12,11 @@ src2/frames/
 src2/fg.txt
 edit2/snapshots/
 edit2/assets/footage.mp4
+src3/raw.mov
+src3/tight.mp4
+src3/frames/
+src3/fg.txt
+src3/*.webm
+src3/.tmp-*
+edit3/snapshots/
+edit3/assets/cutout.webm
