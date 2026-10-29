@@ -152,6 +152,10 @@
       "hash": "eeb7c464c59e339da38f1396b1553aa1c443e595f91837f437f38d950955e662",
       "content": "/root/.cache/hyperframes/history/185938ee-8155-47ab-93cd-d9588b7b5e1d/blobs/ee/eeb7c464c59e339da38f1396b1553aa1c443e595f91837f437f38d950955e662"
     },
+    "snapshots/v3/contact-sheet.jpg": {
+      "hash": "f8f6c45d7b4c43b7a9f264312118d6636312068c71051eed839ab5e195caee45",
+      "content": "/root/.cache/hyperframes/history/185938ee-8155-47ab-93cd-d9588b7b5e1d/blobs/f8/f8f6c45d7b4c43b7a9f264312118d6636312068c71051eed839ab5e195caee45"
+    },
     "snapshots/v3/frame-00-at-6.3s.png": {
       "hash": "2d50ec7c863b80752d6b98b3d8b11a3310e11b53af2bcdb69da477fbf313479a",
       "content": "/root/.cache/hyperframes/history/185938ee-8155-47ab-93cd-d9588b7b5e1d/blobs/2d/2d50ec7c863b80752d6b98b3d8b11a3310e11b53af2bcdb69da477fbf313479a"
@@ -163,10 +167,6 @@
     "snapshots/v3/frame-02-at-14.25s.png": {
       "hash": "eeb7c464c59e339da38f1396b1553aa1c443e595f91837f437f38d950955e662",
       "content": "/root/.cache/hyperframes/history/185938ee-8155-47ab-93cd-d9588b7b5e1d/blobs/ee/eeb7c464c59e339da38f1396b1553aa1c443e595f91837f437f38d950955e662"
-    },
-    "snapshots/v3/contact-sheet.jpg": {
-      "hash": "f8f6c45d7b4c43b7a9f264312118d6636312068c71051eed839ab5e195caee45",
-      "content": "/root/.cache/hyperframes/history/185938ee-8155-47ab-93cd-d9588b7b5e1d/blobs/f8/f8f6c45d7b4c43b7a9f264312118d6636312068c71051eed839ab5e195caee45"
     }
   },
   "revisions": {
@@ -821,9 +821,9 @@
   },
   "renders": {
     "latest": {
-      "id": "c5c3a7dc-d029-445c-ab00-4d70e06811b9",
-      "completedAt": 1793236177218,
-      "output": "/tmp/claude-0/-home-user-videokewangan/703d39bb-09b9-5300-a0ec-959160a4fad7/scratchpad/PREVIEW-draft.mp4",
+      "id": "2a37e38c-5f7d-44fd-9691-f751b6bd7141",
+      "completedAt": 1793237186839,
+      "output": "/tmp/claude-0/-home-user-videokewangan/703d39bb-09b9-5300-a0ec-959160a4fad7/scratchpad/render-raw.mp4",
       "status": "completed",
       "revision": "0a80ca7f-5b01-4373-a76f-232e56cce607"
     },
