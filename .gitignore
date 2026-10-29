@@ -20,3 +20,6 @@ src3/*.webm
 src3/.tmp-*
 edit3/snapshots/
 edit3/assets/cutout.webm
+src3/clean.mp4
+edit3/assets/cutout*.webm
+edit*/.transcode-cache/
