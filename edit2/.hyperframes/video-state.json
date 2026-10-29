@@ -208,6 +208,10 @@
       "hash": "017c3616e51898c5c487bbcc3e24a81c3dc9ae003b4ef79da2ed9c2e8a122f6c",
       "content": "/root/.cache/hyperframes/history/4141f098-f996-4906-9115-40aaf35559d3/blobs/01/017c3616e51898c5c487bbcc3e24a81c3dc9ae003b4ef79da2ed9c2e8a122f6c"
     },
+    "snapshots/v2/contact-sheet.jpg": {
+      "hash": "04aeaff1ff8fc07cd8b2d25fb854c1b8b96aea9fa60463e970c6ca5ea2fa729c",
+      "content": "/root/.cache/hyperframes/history/4141f098-f996-4906-9115-40aaf35559d3/blobs/04/04aeaff1ff8fc07cd8b2d25fb854c1b8b96aea9fa60463e970c6ca5ea2fa729c"
+    },
     "snapshots/v2/frame-00-at-1.5s.png": {
       "hash": "71bc3db21d25f5062e1a9a85ed926f6fae3db3ae017d09cf57a7b893271d959c",
       "content": "/root/.cache/hyperframes/history/4141f098-f996-4906-9115-40aaf35559d3/blobs/71/71bc3db21d25f5062e1a9a85ed926f6fae3db3ae017d09cf57a7b893271d959c"
@@ -223,10 +227,6 @@
     "snapshots/v2/frame-03-at-63.95s.png": {
       "hash": "58edc725e65b1b8a9ad18a57038c52d57a0f7c9bf66085f954396325fb251b70",
       "content": "/root/.cache/hyperframes/history/4141f098-f996-4906-9115-40aaf35559d3/blobs/58/58edc725e65b1b8a9ad18a57038c52d57a0f7c9bf66085f954396325fb251b70"
-    },
-    "snapshots/v2/contact-sheet.jpg": {
-      "hash": "04aeaff1ff8fc07cd8b2d25fb854c1b8b96aea9fa60463e970c6ca5ea2fa729c",
-      "content": "/root/.cache/hyperframes/history/4141f098-f996-4906-9115-40aaf35559d3/blobs/04/04aeaff1ff8fc07cd8b2d25fb854c1b8b96aea9fa60463e970c6ca5ea2fa729c"
     }
   },
   "revisions": {
