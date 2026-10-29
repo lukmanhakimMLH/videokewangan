@@ -410,7 +410,6 @@
         {
           "id": "8d7f83fb-c565-4d68-937a-70c410d54df8",
           "scope": "project",
-          "report": "/home/user/videokewangan/edit3/.hyperframes/artifacts/checks/8d7f83fb-c565-4d68-937a-70c410d54df8.json",
           "metadata": {
             "ok": true,
             "browserSkipped": false,
@@ -432,7 +431,9 @@
           "revision": "c9bc5c0a-24a3-47a5-925d-77e338df8835",
           "inputFingerprint": "e989c0fe972e715ee440fd92abcb8e62d4e8f572cf5d6e9eaa46b4124d889c10",
           "inputScope": "local-project-files",
-          "attribution": "recorded-revision"
+          "attribution": "recorded-revision",
+          "status": "cleaned",
+          "cleanedAfterRender": "55c3f5c0-d565-42ff-b800-b5b17135c0eb"
         }
       ],
       "5f4f197a-f8f9-476b-a88e-7edd16cd2dc0": [
@@ -983,5 +984,18 @@
         "attribution": "inputs-changed"
       }
     ]
-  }
+  },
+  "renders": {
+    "latest": {
+      "id": "55c3f5c0-d565-42ff-b800-b5b17135c0eb",
+      "completedAt": 1793287727453,
+      "output": "/tmp/claude-0/-home-user-videokewangan/703d39bb-09b9-5300-a0ec-959160a4fad7/scratchpad/PREVIEW3-draft.mp4",
+      "status": "completed",
+      "revision": "5f4f197a-f8f9-476b-a88e-7edd16cd2dc0"
+    },
+    "retainedRevisions": [
+      "5f4f197a-f8f9-476b-a88e-7edd16cd2dc0"
+    ]
+  },
+  "pendingArtifactCleanup": []
 }
