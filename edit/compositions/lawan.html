@@ -1,0 +1,71 @@
+<template>
+  <style>
+    #root {
+      position: absolute;
+      inset: 0;
+    }
+    #lw-scrim {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 1080px;
+      height: 720px;
+      background: linear-gradient(180deg, rgba(0, 0, 0, 0.65) 0%, rgba(0, 0, 0, 0.3) 60%, rgba(0, 0, 0, 0) 100%);
+    }
+    #lw-stack {
+      position: absolute;
+      left: 0;
+      top: 250px;
+      width: 1080px;
+      text-align: center;
+      font-family: "Archivo Black", sans-serif;
+      text-transform: uppercase;
+      line-height: 1;
+    }
+    #lw-word {
+      display: block;
+      font-size: 190px;
+      color: var(--accent, #c8ff2e);
+      letter-spacing: -0.02em;
+      text-shadow: 0 0 60px rgba(200, 255, 46, 0.4);
+    }
+    #lw-target {
+      position: relative;
+      display: inline-block;
+      margin-top: 14px;
+      font-size: 92px;
+      color: #ffffff;
+    }
+    #lw-slash {
+      position: absolute;
+      left: -20px;
+      top: 50%;
+      width: calc(100% + 40px);
+      height: 16px;
+      margin-top: -8px;
+      background: var(--danger, #ff3b3b);
+      border-radius: 8px;
+      transform-origin: 0% 50%;
+      box-shadow: 0 0 24px rgba(255, 59, 59, 0.6);
+    }
+  </style>
+  <div data-hf-id="hf-j08a" id="root" data-composition-id="lawan" data-width="1080" data-height="1920">
+    <div data-hf-id="hf-p66r" id="lw-scrim"></div>
+    <div data-hf-id="hf-jvx5" id="lw-stack" data-layout-allow-overlap>
+      <span data-hf-id="hf-bnop" id="lw-word">Lawan</span>
+      <span data-hf-id="hf-hm9z" id="lw-target">Alasan<span data-hf-id="hf-c2wp" id="lw-slash"></span></span>
+    </div>
+  </div>
+  <script>
+    const tl = gsap.timeline({ paused: true });
+    // Scene clock: 0 = comp 6.52. "lawan" at 0.76, "alasan" at 1.16.
+    tl.fromTo("#lw-scrim", { opacity: 0 }, { opacity: 1, duration: 0.25, ease: "power2.out" }, 0.55);
+    tl.fromTo("#lw-word", { opacity: 0, scale: 1.8, filter: "blur(14px)" }, { opacity: 1, scale: 1, filter: "blur(0px)", duration: 0.2, ease: "power4.out" }, 0.76);
+    tl.fromTo("#lw-target", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.25, ease: "power3.out" }, 1.1);
+    tl.fromTo("#lw-slash", { scaleX: 0 }, { scaleX: 1, duration: 0.18, ease: "power3.out" }, 1.26);
+    tl.to("#lw-target", { opacity: 0.55, duration: 0.2 }, 1.44);
+    tl.to("#lw-stack", { opacity: 0, filter: "blur(8px)", duration: 0.15, ease: "power3.in" }, 1.68);
+    tl.to("#lw-scrim", { opacity: 0, duration: 0.15 }, 1.68);
+    window.__timelines["lawan"] = tl;
+  </script>
+</template>

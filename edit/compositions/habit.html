@@ -1,0 +1,83 @@
+<template>
+  <style>
+    #root {
+      position: absolute;
+      inset: 0;
+    }
+    #hb-scrim {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 1080px;
+      height: 760px;
+      background: linear-gradient(180deg, rgba(0, 0, 0, 0.62) 0%, rgba(0, 0, 0, 0.3) 60%, rgba(0, 0, 0, 0) 100%);
+    }
+    #hb-card {
+      position: absolute;
+      left: 130px;
+      top: 270px;
+      width: 820px;
+      padding: 30px 40px;
+      display: flex;
+      align-items: center;
+      gap: 34px;
+      border-radius: 28px;
+      background: rgba(15, 16, 22, 0.78);
+      border: 2px solid rgba(255, 59, 59, 0.55);
+      backdrop-filter: blur(22px);
+      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.45);
+    }
+    #hb-icon {
+      width: 140px;
+      height: 140px;
+      flex: none;
+    }
+    #hb-text {
+      font-family: "Archivo Black", sans-serif;
+      text-transform: uppercase;
+      line-height: 1;
+    }
+    #hb-label {
+      display: block;
+      font-size: 96px;
+      color: #ffffff;
+    }
+    #hb-sub {
+      display: block;
+      margin-top: 12px;
+      font-family: "Inter", sans-serif;
+      font-weight: 900;
+      font-size: 32px;
+      letter-spacing: 0.1em;
+      white-space: nowrap;
+      color: var(--danger, #ff3b3b);
+    }
+  </style>
+  <div data-hf-id="hf-isfb" id="root" data-composition-id="habit" data-width="1080" data-height="1920">
+    <div data-hf-id="hf-mklu" id="hb-scrim"></div>
+    <div data-hf-id="hf-6amy" id="hb-card">
+      <svg data-hf-id="hf-ojqb" id="hb-icon" viewBox="0 0 100 100" fill="none">
+        <circle data-hf-id="hf-o2li" cx="50" cy="50" r="38" stroke="rgba(255,255,255,0.15)" stroke-width="9" />
+        <g data-hf-id="hf-d59o" id="hb-loop">
+          <path data-hf-id="hf-kvut" d="M50 12 A38 38 0 1 1 15 35" stroke="#FF3B3B" stroke-width="9" stroke-linecap="round" />
+          <path data-hf-id="hf-xk59" d="M6 28 L15 37 L25 28" stroke="#FF3B3B" stroke-width="9" stroke-linecap="round" stroke-linejoin="round" />
+        </g>
+      </svg>
+      <div data-hf-id="hf-r1n9" id="hb-text">
+        <span data-hf-id="hf-6u0x" id="hb-label">Habit</span>
+        <span data-hf-id="hf-u7fa" id="hb-sub">Alasan jadi tabiat</span>
+      </div>
+    </div>
+  </div>
+  <script>
+    const tl = gsap.timeline({ paused: true });
+    // Scene clock: 0 = comp 8.38. "habit" at 2.40, scene ends 3.98.
+    tl.fromTo("#hb-scrim", { opacity: 0 }, { opacity: 1, duration: 0.3, ease: "power2.out" }, 2.25);
+    tl.fromTo("#hb-card", { opacity: 0, scale: 0.7, y: 40 }, { opacity: 1, scale: 1, y: 0, duration: 0.5, ease: "back.out(1.5)" }, 2.38);
+    tl.fromTo("#hb-loop", { rotation: -200, svgOrigin: "50 50" }, { rotation: 0, svgOrigin: "50 50", duration: 0.9, ease: "power3.out" }, 2.38);
+    tl.fromTo("#hb-sub", { opacity: 0, x: -20 }, { opacity: 1, x: 0, duration: 0.3, ease: "power3.out" }, 2.7);
+    tl.to("#hb-card", { opacity: 0, scale: 0.95, filter: "blur(8px)", duration: 0.2, ease: "power3.in" }, 3.76);
+    tl.to("#hb-scrim", { opacity: 0, duration: 0.2 }, 3.76);
+    window.__timelines["habit"] = tl;
+  </script>
+</template>

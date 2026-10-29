@@ -1,0 +1,8 @@
+node_modules/
+# Source and intermediate media (raw footage lives on Google Drive)
+src/raw.mov
+src/footage.mp4
+src/freeze.png
+src/audio16k.wav
+src/frames/
+edit/snapshots/
