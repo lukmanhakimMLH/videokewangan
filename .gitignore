@@ -1,0 +1,14 @@
+node_modules/
+.hyperframes/
+src/raw.mp4
+src/cut.mov
+src/seg_*.mov
+src/list.txt
+src/*.wav
+src/f_*.jpg
+src/sfx/
+src/sigtest.*
+src/sigcheck.html
+src/sigfonts.html
+src/package*.json
+src/graded.mp4

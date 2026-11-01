@@ -1,0 +1,402 @@
+<title>Kata-kata Hari Ini</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:wght@500;600&family=Montserrat:wght@500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;1,600;1,700;1,800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/gsap.min.js"></script>
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      :root { color-scheme: dark; --bg: #0b0a08; --ink: #efe6d2; --gold: #d9b45a; }
+:root[data-theme="light"] { --bg: #0b0a08; }
+html, body { margin: 0; height: 100%; background: var(--bg); overflow: hidden; }
+#app { position: fixed; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; padding: 12px 16px; }
+#stagewrap { position: relative; flex: 1; width: 100%; min-height: 0; display: flex; align-items: center; justify-content: center; }
+#stage { position: absolute; width: 1080px; height: 1920px; transform-origin: center center; border-radius: 28px; overflow: hidden; box-shadow: 0 30px 80px rgba(0,0,0,.6), 0 0 0 1px rgba(217,180,90,.25); }
+#play { position: absolute; z-index: 5; width: 92px; height: 92px; border-radius: 50%; border: 1px solid rgba(217,180,90,.7); background: rgba(0,0,0,.55); color: var(--gold); font-size: 34px; cursor: pointer; backdrop-filter: blur(6px); }
+#bar { display: flex; align-items: center; gap: 12px; width: min(460px, 100%); color: var(--ink); font: 500 13px/1 "Montserrat", sans-serif; }
+#bar button { width: 38px; height: 38px; border-radius: 50%; border: 1px solid rgba(217,180,90,.6); background: transparent; color: var(--gold); cursor: pointer; flex: none; }
+#seek { flex: 1; accent-color: var(--gold); min-width: 0; }
+#tc { font-variant-numeric: tabular-nums; opacity: .8; flex: none; }
+
+      body { font-family: "Montserrat", sans-serif; }
+      :root {
+        --gold-1: #fff1b8; --gold-2: #e9c766; --gold-3: #c99a2e; --gold-4: #f5dc8f; --gold-5: #9d7220;
+        --gold-text: linear-gradient(100deg, #fff3c4 0%, #ecc867 28%, #c8962b 55%, #f6dd92 78%, #a9781f 100%);
+      }
+      #root { position: relative; width: 1080px; height: 1920px; overflow: hidden; background: #000; }
+
+      /* ---------- footage ---------- */
+      #cam { position: absolute; inset: 0; overflow: hidden; transform-origin: 50% 56%; }
+      #a-roll { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+
+      /* ---------- decoration layers ---------- */
+      #topshade { position: absolute; left: 0; right: 0; top: 0; height: 760px; pointer-events: none;
+        background: linear-gradient(180deg, rgba(0,0,0,.55) 0%, rgba(0,0,0,.28) 45%, rgba(0,0,0,0) 100%); }
+      #botshade { position: absolute; left: 0; right: 0; bottom: 0; height: 820px; pointer-events: none;
+        background: linear-gradient(0deg, rgba(0,0,0,.72) 0%, rgba(0,0,0,.42) 38%, rgba(0,0,0,0) 100%); }
+      #dim { position: absolute; inset: 0; background: #000; opacity: 0; pointer-events: none; }
+      #leak { position: absolute; left: -200px; top: -300px; width: 1500px; height: 1500px; opacity: 0; pointer-events: none;
+        mix-blend-mode: screen;
+        background: radial-gradient(closest-side, rgba(255,196,110,.85), rgba(255,140,60,.35) 45%, rgba(255,120,40,0) 75%); }
+      #flash { position: absolute; inset: 0; background: #fff6dc; opacity: 0; pointer-events: none; mix-blend-mode: screen; }
+
+      .gold { background: var(--gold-text); -webkit-background-clip: text; background-clip: text; color: transparent; }
+
+      /* ---------- hook ---------- */
+      #hook { position: absolute; inset: 0; }
+      #hook .stack { position: absolute; left: 0; right: 0; top: 250px; text-align: center; }
+      #hook .l1, #hook .l3 { display: block; font-family: "Montserrat"; font-weight: 600; font-size: 54px; color: #fff;
+        letter-spacing: .02em; text-shadow: 0 4px 24px rgba(0,0,0,.7); }
+      #hook .l2wrap { display: block; margin: -6px 0 18px; }
+      #hook .l2 { display: inline-block; font-family: "Playfair Display"; font-style: italic; font-weight: 800; font-size: 200px; line-height: 1.05;
+        padding: 0 30px; filter: drop-shadow(0 8px 30px rgba(0,0,0,.6)); }
+      #hook .rule { display: block; width: 0; height: 2px; margin: 18px auto 0; background: linear-gradient(90deg, transparent, var(--gold-2), transparent); }
+
+      /* ---------- badge ---------- */
+      #badge { position: absolute; left: 0; right: 0; top: 196px; height: 60px; text-align: center; }
+      #badge .inner { display: inline-flex; align-items: center; gap: 22px; }
+      #badge .ln { display: inline-block; width: 90px; height: 1.5px; background: linear-gradient(90deg, transparent, var(--gold-2)); transform-origin: right center; }
+      #badge .ln.r { background: linear-gradient(270deg, transparent, var(--gold-2)); transform-origin: left center; }
+      #badge .txt { font-family: "Montserrat"; font-weight: 600; font-size: 28px; letter-spacing: .42em; padding-left: .42em; }
+
+      /* ---------- captions ---------- */
+      .cap { position: absolute; left: 0; right: 0; top: 290px; height: 260px; text-align: center; overflow: visible; }
+      .cap .line { position: absolute; left: 60px; right: 60px; top: 0; text-align: center; line-height: 1.12; }
+      .cap .row { display: block; white-space: nowrap; }
+      .cap .w { display: inline-block; font-family: "Montserrat"; font-weight: 700; font-size: 70px; color: #fff;
+        text-shadow: 0 4px 22px rgba(0,0,0,.75); margin: 0 12px; }
+      .cap .w.k { font-family: "Playfair Display"; font-style: italic; font-weight: 800; font-size: 96px; text-shadow: none;
+        filter: drop-shadow(0 6px 22px rgba(0,0,0,.65)); }
+      .cap .w.k .in { background: var(--gold-text); -webkit-background-clip: text; background-clip: text; color: transparent; padding: 0 8px; }
+
+      /* ---------- signature (corner) ---------- */
+      #sign { position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; }
+      #sign .box { position: absolute; left: 50px; top: 1290px; width: 560px; }
+      #sign svg { display: block; width: 430px; height: auto; overflow: visible; filter: drop-shadow(0 3px 10px rgba(0,0,0,.55)); }
+      .namebar { display: flex; align-items: center; gap: 14px; margin: 4px 0 0 18px; }
+      .namebar .dash { display: inline-block; width: 46px; height: 1.5px; background: linear-gradient(90deg, transparent, var(--gold-2)); transform-origin: left center; }
+      .namebar .nm { font-family: "EB Garamond"; font-weight: 600; font-size: 32px; letter-spacing: .3em; white-space: nowrap; }
+      .namebar .nm span { display: inline-block; }
+
+      /* ---------- quote (cinematic) ---------- */
+      #bars { position: absolute; inset: 0; pointer-events: none; }
+      #bars .bt, #bars .bb { position: absolute; left: 0; right: 0; height: 168px; background: #000; }
+      #bars .bt { top: 0; } #bars .bb { bottom: 0; }
+      #quote { position: absolute; inset: 0; }
+      #quote .q { position: absolute; left: 0; right: 0; text-align: center; }
+      #q0 { top: 232px; font-family: "Montserrat"; font-weight: 600; font-size: 30px; letter-spacing: .5em; padding-left: .5em; }
+      #q1 { top: 286px; font-family: "Playfair Display"; font-style: italic; font-weight: 700; font-size: 92px; }
+      #q2 { top: 410px; font-family: "Playfair Display"; font-weight: 600; font-size: 74px; color: #fff; text-shadow: 0 5px 26px rgba(0,0,0,.8); }
+      #q3 { top: 506px; font-family: "Playfair Display"; font-style: italic; font-weight: 600; font-size: 74px; color: #fff; text-shadow: 0 5px 26px rgba(0,0,0,.8); }
+      #q1 .gold { padding: 0 14px; filter: drop-shadow(0 6px 24px rgba(0,0,0,.7)); }
+
+      /* ---------- end card ---------- */
+      #endcard { position: absolute; inset: 0; }
+      #endcard .bg { position: absolute; inset: 0; background: radial-gradient(ellipse at 50% 42%, #1b1610 0%, #070605 60%, #000 100%); opacity: 0; }
+      #endcard .center { position: absolute; left: 0; right: 0; top: 560px; text-align: center; }
+      #endcard svg { width: 760px; height: auto; overflow: visible; display: block; margin: 0 auto; }
+      #endcard .namebar { justify-content: center; margin: 22px 0 0 0; }
+      #endcard .namebar .nm { font-size: 46px; }
+      #endcard .namebar .dash { width: 80px; }
+      #endcard .namebar .dash.r { background: linear-gradient(270deg, transparent, var(--gold-2)); transform-origin: right center; }
+      #endcard .tag { margin-top: 34px; font-family: "Montserrat"; font-weight: 500; font-size: 30px; letter-spacing: .38em; padding-left: .38em; color: rgba(255,255,255,.72); }
+      #endcard .orn { width: 0; height: 1.5px; margin: 46px auto 0; background: linear-gradient(90deg, transparent, var(--gold-2), transparent); }
+    </style>
+  <div id="app"><div id="stagewrap"><div id="stage"><div id="root" data-composition-id="main" data-start="0" data-duration="23" data-width="1080" data-height="1920">
+
+      <!-- A-roll (cut + colour graded + audio cleaned in ffmpeg) -->
+      <div id="cam">
+        <video id="a-roll" class="clip" src="preview.mp4" playsinline  data-volume="1"
+          data-start="0" data-duration="20.28" data-track-index="0"></video>
+      </div>
+
+      <div id="topshade"></div>
+      <div id="botshade"></div>
+      <div id="dim"></div>
+      <div id="leak"></div>
+
+      <!-- HOOK : frame 0 = thumbnail -->
+      <div id="hook" class="clip" data-start="0" data-duration="1.8" data-track-index="1" data-track-kind="graphics">
+        <div class="stack">
+          <span class="l1" id="h1">Siapa yang paling</span>
+          <span class="l2wrap"><span class="l2 gold" id="h2">jujur</span></span>
+          <span class="l3" id="h3">tentang dirimu?</span>
+          <span class="rule" id="hrule"></span>
+        </div>
+      </div>
+
+      <!-- BADGE -->
+      <div id="badge" class="clip" data-start="1.5" data-duration="14.2" data-track-index="2" data-track-kind="graphics">
+        <div class="inner" id="badgeInner">
+          <span class="ln" id="bl"></span>
+          <span class="txt gold" id="btxt">KATA-KATA HARI INI</span>
+          <span class="ln r" id="br"></span>
+        </div>
+      </div>
+
+      <!-- CAPTIONS -->
+      <div id="captions">
+      <div class="cap clip" id="cap0" data-start="1.60" data-duration="2.30" data-track-index="3"><div class="line"><span class="row"><span class="w" id="c0w0"><span class="in">Jika</span></span> <span class="w" id="c0w1"><span class="in">kita</span></span> <span class="w" id="c0w2"><span class="in">nak</span></span> <span class="w" id="c0w3"><span class="in">orang</span></span> <span class="w" id="c0w4"><span class="in">tahu</span></span></span><span class="row"><span class="w k" id="c0w6"><span class="in">keburukan</span></span> <span class="w" id="c0w7"><span class="in">kita,</span></span></span></div></div>
+      <div class="cap clip" id="cap1" data-start="3.90" data-duration="1.86" data-track-index="3"><div class="line"><span class="row"><span class="w" id="c1w0"><span class="in">kita</span></span> <span class="w" id="c1w1"><span class="in">tanya</span></span> <span class="w" id="c1w2"><span class="in">orang</span></span></span><span class="row"><span class="w" id="c1w4"><span class="in">yang</span></span> <span class="w k" id="c1w5"><span class="in">membenci</span></span> <span class="w" id="c1w6"><span class="in">kita.</span></span></span></div></div>
+      <div class="cap clip" id="cap2" data-start="5.76" data-duration="1.56" data-track-index="3"><div class="line"><span class="row"><span class="w" id="c2w0"><span class="in">Jika</span></span> <span class="w" id="c2w1"><span class="in">kita</span></span> <span class="w" id="c2w2"><span class="in">nak</span></span> <span class="w" id="c2w3"><span class="in">tahu</span></span></span><span class="row"><span class="w" id="c2w5"><span class="in">apa</span></span> <span class="w k" id="c2w6"><span class="in">baik</span></span> <span class="w" id="c2w7"><span class="in">kita,</span></span></span></div></div>
+      <div class="cap clip" id="cap3" data-start="7.32" data-duration="2.22" data-track-index="3"><div class="line"><span class="row"><span class="w" id="c3w0"><span class="in">kita</span></span> <span class="w" id="c3w1"><span class="in">tanya</span></span> <span class="w" id="c3w2"><span class="in">orang</span></span></span><span class="row"><span class="w" id="c3w4"><span class="in">yang</span></span> <span class="w k" id="c3w5"><span class="in">sayang</span></span> <span class="w" id="c3w6"><span class="in">kita.</span></span></span></div></div>
+      <div class="cap clip" id="cap4" data-start="9.54" data-duration="2.60" data-track-index="3"><div class="line"><span class="row"><span class="w" id="c4w0"><span class="in">Tapi,</span></span> <span class="w" id="c4w1"><span class="in">hakikatnya</span></span></span><span class="row"><span class="w" id="c4w3"><span class="in">dua-dua</span></span> <span class="w" id="c4w4"><span class="in">adalah</span></span> <span class="w k" id="c4w5"><span class="in">manusia.</span></span></span></div></div>
+      <div class="cap clip" id="cap5" data-start="12.14" data-duration="1.28" data-track-index="3"><div class="line"><span class="row"><span class="w" id="c5w0"><span class="in">Akan</span></span> <span class="w" id="c5w1"><span class="in">ada</span></span> <span class="w" id="c5w2"><span class="in">orang</span></span></span><span class="row"><span class="w" id="c5w4"><span class="in">yang</span></span> <span class="w k" id="c5w5"><span class="in">membenci</span></span> <span class="w" id="c5w6"><span class="in">kita</span></span></span></div></div>
+      <div class="cap clip" id="cap6" data-start="13.42" data-duration="2.28" data-track-index="3"><div class="line"><span class="row"><span class="w" id="c6w0"><span class="in">dan</span></span> <span class="w" id="c6w1"><span class="in">juga</span></span> <span class="w" id="c6w2"><span class="in">ada</span></span></span><span class="row"><span class="w" id="c6w4"><span class="in">yang</span></span> <span class="w k" id="c6w5"><span class="in">menyukai</span></span> <span class="w" id="c6w6"><span class="in">kita.</span></span></span></div></div>
+      </div>
+
+      <!-- CINEMATIC QUOTE -->
+      <div id="bars" class="clip" data-start="15.6" data-duration="4.3" data-track-index="4" data-track-kind="graphics">
+        <div class="bt" id="barT"></div><div class="bb" id="barB"></div>
+      </div>
+      <div id="quote" class="clip" data-start="15.68" data-duration="4.2" data-track-index="5" data-track-kind="graphics"><div id="quoteInner">
+        <div class="q" id="q0"><span class="gold">YANG PENTING</span></div>
+        <div class="q" id="q1"><span class="gold">di mata Allah SWT,</span></div>
+        <div class="q" id="q2">kita hamba-Nya</div>
+        <div class="q" id="q3">yang macam mana?</div>
+      </div></div>
+
+      <!-- SIGNATURE (corner) -->
+      <div id="sign" class="clip" data-start="1.7" data-duration="18.2" data-track-index="6" data-track-kind="graphics">
+        <div class="box" id="signBox">
+          <svg viewBox="-9 -210 681 267" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient id="gA" x1="0" y1="0" x2="1" y2="0.35">
+                <stop offset="0" stop-color="#fff3c4"/><stop offset=".3" stop-color="#ecc867"/><stop offset=".55" stop-color="#c8962b"/>
+                <stop offset=".78" stop-color="#f6dd92"/><stop offset="1" stop-color="#a9781f"/>
+              </linearGradient>
+              <linearGradient id="glA" x1="0" y1="0" x2="1" y2="0">
+                <stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset=".5" stop-color="#fff" stop-opacity=".95"/><stop offset="1" stop-color="#fff" stop-opacity="0"/>
+              </linearGradient>
+              <linearGradient id="wfA" x1="0" y1="0" x2="1" y2="0">
+                <stop offset="0" stop-color="#fff"/><stop offset=".85" stop-color="#fff"/><stop offset="1" stop-color="#fff" stop-opacity="0"/>
+              </linearGradient>
+              <mask id="mA" maskUnits="userSpaceOnUse" x="-60" y="-260" width="820" height="400"><rect id="wipeA" x="-20" y="-230" width="0" height="320" fill="url(#wfA)"/></mask>
+              <clipPath id="cA"><path d="M37 6Q63.40 6 90.40-8Q40.60-21.60 29-21.60Q17.40-21.60 12.30-18.40Q7.20-15.20 7.20-9.70Q7.20-4.20 15.30 0.90Q23.40 6 37 6M141.60-1Q170.60 5.20 186.70 5.20Q202.80 5.20 214.20-0.10Q225.60-5.40 225.60-12Q225.60-16.80 218.60-20.10Q211.60-23.40 198.20-23.40Q177-23.40 162.60-17.20Q148.20-11 141.60-1M234-130.80Q220.40-118.20 200.50-96.70Q180.60-75.20 171.40-65.80Q173.40-65.60 177.60-65.60Q194-65.60 213.10-74Q232.20-82.40 246.90-94Q261.60-105.60 271.50-118.10Q281.40-130.60 281.40-138.80Q281.40-148.60 267.20-148.60Q253-148.60 234-130.80M218.40-158.80Q218.40-172.20 196.60-172.20Q184.60-172.20 171.90-166.50Q159.20-160.80 150.20-151.60Q141.20-142.40 135.60-131.20Q130-120 129-109Q134.20-108.60 137.40-108.60Q154-108.60 169.60-113.80Q185.20-119 195.60-126.70Q206-134.40 212.20-143.10Q218.40-151.80 218.40-158.80M102.60-10.20Q117.20-6.60 137.40-1.80Q144-12.60 159.90-19.30Q175.80-26 200.20-26Q214.60-26 223.10-21.60Q231.60-17.20 231.60-11Q231.60-3.40 218.70 2.40Q205.80 8.20 185.10 8.20Q164.40 8.20 139 3.40Q137 8.20 137 13.80Q137 26.80 149.70 36.10Q162.40 45.40 185 45.40L185.80 47Q182.20 47.40 180.40 47.40Q159 47.40 146.10 37.10Q133.20 26.80 133.20 12.80Q133.20 7.40 135.20 2.80Q115.40-1.40 95.60-6.60Q65.20 8.60 35 8.60Q20 8.60 10.60 2.70Q1.20-3.20 1.20-9.80Q1.20-16.40 8.40-20.50Q15.60-24.60 29.90-24.60Q44.20-24.60 97-11.60Q124.60-27.60 159.60-64Q142.20-67.80 133.40-79.30Q124.60-90.80 124.60-106.60L124.60-107Q108.20-108.80 100.30-116.40Q92.40-124 92.40-135.20Q92.40-154.20 112-174.10Q131.60-194 158.60-199.40L159.20-197.60Q132.20-192 113.80-173.50Q95.40-155 95.40-137Q95.40-126.40 102.60-119.10Q109.80-111.80 124.60-109.40Q125.20-121.40 130.80-133.10Q136.40-144.80 145.70-154.50Q155-164.20 169.20-170.20Q183.40-176.20 197.60-176.20Q223.60-176.20 223.60-160Q223.60-152.20 217-142.90Q210.40-133.60 199.30-125.50Q188.20-117.40 171.30-111.90Q154.40-106.40 135.80-106.40Q131-106.40 128.80-106.60L128.80-104.60Q128.80-90.40 137.10-80.30Q145.40-70.20 162.40-67Q168.80-73.60 181.30-87.20Q193.80-100.80 200.30-107.60Q206.80-114.40 217.40-124.40Q228-134.40 235.20-139.20Q254.20-151.60 269-151.60Q288-151.60 288-139Q288-129.80 277.70-116.60Q267.40-103.40 251.80-91.40Q236.20-79.40 215.30-70.90Q194.40-62.40 175.40-62.40Q170.60-62.40 168.40-62.60Q132.60-26.80 102.60-10.20M267.60-35.40Q268.60-36.20 273-35.80Q275.20-35.40 275.20-34.90Q275.20-34.40 274.20-33.20Q273.20-32 264.60-23.60Q246.80-6.20 246.80-1.80Q246.80-0.80 248-0.80Q254.80-0.80 297.40-29.60L302.80-34Q303.80-34.80 306.60-34.60Q309.40-34.40 309.40-32.60Q309.40-31.80 308.80-31.20Q280.80-6 280.80-0.80Q280.80 1.40 284 1.40Q287.20 1.40 292.60-1Q298-3.40 302.20-5.90Q306.40-8.40 312.30-12.10Q318.20-15.80 318.60-16L319-13Q309.80-7 298-1Q286.20 5 280.10 5Q274 5 274 0Q274-7 284.80-18.20Q253.40 2.20 246 2.20Q241.60 2.20 241.60-3Q241.60-14 267.60-35.40M433.80-109.80Q433.80-111.20 431.80-111.20Q423.80-111.20 392.30-82.60Q360.80-54 335.80-27.20Q364.60-45.80 399.20-74.60Q433.80-103.40 433.80-109.80M355-15.80L357-11.60Q357-10 352.60-5.80Q348.20-1.60 348.20-0.10Q348.20 1.40 351.70 1.40Q355.20 1.40 360.60-1Q366-3.40 370.20-5.90Q374.40-8.40 380.30-12.10Q386.20-15.80 386.60-16L387-13Q379.60-7.60 367.20-1.30Q354.80 5 347.80 5Q340.80 5 340.80-1.20Q340.80-4 345.50-8.30Q350.20-12.60 350.20-13.60Q350.20-14.60 349.20-14.60Q345.20-15.20 345.20-17.60Q345.20-18.40 345.80-18.40L348.20-18.40Q359.40-18.40 367-23.40Q374.60-28.40 374.60-32.20Q374.60-33.60 373.20-33.60Q358.60-33.60 315-2.60L307.80 3.40Q307 4.20 303.80 4.20Q300.60 4.20 300.60 3Q300.60 2.40 301.40 1.40Q322.40-22.20 348.40-48Q374.40-73.80 399.30-94.10Q424.20-114.40 433.20-114.40Q438-114.40 438-111.40Q438-105 417.90-86.70Q397.80-68.40 372.80-50Q347.80-31.60 329.80-20.80Q323-13 322-11Q332.60-18.40 339-22.50Q345.40-26.60 355.90-31.50Q366.40-36.40 373.80-36.40Q381.20-36.40 381.20-30.40Q381.20-24.40 373.30-20.30Q365.40-16.20 357.80-16.20Q356.20-16.20 355.60-16.30Q355-16.40 355-15.80M405.60-25.40Q396-18.60 385.40-12L384.80-14.80L403.80-28Q413.60-35 418.80-35Q424-35 424-30.60Q424-24 414.80-14.80L418.20-16.80Q445.60-34.60 452.40-34.60Q459.20-34.60 459.20-31Q459.20-27 452.80-18.40Q475.60-34.20 489.40-34.20Q494.80-34.20 494.80-29.60Q494.80-25 490.80-20.10Q486.80-15.20 482-11.60Q469.20-2.40 469.20 0Q469.20 1.40 471.50 1.40Q473.80 1.40 479.20-1Q484.60-3.40 488.80-5.90Q493-8.40 498.90-12.10Q504.80-15.80 505.20-16L505.60-13Q478.60 5 467.80 5Q462.60 5 462.60 0Q462.60-3.40 466.90-8.10Q471.20-12.80 476.20-16.80Q490-27.20 490-30.60Q490-31.60 487.80-31.60Q480.40-31.60 465.80-23.60Q451.20-15.60 433.40 2.40Q432.20 3.60 428.30 3.60Q424.40 3.60 424.40 1.80Q424.40 1 431.40-5.60Q452.80-25.80 452.80-30.20Q452.80-31.40 451.40-31.40Q446.80-31.40 431.30-21.30Q415.80-11.20 399.60 2.20Q397.20 3.60 395.80 3.60Q389.60 3.60 389.60 2.20Q389.60 1.40 395.10-3.40Q400.60-8.20 409.90-17.90Q419.20-27.60 419.20-31.40Q419.20-32.20 418.20-32.20Q414.60-32.20 405.60-25.40M506.20 0.40Q513.80 0.40 526.50-7.30Q539.20-15 547.70-22.20Q556.20-29.40 556.20-30.60Q556.20-31.80 553.30-32.60Q550.40-33.40 545.40-33.40Q540.40-33.40 532.20-29.50Q524-25.60 518-20.20Q512-14.80 508-9.60Q504-4.40 504-2Q504 0.40 506.20 0.40M559.80-33.20Q563.80-36.40 564.20-36.40Q569.60-35.80 569.80-35.50Q570-35.20 570-34.80Q570-34.40 568.40-32.30Q566.80-30.20 559-22.40Q539.60-3.40 539.60 0.60Q539.60 2.20 541 2.20Q550.60 2.20 577-16L577.40-13Q550.80 4.40 539.80 4.40Q534.40 4.40 534.40-0.70Q534.40-5.80 540.60-14Q517 3.40 503.80 3.60Q499 3.60 499-2.20Q499-12.60 512.30-24.40Q525.60-36.20 547.40-36.20Q554.60-36.20 559.80-33.20M611.40-36Q615.60-36 615.60-31.50Q615.60-27 609.20-18.40Q632-34.20 645.80-34.20Q651.20-34.20 651.20-29.60Q651.20-25 647.20-20.10Q643.20-15.20 638.40-11.60Q625.60-2.40 625.60 0Q625.60 1.40 627.90 1.40Q630.20 1.40 635.60-1Q641-3.40 645.20-5.90Q649.40-8.40 655.30-12.10Q661.20-15.80 661.60-16L662-13Q635 5 624.20 5Q619 5 619 0Q619-3.40 623.30-8.10Q627.60-12.80 632.60-16.80Q646.40-27.20 646.40-30.60Q646.40-31.60 644.20-31.60Q636.80-31.60 622.20-23.60Q607.60-15.60 589.80 2.40Q588.60 3.60 585.30 3.60Q582 3.60 582 1.80Q582 1.20 595.80-13Q609.60-27.20 609.60-31.40Q609.60-32.40 608.30-32.40Q607-32.40 602.90-29.80Q598.80-27.20 590.30-21.50Q581.80-15.80 575.80-12L575.20-14.80Q578.20-16.80 583.40-20.40Q588.60-24 592-26.30Q595.40-28.60 599.40-31.20Q607.20-36 611.40-36"/></clipPath>
+            </defs>
+            <path id="sigStrokeA" class="sigstroke" d="M37 6Q63.40 6 90.40-8Q40.60-21.60 29-21.60Q17.40-21.60 12.30-18.40Q7.20-15.20 7.20-9.70Q7.20-4.20 15.30 0.90Q23.40 6 37 6M141.60-1Q170.60 5.20 186.70 5.20Q202.80 5.20 214.20-0.10Q225.60-5.40 225.60-12Q225.60-16.80 218.60-20.10Q211.60-23.40 198.20-23.40Q177-23.40 162.60-17.20Q148.20-11 141.60-1M234-130.80Q220.40-118.20 200.50-96.70Q180.60-75.20 171.40-65.80Q173.40-65.60 177.60-65.60Q194-65.60 213.10-74Q232.20-82.40 246.90-94Q261.60-105.60 271.50-118.10Q281.40-130.60 281.40-138.80Q281.40-148.60 267.20-148.60Q253-148.60 234-130.80M218.40-158.80Q218.40-172.20 196.60-172.20Q184.60-172.20 171.90-166.50Q159.20-160.80 150.20-151.60Q141.20-142.40 135.60-131.20Q130-120 129-109Q134.20-108.60 137.40-108.60Q154-108.60 169.60-113.80Q185.20-119 195.60-126.70Q206-134.40 212.20-143.10Q218.40-151.80 218.40-158.80M102.60-10.20Q117.20-6.60 137.40-1.80Q144-12.60 159.90-19.30Q175.80-26 200.20-26Q214.60-26 223.10-21.60Q231.60-17.20 231.60-11Q231.60-3.40 218.70 2.40Q205.80 8.20 185.10 8.20Q164.40 8.20 139 3.40Q137 8.20 137 13.80Q137 26.80 149.70 36.10Q162.40 45.40 185 45.40L185.80 47Q182.20 47.40 180.40 47.40Q159 47.40 146.10 37.10Q133.20 26.80 133.20 12.80Q133.20 7.40 135.20 2.80Q115.40-1.40 95.60-6.60Q65.20 8.60 35 8.60Q20 8.60 10.60 2.70Q1.20-3.20 1.20-9.80Q1.20-16.40 8.40-20.50Q15.60-24.60 29.90-24.60Q44.20-24.60 97-11.60Q124.60-27.60 159.60-64Q142.20-67.80 133.40-79.30Q124.60-90.80 124.60-106.60L124.60-107Q108.20-108.80 100.30-116.40Q92.40-124 92.40-135.20Q92.40-154.20 112-174.10Q131.60-194 158.60-199.40L159.20-197.60Q132.20-192 113.80-173.50Q95.40-155 95.40-137Q95.40-126.40 102.60-119.10Q109.80-111.80 124.60-109.40Q125.20-121.40 130.80-133.10Q136.40-144.80 145.70-154.50Q155-164.20 169.20-170.20Q183.40-176.20 197.60-176.20Q223.60-176.20 223.60-160Q223.60-152.20 217-142.90Q210.40-133.60 199.30-125.50Q188.20-117.40 171.30-111.90Q154.40-106.40 135.80-106.40Q131-106.40 128.80-106.60L128.80-104.60Q128.80-90.40 137.10-80.30Q145.40-70.20 162.40-67Q168.80-73.60 181.30-87.20Q193.80-100.80 200.30-107.60Q206.80-114.40 217.40-124.40Q228-134.40 235.20-139.20Q254.20-151.60 269-151.60Q288-151.60 288-139Q288-129.80 277.70-116.60Q267.40-103.40 251.80-91.40Q236.20-79.40 215.30-70.90Q194.40-62.40 175.40-62.40Q170.60-62.40 168.40-62.60Q132.60-26.80 102.60-10.20M267.60-35.40Q268.60-36.20 273-35.80Q275.20-35.40 275.20-34.90Q275.20-34.40 274.20-33.20Q273.20-32 264.60-23.60Q246.80-6.20 246.80-1.80Q246.80-0.80 248-0.80Q254.80-0.80 297.40-29.60L302.80-34Q303.80-34.80 306.60-34.60Q309.40-34.40 309.40-32.60Q309.40-31.80 308.80-31.20Q280.80-6 280.80-0.80Q280.80 1.40 284 1.40Q287.20 1.40 292.60-1Q298-3.40 302.20-5.90Q306.40-8.40 312.30-12.10Q318.20-15.80 318.60-16L319-13Q309.80-7 298-1Q286.20 5 280.10 5Q274 5 274 0Q274-7 284.80-18.20Q253.40 2.20 246 2.20Q241.60 2.20 241.60-3Q241.60-14 267.60-35.40M433.80-109.80Q433.80-111.20 431.80-111.20Q423.80-111.20 392.30-82.60Q360.80-54 335.80-27.20Q364.60-45.80 399.20-74.60Q433.80-103.40 433.80-109.80M355-15.80L357-11.60Q357-10 352.60-5.80Q348.20-1.60 348.20-0.10Q348.20 1.40 351.70 1.40Q355.20 1.40 360.60-1Q366-3.40 370.20-5.90Q374.40-8.40 380.30-12.10Q386.20-15.80 386.60-16L387-13Q379.60-7.60 367.20-1.30Q354.80 5 347.80 5Q340.80 5 340.80-1.20Q340.80-4 345.50-8.30Q350.20-12.60 350.20-13.60Q350.20-14.60 349.20-14.60Q345.20-15.20 345.20-17.60Q345.20-18.40 345.80-18.40L348.20-18.40Q359.40-18.40 367-23.40Q374.60-28.40 374.60-32.20Q374.60-33.60 373.20-33.60Q358.60-33.60 315-2.60L307.80 3.40Q307 4.20 303.80 4.20Q300.60 4.20 300.60 3Q300.60 2.40 301.40 1.40Q322.40-22.20 348.40-48Q374.40-73.80 399.30-94.10Q424.20-114.40 433.20-114.40Q438-114.40 438-111.40Q438-105 417.90-86.70Q397.80-68.40 372.80-50Q347.80-31.60 329.80-20.80Q323-13 322-11Q332.60-18.40 339-22.50Q345.40-26.60 355.90-31.50Q366.40-36.40 373.80-36.40Q381.20-36.40 381.20-30.40Q381.20-24.40 373.30-20.30Q365.40-16.20 357.80-16.20Q356.20-16.20 355.60-16.30Q355-16.40 355-15.80M405.60-25.40Q396-18.60 385.40-12L384.80-14.80L403.80-28Q413.60-35 418.80-35Q424-35 424-30.60Q424-24 414.80-14.80L418.20-16.80Q445.60-34.60 452.40-34.60Q459.20-34.60 459.20-31Q459.20-27 452.80-18.40Q475.60-34.20 489.40-34.20Q494.80-34.20 494.80-29.60Q494.80-25 490.80-20.10Q486.80-15.20 482-11.60Q469.20-2.40 469.20 0Q469.20 1.40 471.50 1.40Q473.80 1.40 479.20-1Q484.60-3.40 488.80-5.90Q493-8.40 498.90-12.10Q504.80-15.80 505.20-16L505.60-13Q478.60 5 467.80 5Q462.60 5 462.60 0Q462.60-3.40 466.90-8.10Q471.20-12.80 476.20-16.80Q490-27.20 490-30.60Q490-31.60 487.80-31.60Q480.40-31.60 465.80-23.60Q451.20-15.60 433.40 2.40Q432.20 3.60 428.30 3.60Q424.40 3.60 424.40 1.80Q424.40 1 431.40-5.60Q452.80-25.80 452.80-30.20Q452.80-31.40 451.40-31.40Q446.80-31.40 431.30-21.30Q415.80-11.20 399.60 2.20Q397.20 3.60 395.80 3.60Q389.60 3.60 389.60 2.20Q389.60 1.40 395.10-3.40Q400.60-8.20 409.90-17.90Q419.20-27.60 419.20-31.40Q419.20-32.20 418.20-32.20Q414.60-32.20 405.60-25.40M506.20 0.40Q513.80 0.40 526.50-7.30Q539.20-15 547.70-22.20Q556.20-29.40 556.20-30.60Q556.20-31.80 553.30-32.60Q550.40-33.40 545.40-33.40Q540.40-33.40 532.20-29.50Q524-25.60 518-20.20Q512-14.80 508-9.60Q504-4.40 504-2Q504 0.40 506.20 0.40M559.80-33.20Q563.80-36.40 564.20-36.40Q569.60-35.80 569.80-35.50Q570-35.20 570-34.80Q570-34.40 568.40-32.30Q566.80-30.20 559-22.40Q539.60-3.40 539.60 0.60Q539.60 2.20 541 2.20Q550.60 2.20 577-16L577.40-13Q550.80 4.40 539.80 4.40Q534.40 4.40 534.40-0.70Q534.40-5.80 540.60-14Q517 3.40 503.80 3.60Q499 3.60 499-2.20Q499-12.60 512.30-24.40Q525.60-36.20 547.40-36.20Q554.60-36.20 559.80-33.20M611.40-36Q615.60-36 615.60-31.50Q615.60-27 609.20-18.40Q632-34.20 645.80-34.20Q651.20-34.20 651.20-29.60Q651.20-25 647.20-20.10Q643.20-15.20 638.40-11.60Q625.60-2.40 625.60 0Q625.60 1.40 627.90 1.40Q630.20 1.40 635.60-1Q641-3.40 645.20-5.90Q649.40-8.40 655.30-12.10Q661.20-15.80 661.60-16L662-13Q635 5 624.20 5Q619 5 619 0Q619-3.40 623.30-8.10Q627.60-12.80 632.60-16.80Q646.40-27.20 646.40-30.60Q646.40-31.60 644.20-31.60Q636.80-31.60 622.20-23.60Q607.60-15.60 589.80 2.40Q588.60 3.60 585.30 3.60Q582 3.60 582 1.80Q582 1.20 595.80-13Q609.60-27.20 609.60-31.40Q609.60-32.40 608.30-32.40Q607-32.40 602.90-29.80Q598.80-27.20 590.30-21.50Q581.80-15.80 575.80-12L575.20-14.80Q578.20-16.80 583.40-20.40Q588.60-24 592-26.30Q595.40-28.60 599.40-31.20Q607.20-36 611.40-36" fill="none" stroke="#f1d27a" stroke-width="1.4" stroke-linejoin="round"/>
+            <path id="sigFillA" d="M37 6Q63.40 6 90.40-8Q40.60-21.60 29-21.60Q17.40-21.60 12.30-18.40Q7.20-15.20 7.20-9.70Q7.20-4.20 15.30 0.90Q23.40 6 37 6M141.60-1Q170.60 5.20 186.70 5.20Q202.80 5.20 214.20-0.10Q225.60-5.40 225.60-12Q225.60-16.80 218.60-20.10Q211.60-23.40 198.20-23.40Q177-23.40 162.60-17.20Q148.20-11 141.60-1M234-130.80Q220.40-118.20 200.50-96.70Q180.60-75.20 171.40-65.80Q173.40-65.60 177.60-65.60Q194-65.60 213.10-74Q232.20-82.40 246.90-94Q261.60-105.60 271.50-118.10Q281.40-130.60 281.40-138.80Q281.40-148.60 267.20-148.60Q253-148.60 234-130.80M218.40-158.80Q218.40-172.20 196.60-172.20Q184.60-172.20 171.90-166.50Q159.20-160.80 150.20-151.60Q141.20-142.40 135.60-131.20Q130-120 129-109Q134.20-108.60 137.40-108.60Q154-108.60 169.60-113.80Q185.20-119 195.60-126.70Q206-134.40 212.20-143.10Q218.40-151.80 218.40-158.80M102.60-10.20Q117.20-6.60 137.40-1.80Q144-12.60 159.90-19.30Q175.80-26 200.20-26Q214.60-26 223.10-21.60Q231.60-17.20 231.60-11Q231.60-3.40 218.70 2.40Q205.80 8.20 185.10 8.20Q164.40 8.20 139 3.40Q137 8.20 137 13.80Q137 26.80 149.70 36.10Q162.40 45.40 185 45.40L185.80 47Q182.20 47.40 180.40 47.40Q159 47.40 146.10 37.10Q133.20 26.80 133.20 12.80Q133.20 7.40 135.20 2.80Q115.40-1.40 95.60-6.60Q65.20 8.60 35 8.60Q20 8.60 10.60 2.70Q1.20-3.20 1.20-9.80Q1.20-16.40 8.40-20.50Q15.60-24.60 29.90-24.60Q44.20-24.60 97-11.60Q124.60-27.60 159.60-64Q142.20-67.80 133.40-79.30Q124.60-90.80 124.60-106.60L124.60-107Q108.20-108.80 100.30-116.40Q92.40-124 92.40-135.20Q92.40-154.20 112-174.10Q131.60-194 158.60-199.40L159.20-197.60Q132.20-192 113.80-173.50Q95.40-155 95.40-137Q95.40-126.40 102.60-119.10Q109.80-111.80 124.60-109.40Q125.20-121.40 130.80-133.10Q136.40-144.80 145.70-154.50Q155-164.20 169.20-170.20Q183.40-176.20 197.60-176.20Q223.60-176.20 223.60-160Q223.60-152.20 217-142.90Q210.40-133.60 199.30-125.50Q188.20-117.40 171.30-111.90Q154.40-106.40 135.80-106.40Q131-106.40 128.80-106.60L128.80-104.60Q128.80-90.40 137.10-80.30Q145.40-70.20 162.40-67Q168.80-73.60 181.30-87.20Q193.80-100.80 200.30-107.60Q206.80-114.40 217.40-124.40Q228-134.40 235.20-139.20Q254.20-151.60 269-151.60Q288-151.60 288-139Q288-129.80 277.70-116.60Q267.40-103.40 251.80-91.40Q236.20-79.40 215.30-70.90Q194.40-62.40 175.40-62.40Q170.60-62.40 168.40-62.60Q132.60-26.80 102.60-10.20M267.60-35.40Q268.60-36.20 273-35.80Q275.20-35.40 275.20-34.90Q275.20-34.40 274.20-33.20Q273.20-32 264.60-23.60Q246.80-6.20 246.80-1.80Q246.80-0.80 248-0.80Q254.80-0.80 297.40-29.60L302.80-34Q303.80-34.80 306.60-34.60Q309.40-34.40 309.40-32.60Q309.40-31.80 308.80-31.20Q280.80-6 280.80-0.80Q280.80 1.40 284 1.40Q287.20 1.40 292.60-1Q298-3.40 302.20-5.90Q306.40-8.40 312.30-12.10Q318.20-15.80 318.60-16L319-13Q309.80-7 298-1Q286.20 5 280.10 5Q274 5 274 0Q274-7 284.80-18.20Q253.40 2.20 246 2.20Q241.60 2.20 241.60-3Q241.60-14 267.60-35.40M433.80-109.80Q433.80-111.20 431.80-111.20Q423.80-111.20 392.30-82.60Q360.80-54 335.80-27.20Q364.60-45.80 399.20-74.60Q433.80-103.40 433.80-109.80M355-15.80L357-11.60Q357-10 352.60-5.80Q348.20-1.60 348.20-0.10Q348.20 1.40 351.70 1.40Q355.20 1.40 360.60-1Q366-3.40 370.20-5.90Q374.40-8.40 380.30-12.10Q386.20-15.80 386.60-16L387-13Q379.60-7.60 367.20-1.30Q354.80 5 347.80 5Q340.80 5 340.80-1.20Q340.80-4 345.50-8.30Q350.20-12.60 350.20-13.60Q350.20-14.60 349.20-14.60Q345.20-15.20 345.20-17.60Q345.20-18.40 345.80-18.40L348.20-18.40Q359.40-18.40 367-23.40Q374.60-28.40 374.60-32.20Q374.60-33.60 373.20-33.60Q358.60-33.60 315-2.60L307.80 3.40Q307 4.20 303.80 4.20Q300.60 4.20 300.60 3Q300.60 2.40 301.40 1.40Q322.40-22.20 348.40-48Q374.40-73.80 399.30-94.10Q424.20-114.40 433.20-114.40Q438-114.40 438-111.40Q438-105 417.90-86.70Q397.80-68.40 372.80-50Q347.80-31.60 329.80-20.80Q323-13 322-11Q332.60-18.40 339-22.50Q345.40-26.60 355.90-31.50Q366.40-36.40 373.80-36.40Q381.20-36.40 381.20-30.40Q381.20-24.40 373.30-20.30Q365.40-16.20 357.80-16.20Q356.20-16.20 355.60-16.30Q355-16.40 355-15.80M405.60-25.40Q396-18.60 385.40-12L384.80-14.80L403.80-28Q413.60-35 418.80-35Q424-35 424-30.60Q424-24 414.80-14.80L418.20-16.80Q445.60-34.60 452.40-34.60Q459.20-34.60 459.20-31Q459.20-27 452.80-18.40Q475.60-34.20 489.40-34.20Q494.80-34.20 494.80-29.60Q494.80-25 490.80-20.10Q486.80-15.20 482-11.60Q469.20-2.40 469.20 0Q469.20 1.40 471.50 1.40Q473.80 1.40 479.20-1Q484.60-3.40 488.80-5.90Q493-8.40 498.90-12.10Q504.80-15.80 505.20-16L505.60-13Q478.60 5 467.80 5Q462.60 5 462.60 0Q462.60-3.40 466.90-8.10Q471.20-12.80 476.20-16.80Q490-27.20 490-30.60Q490-31.60 487.80-31.60Q480.40-31.60 465.80-23.60Q451.20-15.60 433.40 2.40Q432.20 3.60 428.30 3.60Q424.40 3.60 424.40 1.80Q424.40 1 431.40-5.60Q452.80-25.80 452.80-30.20Q452.80-31.40 451.40-31.40Q446.80-31.40 431.30-21.30Q415.80-11.20 399.60 2.20Q397.20 3.60 395.80 3.60Q389.60 3.60 389.60 2.20Q389.60 1.40 395.10-3.40Q400.60-8.20 409.90-17.90Q419.20-27.60 419.20-31.40Q419.20-32.20 418.20-32.20Q414.60-32.20 405.60-25.40M506.20 0.40Q513.80 0.40 526.50-7.30Q539.20-15 547.70-22.20Q556.20-29.40 556.20-30.60Q556.20-31.80 553.30-32.60Q550.40-33.40 545.40-33.40Q540.40-33.40 532.20-29.50Q524-25.60 518-20.20Q512-14.80 508-9.60Q504-4.40 504-2Q504 0.40 506.20 0.40M559.80-33.20Q563.80-36.40 564.20-36.40Q569.60-35.80 569.80-35.50Q570-35.20 570-34.80Q570-34.40 568.40-32.30Q566.80-30.20 559-22.40Q539.60-3.40 539.60 0.60Q539.60 2.20 541 2.20Q550.60 2.20 577-16L577.40-13Q550.80 4.40 539.80 4.40Q534.40 4.40 534.40-0.70Q534.40-5.80 540.60-14Q517 3.40 503.80 3.60Q499 3.60 499-2.20Q499-12.60 512.30-24.40Q525.60-36.20 547.40-36.20Q554.60-36.20 559.80-33.20M611.40-36Q615.60-36 615.60-31.50Q615.60-27 609.20-18.40Q632-34.20 645.80-34.20Q651.20-34.20 651.20-29.60Q651.20-25 647.20-20.10Q643.20-15.20 638.40-11.60Q625.60-2.40 625.60 0Q625.60 1.40 627.90 1.40Q630.20 1.40 635.60-1Q641-3.40 645.20-5.90Q649.40-8.40 655.30-12.10Q661.20-15.80 661.60-16L662-13Q635 5 624.20 5Q619 5 619 0Q619-3.40 623.30-8.10Q627.60-12.80 632.60-16.80Q646.40-27.20 646.40-30.60Q646.40-31.60 644.20-31.60Q636.80-31.60 622.20-23.60Q607.60-15.60 589.80 2.40Q588.60 3.60 585.30 3.60Q582 3.60 582 1.80Q582 1.20 595.80-13Q609.60-27.20 609.60-31.40Q609.60-32.40 608.30-32.40Q607-32.40 602.90-29.80Q598.80-27.20 590.30-21.50Q581.80-15.80 575.80-12L575.20-14.80Q578.20-16.80 583.40-20.40Q588.60-24 592-26.30Q595.40-28.60 599.40-31.20Q607.20-36 611.40-36" fill="url(#gA)" mask="url(#mA)"/>
+            <path id="swashA" class="sigstroke" d="M250 26 C 380 36, 540 30, 676 -22" fill="none" stroke="url(#gA)" stroke-width="3.2" stroke-linecap="round"/>
+            <g clip-path="url(#cA)"><rect id="glintA" x="-160" y="-230" width="120" height="320" fill="url(#glA)" transform="skewX(-18)"/></g>
+          </svg>
+          <div class="namebar">
+            <span class="dash" id="ndA"></span>
+            <span class="nm gold" id="nmA">LUKMAN HAKIM</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- END CARD -->
+      <div id="endcard" class="clip" data-start="19.75" data-duration="3.25" data-track-index="7" data-track-kind="graphics">
+        <div class="bg" id="endBg"></div>
+        <div class="center">
+          <svg viewBox="-9 -210 681 267" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient id="gB" x1="0" y1="0" x2="1" y2="0.35">
+                <stop offset="0" stop-color="#fff3c4"/><stop offset=".3" stop-color="#ecc867"/><stop offset=".55" stop-color="#c8962b"/>
+                <stop offset=".78" stop-color="#f6dd92"/><stop offset="1" stop-color="#a9781f"/>
+              </linearGradient>
+              <linearGradient id="glB" x1="0" y1="0" x2="1" y2="0">
+                <stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset=".5" stop-color="#fff" stop-opacity=".95"/><stop offset="1" stop-color="#fff" stop-opacity="0"/>
+              </linearGradient>
+              <linearGradient id="wfB" x1="0" y1="0" x2="1" y2="0">
+                <stop offset="0" stop-color="#fff"/><stop offset=".85" stop-color="#fff"/><stop offset="1" stop-color="#fff" stop-opacity="0"/>
+              </linearGradient>
+              <mask id="mB" maskUnits="userSpaceOnUse" x="-60" y="-260" width="820" height="400"><rect id="wipeB" x="-20" y="-230" width="0" height="320" fill="url(#wfB)"/></mask>
+              <clipPath id="cB"><path d="M37 6Q63.40 6 90.40-8Q40.60-21.60 29-21.60Q17.40-21.60 12.30-18.40Q7.20-15.20 7.20-9.70Q7.20-4.20 15.30 0.90Q23.40 6 37 6M141.60-1Q170.60 5.20 186.70 5.20Q202.80 5.20 214.20-0.10Q225.60-5.40 225.60-12Q225.60-16.80 218.60-20.10Q211.60-23.40 198.20-23.40Q177-23.40 162.60-17.20Q148.20-11 141.60-1M234-130.80Q220.40-118.20 200.50-96.70Q180.60-75.20 171.40-65.80Q173.40-65.60 177.60-65.60Q194-65.60 213.10-74Q232.20-82.40 246.90-94Q261.60-105.60 271.50-118.10Q281.40-130.60 281.40-138.80Q281.40-148.60 267.20-148.60Q253-148.60 234-130.80M218.40-158.80Q218.40-172.20 196.60-172.20Q184.60-172.20 171.90-166.50Q159.20-160.80 150.20-151.60Q141.20-142.40 135.60-131.20Q130-120 129-109Q134.20-108.60 137.40-108.60Q154-108.60 169.60-113.80Q185.20-119 195.60-126.70Q206-134.40 212.20-143.10Q218.40-151.80 218.40-158.80M102.60-10.20Q117.20-6.60 137.40-1.80Q144-12.60 159.90-19.30Q175.80-26 200.20-26Q214.60-26 223.10-21.60Q231.60-17.20 231.60-11Q231.60-3.40 218.70 2.40Q205.80 8.20 185.10 8.20Q164.40 8.20 139 3.40Q137 8.20 137 13.80Q137 26.80 149.70 36.10Q162.40 45.40 185 45.40L185.80 47Q182.20 47.40 180.40 47.40Q159 47.40 146.10 37.10Q133.20 26.80 133.20 12.80Q133.20 7.40 135.20 2.80Q115.40-1.40 95.60-6.60Q65.20 8.60 35 8.60Q20 8.60 10.60 2.70Q1.20-3.20 1.20-9.80Q1.20-16.40 8.40-20.50Q15.60-24.60 29.90-24.60Q44.20-24.60 97-11.60Q124.60-27.60 159.60-64Q142.20-67.80 133.40-79.30Q124.60-90.80 124.60-106.60L124.60-107Q108.20-108.80 100.30-116.40Q92.40-124 92.40-135.20Q92.40-154.20 112-174.10Q131.60-194 158.60-199.40L159.20-197.60Q132.20-192 113.80-173.50Q95.40-155 95.40-137Q95.40-126.40 102.60-119.10Q109.80-111.80 124.60-109.40Q125.20-121.40 130.80-133.10Q136.40-144.80 145.70-154.50Q155-164.20 169.20-170.20Q183.40-176.20 197.60-176.20Q223.60-176.20 223.60-160Q223.60-152.20 217-142.90Q210.40-133.60 199.30-125.50Q188.20-117.40 171.30-111.90Q154.40-106.40 135.80-106.40Q131-106.40 128.80-106.60L128.80-104.60Q128.80-90.40 137.10-80.30Q145.40-70.20 162.40-67Q168.80-73.60 181.30-87.20Q193.80-100.80 200.30-107.60Q206.80-114.40 217.40-124.40Q228-134.40 235.20-139.20Q254.20-151.60 269-151.60Q288-151.60 288-139Q288-129.80 277.70-116.60Q267.40-103.40 251.80-91.40Q236.20-79.40 215.30-70.90Q194.40-62.40 175.40-62.40Q170.60-62.40 168.40-62.60Q132.60-26.80 102.60-10.20M267.60-35.40Q268.60-36.20 273-35.80Q275.20-35.40 275.20-34.90Q275.20-34.40 274.20-33.20Q273.20-32 264.60-23.60Q246.80-6.20 246.80-1.80Q246.80-0.80 248-0.80Q254.80-0.80 297.40-29.60L302.80-34Q303.80-34.80 306.60-34.60Q309.40-34.40 309.40-32.60Q309.40-31.80 308.80-31.20Q280.80-6 280.80-0.80Q280.80 1.40 284 1.40Q287.20 1.40 292.60-1Q298-3.40 302.20-5.90Q306.40-8.40 312.30-12.10Q318.20-15.80 318.60-16L319-13Q309.80-7 298-1Q286.20 5 280.10 5Q274 5 274 0Q274-7 284.80-18.20Q253.40 2.20 246 2.20Q241.60 2.20 241.60-3Q241.60-14 267.60-35.40M433.80-109.80Q433.80-111.20 431.80-111.20Q423.80-111.20 392.30-82.60Q360.80-54 335.80-27.20Q364.60-45.80 399.20-74.60Q433.80-103.40 433.80-109.80M355-15.80L357-11.60Q357-10 352.60-5.80Q348.20-1.60 348.20-0.10Q348.20 1.40 351.70 1.40Q355.20 1.40 360.60-1Q366-3.40 370.20-5.90Q374.40-8.40 380.30-12.10Q386.20-15.80 386.60-16L387-13Q379.60-7.60 367.20-1.30Q354.80 5 347.80 5Q340.80 5 340.80-1.20Q340.80-4 345.50-8.30Q350.20-12.60 350.20-13.60Q350.20-14.60 349.20-14.60Q345.20-15.20 345.20-17.60Q345.20-18.40 345.80-18.40L348.20-18.40Q359.40-18.40 367-23.40Q374.60-28.40 374.60-32.20Q374.60-33.60 373.20-33.60Q358.60-33.60 315-2.60L307.80 3.40Q307 4.20 303.80 4.20Q300.60 4.20 300.60 3Q300.60 2.40 301.40 1.40Q322.40-22.20 348.40-48Q374.40-73.80 399.30-94.10Q424.20-114.40 433.20-114.40Q438-114.40 438-111.40Q438-105 417.90-86.70Q397.80-68.40 372.80-50Q347.80-31.60 329.80-20.80Q323-13 322-11Q332.60-18.40 339-22.50Q345.40-26.60 355.90-31.50Q366.40-36.40 373.80-36.40Q381.20-36.40 381.20-30.40Q381.20-24.40 373.30-20.30Q365.40-16.20 357.80-16.20Q356.20-16.20 355.60-16.30Q355-16.40 355-15.80M405.60-25.40Q396-18.60 385.40-12L384.80-14.80L403.80-28Q413.60-35 418.80-35Q424-35 424-30.60Q424-24 414.80-14.80L418.20-16.80Q445.60-34.60 452.40-34.60Q459.20-34.60 459.20-31Q459.20-27 452.80-18.40Q475.60-34.20 489.40-34.20Q494.80-34.20 494.80-29.60Q494.80-25 490.80-20.10Q486.80-15.20 482-11.60Q469.20-2.40 469.20 0Q469.20 1.40 471.50 1.40Q473.80 1.40 479.20-1Q484.60-3.40 488.80-5.90Q493-8.40 498.90-12.10Q504.80-15.80 505.20-16L505.60-13Q478.60 5 467.80 5Q462.60 5 462.60 0Q462.60-3.40 466.90-8.10Q471.20-12.80 476.20-16.80Q490-27.20 490-30.60Q490-31.60 487.80-31.60Q480.40-31.60 465.80-23.60Q451.20-15.60 433.40 2.40Q432.20 3.60 428.30 3.60Q424.40 3.60 424.40 1.80Q424.40 1 431.40-5.60Q452.80-25.80 452.80-30.20Q452.80-31.40 451.40-31.40Q446.80-31.40 431.30-21.30Q415.80-11.20 399.60 2.20Q397.20 3.60 395.80 3.60Q389.60 3.60 389.60 2.20Q389.60 1.40 395.10-3.40Q400.60-8.20 409.90-17.90Q419.20-27.60 419.20-31.40Q419.20-32.20 418.20-32.20Q414.60-32.20 405.60-25.40M506.20 0.40Q513.80 0.40 526.50-7.30Q539.20-15 547.70-22.20Q556.20-29.40 556.20-30.60Q556.20-31.80 553.30-32.60Q550.40-33.40 545.40-33.40Q540.40-33.40 532.20-29.50Q524-25.60 518-20.20Q512-14.80 508-9.60Q504-4.40 504-2Q504 0.40 506.20 0.40M559.80-33.20Q563.80-36.40 564.20-36.40Q569.60-35.80 569.80-35.50Q570-35.20 570-34.80Q570-34.40 568.40-32.30Q566.80-30.20 559-22.40Q539.60-3.40 539.60 0.60Q539.60 2.20 541 2.20Q550.60 2.20 577-16L577.40-13Q550.80 4.40 539.80 4.40Q534.40 4.40 534.40-0.70Q534.40-5.80 540.60-14Q517 3.40 503.80 3.60Q499 3.60 499-2.20Q499-12.60 512.30-24.40Q525.60-36.20 547.40-36.20Q554.60-36.20 559.80-33.20M611.40-36Q615.60-36 615.60-31.50Q615.60-27 609.20-18.40Q632-34.20 645.80-34.20Q651.20-34.20 651.20-29.60Q651.20-25 647.20-20.10Q643.20-15.20 638.40-11.60Q625.60-2.40 625.60 0Q625.60 1.40 627.90 1.40Q630.20 1.40 635.60-1Q641-3.40 645.20-5.90Q649.40-8.40 655.30-12.10Q661.20-15.80 661.60-16L662-13Q635 5 624.20 5Q619 5 619 0Q619-3.40 623.30-8.10Q627.60-12.80 632.60-16.80Q646.40-27.20 646.40-30.60Q646.40-31.60 644.20-31.60Q636.80-31.60 622.20-23.60Q607.60-15.60 589.80 2.40Q588.60 3.60 585.30 3.60Q582 3.60 582 1.80Q582 1.20 595.80-13Q609.60-27.20 609.60-31.40Q609.60-32.40 608.30-32.40Q607-32.40 602.90-29.80Q598.80-27.20 590.30-21.50Q581.80-15.80 575.80-12L575.20-14.80Q578.20-16.80 583.40-20.40Q588.60-24 592-26.30Q595.40-28.60 599.40-31.20Q607.20-36 611.40-36"/></clipPath>
+            </defs>
+            <path id="sigStrokeB" class="sigstroke" d="M37 6Q63.40 6 90.40-8Q40.60-21.60 29-21.60Q17.40-21.60 12.30-18.40Q7.20-15.20 7.20-9.70Q7.20-4.20 15.30 0.90Q23.40 6 37 6M141.60-1Q170.60 5.20 186.70 5.20Q202.80 5.20 214.20-0.10Q225.60-5.40 225.60-12Q225.60-16.80 218.60-20.10Q211.60-23.40 198.20-23.40Q177-23.40 162.60-17.20Q148.20-11 141.60-1M234-130.80Q220.40-118.20 200.50-96.70Q180.60-75.20 171.40-65.80Q173.40-65.60 177.60-65.60Q194-65.60 213.10-74Q232.20-82.40 246.90-94Q261.60-105.60 271.50-118.10Q281.40-130.60 281.40-138.80Q281.40-148.60 267.20-148.60Q253-148.60 234-130.80M218.40-158.80Q218.40-172.20 196.60-172.20Q184.60-172.20 171.90-166.50Q159.20-160.80 150.20-151.60Q141.20-142.40 135.60-131.20Q130-120 129-109Q134.20-108.60 137.40-108.60Q154-108.60 169.60-113.80Q185.20-119 195.60-126.70Q206-134.40 212.20-143.10Q218.40-151.80 218.40-158.80M102.60-10.20Q117.20-6.60 137.40-1.80Q144-12.60 159.90-19.30Q175.80-26 200.20-26Q214.60-26 223.10-21.60Q231.60-17.20 231.60-11Q231.60-3.40 218.70 2.40Q205.80 8.20 185.10 8.20Q164.40 8.20 139 3.40Q137 8.20 137 13.80Q137 26.80 149.70 36.10Q162.40 45.40 185 45.40L185.80 47Q182.20 47.40 180.40 47.40Q159 47.40 146.10 37.10Q133.20 26.80 133.20 12.80Q133.20 7.40 135.20 2.80Q115.40-1.40 95.60-6.60Q65.20 8.60 35 8.60Q20 8.60 10.60 2.70Q1.20-3.20 1.20-9.80Q1.20-16.40 8.40-20.50Q15.60-24.60 29.90-24.60Q44.20-24.60 97-11.60Q124.60-27.60 159.60-64Q142.20-67.80 133.40-79.30Q124.60-90.80 124.60-106.60L124.60-107Q108.20-108.80 100.30-116.40Q92.40-124 92.40-135.20Q92.40-154.20 112-174.10Q131.60-194 158.60-199.40L159.20-197.60Q132.20-192 113.80-173.50Q95.40-155 95.40-137Q95.40-126.40 102.60-119.10Q109.80-111.80 124.60-109.40Q125.20-121.40 130.80-133.10Q136.40-144.80 145.70-154.50Q155-164.20 169.20-170.20Q183.40-176.20 197.60-176.20Q223.60-176.20 223.60-160Q223.60-152.20 217-142.90Q210.40-133.60 199.30-125.50Q188.20-117.40 171.30-111.90Q154.40-106.40 135.80-106.40Q131-106.40 128.80-106.60L128.80-104.60Q128.80-90.40 137.10-80.30Q145.40-70.20 162.40-67Q168.80-73.60 181.30-87.20Q193.80-100.80 200.30-107.60Q206.80-114.40 217.40-124.40Q228-134.40 235.20-139.20Q254.20-151.60 269-151.60Q288-151.60 288-139Q288-129.80 277.70-116.60Q267.40-103.40 251.80-91.40Q236.20-79.40 215.30-70.90Q194.40-62.40 175.40-62.40Q170.60-62.40 168.40-62.60Q132.60-26.80 102.60-10.20M267.60-35.40Q268.60-36.20 273-35.80Q275.20-35.40 275.20-34.90Q275.20-34.40 274.20-33.20Q273.20-32 264.60-23.60Q246.80-6.20 246.80-1.80Q246.80-0.80 248-0.80Q254.80-0.80 297.40-29.60L302.80-34Q303.80-34.80 306.60-34.60Q309.40-34.40 309.40-32.60Q309.40-31.80 308.80-31.20Q280.80-6 280.80-0.80Q280.80 1.40 284 1.40Q287.20 1.40 292.60-1Q298-3.40 302.20-5.90Q306.40-8.40 312.30-12.10Q318.20-15.80 318.60-16L319-13Q309.80-7 298-1Q286.20 5 280.10 5Q274 5 274 0Q274-7 284.80-18.20Q253.40 2.20 246 2.20Q241.60 2.20 241.60-3Q241.60-14 267.60-35.40M433.80-109.80Q433.80-111.20 431.80-111.20Q423.80-111.20 392.30-82.60Q360.80-54 335.80-27.20Q364.60-45.80 399.20-74.60Q433.80-103.40 433.80-109.80M355-15.80L357-11.60Q357-10 352.60-5.80Q348.20-1.60 348.20-0.10Q348.20 1.40 351.70 1.40Q355.20 1.40 360.60-1Q366-3.40 370.20-5.90Q374.40-8.40 380.30-12.10Q386.20-15.80 386.60-16L387-13Q379.60-7.60 367.20-1.30Q354.80 5 347.80 5Q340.80 5 340.80-1.20Q340.80-4 345.50-8.30Q350.20-12.60 350.20-13.60Q350.20-14.60 349.20-14.60Q345.20-15.20 345.20-17.60Q345.20-18.40 345.80-18.40L348.20-18.40Q359.40-18.40 367-23.40Q374.60-28.40 374.60-32.20Q374.60-33.60 373.20-33.60Q358.60-33.60 315-2.60L307.80 3.40Q307 4.20 303.80 4.20Q300.60 4.20 300.60 3Q300.60 2.40 301.40 1.40Q322.40-22.20 348.40-48Q374.40-73.80 399.30-94.10Q424.20-114.40 433.20-114.40Q438-114.40 438-111.40Q438-105 417.90-86.70Q397.80-68.40 372.80-50Q347.80-31.60 329.80-20.80Q323-13 322-11Q332.60-18.40 339-22.50Q345.40-26.60 355.90-31.50Q366.40-36.40 373.80-36.40Q381.20-36.40 381.20-30.40Q381.20-24.40 373.30-20.30Q365.40-16.20 357.80-16.20Q356.20-16.20 355.60-16.30Q355-16.40 355-15.80M405.60-25.40Q396-18.60 385.40-12L384.80-14.80L403.80-28Q413.60-35 418.80-35Q424-35 424-30.60Q424-24 414.80-14.80L418.20-16.80Q445.60-34.60 452.40-34.60Q459.20-34.60 459.20-31Q459.20-27 452.80-18.40Q475.60-34.20 489.40-34.20Q494.80-34.20 494.80-29.60Q494.80-25 490.80-20.10Q486.80-15.20 482-11.60Q469.20-2.40 469.20 0Q469.20 1.40 471.50 1.40Q473.80 1.40 479.20-1Q484.60-3.40 488.80-5.90Q493-8.40 498.90-12.10Q504.80-15.80 505.20-16L505.60-13Q478.60 5 467.80 5Q462.60 5 462.60 0Q462.60-3.40 466.90-8.10Q471.20-12.80 476.20-16.80Q490-27.20 490-30.60Q490-31.60 487.80-31.60Q480.40-31.60 465.80-23.60Q451.20-15.60 433.40 2.40Q432.20 3.60 428.30 3.60Q424.40 3.60 424.40 1.80Q424.40 1 431.40-5.60Q452.80-25.80 452.80-30.20Q452.80-31.40 451.40-31.40Q446.80-31.40 431.30-21.30Q415.80-11.20 399.60 2.20Q397.20 3.60 395.80 3.60Q389.60 3.60 389.60 2.20Q389.60 1.40 395.10-3.40Q400.60-8.20 409.90-17.90Q419.20-27.60 419.20-31.40Q419.20-32.20 418.20-32.20Q414.60-32.20 405.60-25.40M506.20 0.40Q513.80 0.40 526.50-7.30Q539.20-15 547.70-22.20Q556.20-29.40 556.20-30.60Q556.20-31.80 553.30-32.60Q550.40-33.40 545.40-33.40Q540.40-33.40 532.20-29.50Q524-25.60 518-20.20Q512-14.80 508-9.60Q504-4.40 504-2Q504 0.40 506.20 0.40M559.80-33.20Q563.80-36.40 564.20-36.40Q569.60-35.80 569.80-35.50Q570-35.20 570-34.80Q570-34.40 568.40-32.30Q566.80-30.20 559-22.40Q539.60-3.40 539.60 0.60Q539.60 2.20 541 2.20Q550.60 2.20 577-16L577.40-13Q550.80 4.40 539.80 4.40Q534.40 4.40 534.40-0.70Q534.40-5.80 540.60-14Q517 3.40 503.80 3.60Q499 3.60 499-2.20Q499-12.60 512.30-24.40Q525.60-36.20 547.40-36.20Q554.60-36.20 559.80-33.20M611.40-36Q615.60-36 615.60-31.50Q615.60-27 609.20-18.40Q632-34.20 645.80-34.20Q651.20-34.20 651.20-29.60Q651.20-25 647.20-20.10Q643.20-15.20 638.40-11.60Q625.60-2.40 625.60 0Q625.60 1.40 627.90 1.40Q630.20 1.40 635.60-1Q641-3.40 645.20-5.90Q649.40-8.40 655.30-12.10Q661.20-15.80 661.60-16L662-13Q635 5 624.20 5Q619 5 619 0Q619-3.40 623.30-8.10Q627.60-12.80 632.60-16.80Q646.40-27.20 646.40-30.60Q646.40-31.60 644.20-31.60Q636.80-31.60 622.20-23.60Q607.60-15.60 589.80 2.40Q588.60 3.60 585.30 3.60Q582 3.60 582 1.80Q582 1.20 595.80-13Q609.60-27.20 609.60-31.40Q609.60-32.40 608.30-32.40Q607-32.40 602.90-29.80Q598.80-27.20 590.30-21.50Q581.80-15.80 575.80-12L575.20-14.80Q578.20-16.80 583.40-20.40Q588.60-24 592-26.30Q595.40-28.60 599.40-31.20Q607.20-36 611.40-36" fill="none" stroke="#f1d27a" stroke-width="1.1" stroke-linejoin="round"/>
+            <path id="sigFillB" d="M37 6Q63.40 6 90.40-8Q40.60-21.60 29-21.60Q17.40-21.60 12.30-18.40Q7.20-15.20 7.20-9.70Q7.20-4.20 15.30 0.90Q23.40 6 37 6M141.60-1Q170.60 5.20 186.70 5.20Q202.80 5.20 214.20-0.10Q225.60-5.40 225.60-12Q225.60-16.80 218.60-20.10Q211.60-23.40 198.20-23.40Q177-23.40 162.60-17.20Q148.20-11 141.60-1M234-130.80Q220.40-118.20 200.50-96.70Q180.60-75.20 171.40-65.80Q173.40-65.60 177.60-65.60Q194-65.60 213.10-74Q232.20-82.40 246.90-94Q261.60-105.60 271.50-118.10Q281.40-130.60 281.40-138.80Q281.40-148.60 267.20-148.60Q253-148.60 234-130.80M218.40-158.80Q218.40-172.20 196.60-172.20Q184.60-172.20 171.90-166.50Q159.20-160.80 150.20-151.60Q141.20-142.40 135.60-131.20Q130-120 129-109Q134.20-108.60 137.40-108.60Q154-108.60 169.60-113.80Q185.20-119 195.60-126.70Q206-134.40 212.20-143.10Q218.40-151.80 218.40-158.80M102.60-10.20Q117.20-6.60 137.40-1.80Q144-12.60 159.90-19.30Q175.80-26 200.20-26Q214.60-26 223.10-21.60Q231.60-17.20 231.60-11Q231.60-3.40 218.70 2.40Q205.80 8.20 185.10 8.20Q164.40 8.20 139 3.40Q137 8.20 137 13.80Q137 26.80 149.70 36.10Q162.40 45.40 185 45.40L185.80 47Q182.20 47.40 180.40 47.40Q159 47.40 146.10 37.10Q133.20 26.80 133.20 12.80Q133.20 7.40 135.20 2.80Q115.40-1.40 95.60-6.60Q65.20 8.60 35 8.60Q20 8.60 10.60 2.70Q1.20-3.20 1.20-9.80Q1.20-16.40 8.40-20.50Q15.60-24.60 29.90-24.60Q44.20-24.60 97-11.60Q124.60-27.60 159.60-64Q142.20-67.80 133.40-79.30Q124.60-90.80 124.60-106.60L124.60-107Q108.20-108.80 100.30-116.40Q92.40-124 92.40-135.20Q92.40-154.20 112-174.10Q131.60-194 158.60-199.40L159.20-197.60Q132.20-192 113.80-173.50Q95.40-155 95.40-137Q95.40-126.40 102.60-119.10Q109.80-111.80 124.60-109.40Q125.20-121.40 130.80-133.10Q136.40-144.80 145.70-154.50Q155-164.20 169.20-170.20Q183.40-176.20 197.60-176.20Q223.60-176.20 223.60-160Q223.60-152.20 217-142.90Q210.40-133.60 199.30-125.50Q188.20-117.40 171.30-111.90Q154.40-106.40 135.80-106.40Q131-106.40 128.80-106.60L128.80-104.60Q128.80-90.40 137.10-80.30Q145.40-70.20 162.40-67Q168.80-73.60 181.30-87.20Q193.80-100.80 200.30-107.60Q206.80-114.40 217.40-124.40Q228-134.40 235.20-139.20Q254.20-151.60 269-151.60Q288-151.60 288-139Q288-129.80 277.70-116.60Q267.40-103.40 251.80-91.40Q236.20-79.40 215.30-70.90Q194.40-62.40 175.40-62.40Q170.60-62.40 168.40-62.60Q132.60-26.80 102.60-10.20M267.60-35.40Q268.60-36.20 273-35.80Q275.20-35.40 275.20-34.90Q275.20-34.40 274.20-33.20Q273.20-32 264.60-23.60Q246.80-6.20 246.80-1.80Q246.80-0.80 248-0.80Q254.80-0.80 297.40-29.60L302.80-34Q303.80-34.80 306.60-34.60Q309.40-34.40 309.40-32.60Q309.40-31.80 308.80-31.20Q280.80-6 280.80-0.80Q280.80 1.40 284 1.40Q287.20 1.40 292.60-1Q298-3.40 302.20-5.90Q306.40-8.40 312.30-12.10Q318.20-15.80 318.60-16L319-13Q309.80-7 298-1Q286.20 5 280.10 5Q274 5 274 0Q274-7 284.80-18.20Q253.40 2.20 246 2.20Q241.60 2.20 241.60-3Q241.60-14 267.60-35.40M433.80-109.80Q433.80-111.20 431.80-111.20Q423.80-111.20 392.30-82.60Q360.80-54 335.80-27.20Q364.60-45.80 399.20-74.60Q433.80-103.40 433.80-109.80M355-15.80L357-11.60Q357-10 352.60-5.80Q348.20-1.60 348.20-0.10Q348.20 1.40 351.70 1.40Q355.20 1.40 360.60-1Q366-3.40 370.20-5.90Q374.40-8.40 380.30-12.10Q386.20-15.80 386.60-16L387-13Q379.60-7.60 367.20-1.30Q354.80 5 347.80 5Q340.80 5 340.80-1.20Q340.80-4 345.50-8.30Q350.20-12.60 350.20-13.60Q350.20-14.60 349.20-14.60Q345.20-15.20 345.20-17.60Q345.20-18.40 345.80-18.40L348.20-18.40Q359.40-18.40 367-23.40Q374.60-28.40 374.60-32.20Q374.60-33.60 373.20-33.60Q358.60-33.60 315-2.60L307.80 3.40Q307 4.20 303.80 4.20Q300.60 4.20 300.60 3Q300.60 2.40 301.40 1.40Q322.40-22.20 348.40-48Q374.40-73.80 399.30-94.10Q424.20-114.40 433.20-114.40Q438-114.40 438-111.40Q438-105 417.90-86.70Q397.80-68.40 372.80-50Q347.80-31.60 329.80-20.80Q323-13 322-11Q332.60-18.40 339-22.50Q345.40-26.60 355.90-31.50Q366.40-36.40 373.80-36.40Q381.20-36.40 381.20-30.40Q381.20-24.40 373.30-20.30Q365.40-16.20 357.80-16.20Q356.20-16.20 355.60-16.30Q355-16.40 355-15.80M405.60-25.40Q396-18.60 385.40-12L384.80-14.80L403.80-28Q413.60-35 418.80-35Q424-35 424-30.60Q424-24 414.80-14.80L418.20-16.80Q445.60-34.60 452.40-34.60Q459.20-34.60 459.20-31Q459.20-27 452.80-18.40Q475.60-34.20 489.40-34.20Q494.80-34.20 494.80-29.60Q494.80-25 490.80-20.10Q486.80-15.20 482-11.60Q469.20-2.40 469.20 0Q469.20 1.40 471.50 1.40Q473.80 1.40 479.20-1Q484.60-3.40 488.80-5.90Q493-8.40 498.90-12.10Q504.80-15.80 505.20-16L505.60-13Q478.60 5 467.80 5Q462.60 5 462.60 0Q462.60-3.40 466.90-8.10Q471.20-12.80 476.20-16.80Q490-27.20 490-30.60Q490-31.60 487.80-31.60Q480.40-31.60 465.80-23.60Q451.20-15.60 433.40 2.40Q432.20 3.60 428.30 3.60Q424.40 3.60 424.40 1.80Q424.40 1 431.40-5.60Q452.80-25.80 452.80-30.20Q452.80-31.40 451.40-31.40Q446.80-31.40 431.30-21.30Q415.80-11.20 399.60 2.20Q397.20 3.60 395.80 3.60Q389.60 3.60 389.60 2.20Q389.60 1.40 395.10-3.40Q400.60-8.20 409.90-17.90Q419.20-27.60 419.20-31.40Q419.20-32.20 418.20-32.20Q414.60-32.20 405.60-25.40M506.20 0.40Q513.80 0.40 526.50-7.30Q539.20-15 547.70-22.20Q556.20-29.40 556.20-30.60Q556.20-31.80 553.30-32.60Q550.40-33.40 545.40-33.40Q540.40-33.40 532.20-29.50Q524-25.60 518-20.20Q512-14.80 508-9.60Q504-4.40 504-2Q504 0.40 506.20 0.40M559.80-33.20Q563.80-36.40 564.20-36.40Q569.60-35.80 569.80-35.50Q570-35.20 570-34.80Q570-34.40 568.40-32.30Q566.80-30.20 559-22.40Q539.60-3.40 539.60 0.60Q539.60 2.20 541 2.20Q550.60 2.20 577-16L577.40-13Q550.80 4.40 539.80 4.40Q534.40 4.40 534.40-0.70Q534.40-5.80 540.60-14Q517 3.40 503.80 3.60Q499 3.60 499-2.20Q499-12.60 512.30-24.40Q525.60-36.20 547.40-36.20Q554.60-36.20 559.80-33.20M611.40-36Q615.60-36 615.60-31.50Q615.60-27 609.20-18.40Q632-34.20 645.80-34.20Q651.20-34.20 651.20-29.60Q651.20-25 647.20-20.10Q643.20-15.20 638.40-11.60Q625.60-2.40 625.60 0Q625.60 1.40 627.90 1.40Q630.20 1.40 635.60-1Q641-3.40 645.20-5.90Q649.40-8.40 655.30-12.10Q661.20-15.80 661.60-16L662-13Q635 5 624.20 5Q619 5 619 0Q619-3.40 623.30-8.10Q627.60-12.80 632.60-16.80Q646.40-27.20 646.40-30.60Q646.40-31.60 644.20-31.60Q636.80-31.60 622.20-23.60Q607.60-15.60 589.80 2.40Q588.60 3.60 585.30 3.60Q582 3.60 582 1.80Q582 1.20 595.80-13Q609.60-27.20 609.60-31.40Q609.60-32.40 608.30-32.40Q607-32.40 602.90-29.80Q598.80-27.20 590.30-21.50Q581.80-15.80 575.80-12L575.20-14.80Q578.20-16.80 583.40-20.40Q588.60-24 592-26.30Q595.40-28.60 599.40-31.20Q607.20-36 611.40-36" fill="url(#gB)" mask="url(#mB)"/>
+            <path id="swashB" class="sigstroke" d="M250 26 C 380 36, 540 30, 676 -22" fill="none" stroke="url(#gB)" stroke-width="2.6" stroke-linecap="round"/>
+            <g clip-path="url(#cB)"><rect id="glintB" x="-160" y="-230" width="120" height="320" fill="url(#glB)" transform="skewX(-18)"/></g>
+          </svg>
+          <div class="namebar">
+            <span class="dash" id="ndB1"></span>
+            <span class="nm gold" id="nmB">LUKMAN HAKIM</span>
+            <span class="dash r" id="ndB2"></span>
+          </div>
+          <div class="orn" id="endOrn"></div>
+          <div class="tag" id="endTag">SELAMAT PAGI</div>
+        </div>
+      </div>
+
+      <div id="flash"></div>
+    </div></div>
+      <button id="play" aria-label="Main">▶</button>
+    </div>
+    <div id="bar"><button id="pp" aria-label="Main/Jeda">▶</button><input id="seek" type="range" min="0" max="23" step="0.01" value="0"><span id="tc">0.0 / 23.0</span></div>
+    </div>
+
+    <script>
+      const tl = gsap.timeline({ paused: true });
+      const E = "power3.out";
+
+      /* ---------- camera: punch-ins hide every jump cut ---------- */
+      const cam = "#cam";
+      tl.fromTo(cam, { scale: 1.14 }, { scale: 1.08, duration: 1.55, ease: "power2.out" }, 0);
+      const cuts = [
+        [1.55, 1.00, 1.015], [2.10, 1.065, 1.08], [3.85, 1.00, 1.02], [5.70, 1.05, 1.075],
+        [9.55, 1.00, 1.02], [12.10, 1.04, 1.06], [15.63, 1.10, 1.12], [16.28, 1.06, 1.13],
+        [18.25, 1.15, 1.19], [19.68, 1.08, 1.09]
+      ];
+      cuts.forEach(([t, a, b], i) => {
+        const end = i + 1 < cuts.length ? cuts[i + 1][0] : 20.28;
+        tl.set(cam, { scale: a }, t);
+        tl.to(cam, { scale: b, duration: (t === 9.55 ? 11.36 : end) - t, ease: "none" }, t);
+      });
+      // emphasis punch on "manusia"
+      tl.to(cam, { scale: 1.12, duration: 0.22, ease: "power3.out" }, 11.36);
+      tl.to(cam, { scale: 1.10, duration: 0.5, ease: "power2.inOut" }, 11.6);
+
+      /* ---------- light leaks + flashes on transitions ---------- */
+      function leak(t, x0, x1, peak) {
+        tl.set("#leak", { x: x0 }, t);
+        tl.to("#leak", { opacity: peak, x: (x0 + x1) / 2, duration: 0.3, ease: "power2.out" }, t);
+        tl.to("#leak", { opacity: 0, x: x1, duration: 0.7, ease: "power2.in" }, t + 0.3);
+      }
+      leak(1.40, -500, 400, 0.45);
+      leak(9.45, 500, -400, 0.35);
+      leak(15.62, -400, 500, 0.5);
+      leak(19.7, 300, -300, 0.4);
+      tl.to("#flash", { opacity: 0.35, duration: 0.06 }, 15.68);
+      tl.to("#flash", { opacity: 0, duration: 0.4 }, 15.74);
+
+      /* ---------- hook ---------- */
+      tl.fromTo("#h2", { scale: 1.18, opacity: 1 }, { scale: 1, duration: 0.9, ease: "expo.out" }, 0);
+      tl.fromTo("#h1", { y: 0, opacity: 1 }, { y: -6, duration: 1.4, ease: "none" }, 0);
+      tl.fromTo("#h3", { y: 0, opacity: 1 }, { y: 6, duration: 1.4, ease: "none" }, 0);
+      tl.fromTo("#hrule", { width: 0 }, { width: 420, duration: 0.8, ease: E }, 0.15);
+      tl.to(["#h1", "#h3", "#hrule"], { opacity: 0, y: -30, duration: 0.25, ease: "power2.in" }, 1.42);
+      tl.to("#h2", { opacity: 0, scale: 0.7, y: -120, duration: 0.3, ease: "power2.in" }, 1.42);
+
+      /* ---------- badge ---------- */
+      tl.fromTo("#btxt", { opacity: 0, scale: 1.12 }, { opacity: 1, scale: 1, duration: 0.7, ease: E }, 1.55);
+      tl.fromTo(["#bl", "#br"], { scaleX: 0 }, { scaleX: 1, duration: 0.7, ease: E }, 1.7);
+      tl.to("#badgeInner", { opacity: 0, y: -16, duration: 0.25, ease: "power2.in" }, 15.42);
+
+      /* ---------- captions ---------- */
+      function word(sel, t, key) {
+        const from = key ? { opacity: 0, scale: 1.45, y: 8 } : { opacity: 0, scale: 1, y: 26 };
+        const to = key ? { opacity: 1, scale: 1, y: 0, duration: 0.42, ease: "back.out(2.2)" } : { opacity: 1, scale: 1, y: 0, duration: 0.26, ease: E };
+        tl.fromTo(sel, from, to, t);
+      }
+      function capOut(sel, dur, start) {
+        tl.to(sel + " .line", { opacity: 0, y: -14, duration: 0.14, ease: "power2.in" }, start + dur - 0.16);
+      }
+      word("#c0w0",1.62,0);
+      word("#c0w1",1.74,0);
+      word("#c0w2",1.96,0);
+      word("#c0w3",2.20,0);
+      word("#c0w4",2.48,0);
+      word("#c0w6",2.80,1);
+      word("#c0w7",3.26,0);
+      capOut("#cap0",2.30,1.60);
+      word("#c1w0",3.92,0);
+      word("#c1w1",3.98,0);
+      word("#c1w2",4.24,0);
+      word("#c1w4",4.52,0);
+      word("#c1w5",4.72,1);
+      word("#c1w6",5.12,0);
+      capOut("#cap1",1.86,3.90);
+      word("#c2w0",5.78,0);
+      word("#c2w1",5.88,0);
+      word("#c2w2",6.08,0);
+      word("#c2w3",6.20,0);
+      word("#c2w5",6.44,0);
+      word("#c2w6",6.78,1);
+      word("#c2w7",7.00,0);
+      capOut("#cap2",1.56,5.76);
+      word("#c3w0",7.34,0);
+      word("#c3w1",7.60,0);
+      word("#c3w2",8.02,0);
+      word("#c3w4",8.30,0);
+      word("#c3w5",8.62,1);
+      word("#c3w6",8.86,0);
+      capOut("#cap3",2.22,7.32);
+      word("#c4w0",9.56,0);
+      word("#c4w1",10.04,0);
+      word("#c4w3",10.72,0);
+      word("#c4w4",11.16,0);
+      word("#c4w5",11.36,1);
+      capOut("#cap4",2.60,9.54);
+      word("#c5w0",12.16,0);
+      word("#c5w1",12.24,0);
+      word("#c5w2",12.44,0);
+      word("#c5w4",12.62,0);
+      word("#c5w5",12.74,1);
+      word("#c5w6",13.18,0);
+      capOut("#cap5",1.28,12.14);
+      word("#c6w0",13.44,0);
+      word("#c6w1",13.76,0);
+      word("#c6w2",13.96,0);
+      word("#c6w4",14.26,0);
+      word("#c6w5",14.58,1);
+      word("#c6w6",15.12,0);
+      capOut("#cap6",2.28,13.42);
+
+      /* ---------- corner signature ---------- */
+      function sigDraw(sfx, t, dur) {
+        const p = document.querySelector("#sigStroke" + sfx);
+        const L = Math.ceil(p.getTotalLength());
+        const s = document.querySelector("#swash" + sfx);
+        const Ls = Math.ceil(s.getTotalLength());
+        tl.fromTo(p, { strokeDasharray: L, strokeDashoffset: L, opacity: 1 }, { strokeDashoffset: 0, duration: dur, ease: "power1.inOut" }, t);
+        tl.fromTo("#wipe" + sfx, { attr: { width: 0 } }, { attr: { width: 760 }, duration: dur * 0.95, ease: "power1.inOut" }, t + dur * 0.18);
+        tl.to(p, { opacity: 0, duration: 0.5 }, t + dur + 0.1);
+        tl.fromTo(s, { strokeDasharray: Ls, strokeDashoffset: Ls }, { strokeDashoffset: 0, duration: 0.45, ease: "power2.out" }, t + dur * 0.92);
+        tl.fromTo("#glint" + sfx, { attr: { x: -160 } }, { attr: { x: 900 }, duration: 0.9, ease: "power2.inOut" }, t + dur + 0.25);
+      }
+      sigDraw("A", 1.95, 1.5);
+      tl.fromTo("#ndA", { scaleX: 0 }, { scaleX: 1, duration: 0.5, ease: E }, 3.05);
+      tl.fromTo("#nmA", { opacity: 0, x: -18 }, { opacity: 1, x: 0, duration: 0.8, ease: E }, 3.1);
+      // second glint mid-video keeps it alive
+      tl.fromTo("#glintA", { attr: { x: -160 } }, { attr: { x: 900 }, duration: 1.0, ease: "power2.inOut" }, 10.2);
+      tl.to("#signBox", { opacity: 0, y: 10, duration: 0.3, ease: "power2.in" }, 19.55);
+
+      /* ---------- cinematic quote ---------- */
+      tl.fromTo("#barT", { yPercent: -100 }, { yPercent: 0, duration: 0.5, ease: "power3.inOut" }, 15.6);
+      tl.fromTo("#barB", { yPercent: 100 }, { yPercent: 0, duration: 0.5, ease: "power3.inOut" }, 15.6);
+      tl.to("#dim", { opacity: 0.3, duration: 0.6, ease: "power2.out" }, 15.6);
+      tl.fromTo("#q0", { opacity: 0, scale: 1.15 }, { opacity: 1, scale: 1, duration: 0.6, ease: E }, 15.72);
+      tl.fromTo("#q1", { opacity: 0, y: 40, scale: 0.92 }, { opacity: 1, y: 0, scale: 1, duration: 0.7, ease: "expo.out" }, 16.40);
+      tl.fromTo("#q2", { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.55, ease: E }, 17.76);
+      tl.fromTo("#q3", { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.55, ease: E }, 18.80);
+      tl.to("#quoteInner", { opacity: 0, duration: 0.2, ease: "power2.in" }, 19.62);
+
+      /* ---------- end card ---------- */
+      tl.fromTo("#endBg", { opacity: 0 }, { opacity: 1, duration: 0.55, ease: "power2.inOut" }, 19.75);
+      sigDraw("B", 20.05, 1.25);
+      tl.fromTo(["#ndB1", "#ndB2"], { scaleX: 0 }, { scaleX: 1, duration: 0.5, ease: E }, 20.9);
+      tl.fromTo("#nmB", { opacity: 0, scale: 1.1 }, { opacity: 1, scale: 1, duration: 0.8, ease: E }, 20.85);
+      tl.fromTo("#endOrn", { width: 0 }, { width: 300, duration: 0.6, ease: E }, 20.85);
+      tl.fromTo("#endTag", { opacity: 0, y: 12 }, { opacity: 1, y: 0, duration: 0.5, ease: E }, 20.95);
+
+      window.__timelines = window.__timelines || {};
+      window.__timelines["main"] = tl;
+    </script>
+    <script>
+(function () {
+  const v = document.getElementById("a-roll"), tl = window.__timelines.main;
+  const stage = document.getElementById("stage"), wrap = document.getElementById("stagewrap");
+  const seek = document.getElementById("seek"), tc = document.getElementById("tc");
+  const pp = document.getElementById("pp"), big = document.getElementById("play");
+  const clips = [...document.querySelectorAll("#root [data-start]")].filter(e => e !== v && e.tagName !== "AUDIO");
+  v.removeAttribute("data-duration"); v.preload = "auto";
+  function fit() { const s = Math.min(wrap.clientWidth / 1080, wrap.clientHeight / 1920); stage.style.transform = "scale(" + s + ")"; }
+  addEventListener("resize", fit); fit();
+  function render(t) {
+    for (const c of clips) { const s = +c.dataset.start, d = +c.dataset.duration; c.style.visibility = (t >= s && t < s + d) ? "visible" : "hidden"; }
+    tl.seek(t, false);
+    seek.value = t; tc.textContent = t.toFixed(1) + " / 23.0";
+  }
+  function loop() { render(v.currentTime); if (!v.paused) requestAnimationFrame(loop); }
+  function setUI() { const p = v.paused; pp.textContent = p ? "▶" : "❚❚"; big.style.display = p ? "block" : "none"; }
+  function toggle() { if (v.paused) { if (v.ended || v.currentTime >= 22.95) v.currentTime = 0; v.play(); } else v.pause(); }
+  v.addEventListener("play", () => { setUI(); requestAnimationFrame(loop); });
+  v.addEventListener("pause", setUI); v.addEventListener("ended", setUI);
+  v.addEventListener("seeked", () => render(v.currentTime));
+  big.onclick = toggle; pp.onclick = toggle; stage.onclick = toggle;
+  seek.oninput = () => { v.currentTime = +seek.value; render(+seek.value); };
+  render(0); setUI();
+})();
+
+    </script>
+  
