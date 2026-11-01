@@ -60,7 +60,7 @@
 
       /* ---------- signature (corner) ---------- */
       #sign { position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; }
-      #sign .box { position: absolute; left: 50px; top: 1290px; width: 560px; }
+      #sign .box { position: absolute; left: 50px; top: 1410px; width: 560px; }
       #sign svg { display: block; width: 430px; height: auto; overflow: visible; filter: drop-shadow(0 3px 10px rgba(0,0,0,.55)); }
       .namebar { display: flex; align-items: center; gap: 14px; margin: 4px 0 0 18px; }
       .namebar .dash { display: inline-block; width: 46px; height: 1.5px; background: linear-gradient(90deg, transparent, var(--gold-2)); transform-origin: left center; }
@@ -88,12 +88,15 @@
       #endcard .namebar .nm { font-size: 46px; }
       #endcard .namebar .dash { width: 80px; }
       #endcard .namebar .dash.r { background: linear-gradient(270deg, transparent, var(--gold-2)); transform-origin: right center; }
-      #endcard .tag { margin-top: 34px; font-family: "Montserrat"; font-weight: 500; font-size: 30px; letter-spacing: .38em; padding-left: .38em; color: rgba(255,255,255,.72); }
+      @font-face { font-family: "EmojiColor"; src: local("Noto Color Emoji"); }
+      #endcard .tag { margin-top: 38px; font-family: "Montserrat", "EmojiColor", sans-serif; font-weight: 600; font-size: 30px; letter-spacing: .24em; padding-left: .24em; color: rgba(255,255,255,.82); white-space: nowrap; }
+      #endcard .tag2 { margin-top: 18px; font-family: "Playfair Display", "EmojiColor", serif; font-style: italic; font-weight: 600; font-size: 46px; color: #fff; white-space: nowrap; }
+      #endcard .tag2 .gold { padding: 0 6px; }
       #endcard .orn { width: 0; height: 1.5px; margin: 46px auto 0; background: linear-gradient(90deg, transparent, var(--gold-2), transparent); }
     </style>
   </head>
   <body>
-    <div id="root" data-composition-id="main" data-start="0" data-duration="23" data-width="1080" data-height="1920">
+    <div id="root" data-composition-id="main" data-start="0" data-duration="24.5" data-width="1080" data-height="1920">
 
       <!-- A-roll (cut + colour graded + audio cleaned in ffmpeg) -->
       <div id="cam">
@@ -178,7 +181,7 @@
       </div>
 
       <!-- END CARD -->
-      <div id="endcard" class="clip" data-start="19.75" data-duration="3.25" data-track-index="7" data-track-kind="graphics">
+      <div id="endcard" class="clip" data-start="19.75" data-duration="4.75" data-track-index="7" data-track-kind="graphics">
         <div class="bg" id="endBg"></div>
         <div class="center">
           <svg viewBox="-9 -210 681 267" xmlns="http://www.w3.org/2000/svg">
@@ -207,14 +210,15 @@
             <span class="dash r" id="ndB2"></span>
           </div>
           <div class="orn" id="endOrn"></div>
-          <div class="tag" id="endTag">SELAMAT PAGI</div>
+          <div class="tag" id="endTag">💼 FINANCIAL CONTENT CREATOR 📈</div>
+          <div class="tag2" id="endTag2">Insan biasa, <span class="gold">bercita-cita luar biasa</span> ✨</div>
         </div>
       </div>
 
       <div id="flash"></div>
 
       <!-- MUSIC + SFX -->
-      <audio id="music" src="assets/sfx/pad.wav" data-start="0" data-duration="23.00" data-volume="0.11" data-fade-out="1.5" data-track-index="10"></audio>
+      <audio id="music" src="assets/sfx/pad.wav" data-start="0" data-duration="24.50" data-volume="0.11" data-fade-out="1.5" data-track-index="10"></audio>
       <audio id="sfx-hook" src="assets/sfx/impact.wav" data-start="0" data-duration="4.20" data-volume="0.55" data-track-index="11"></audio>
       <audio id="sfx-wh1" src="assets/sfx/whoosh.wav" data-start="1.32" data-duration="1.70" data-volume="0.38" data-track-index="12"></audio>
       <audio id="sfx-sig" src="assets/sfx/shimmer.wav" data-start="1.95" data-duration="4.00" data-volume="0.22" data-track-index="13"></audio>
@@ -376,6 +380,7 @@
       tl.fromTo("#nmB", { opacity: 0, scale: 1.1 }, { opacity: 1, scale: 1, duration: 0.8, ease: E }, 20.85);
       tl.fromTo("#endOrn", { width: 0 }, { width: 300, duration: 0.6, ease: E }, 20.85);
       tl.fromTo("#endTag", { opacity: 0, y: 12 }, { opacity: 1, y: 0, duration: 0.5, ease: E }, 20.95);
+      tl.fromTo("#endTag2", { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.6, ease: E }, 21.3);
 
       window.__timelines = window.__timelines || {};
       window.__timelines["main"] = tl;

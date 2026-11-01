@@ -41,7 +41,7 @@ tt=t(0.12);save("tick",rev(np.sin(2*np.pi*1800*tt)*np.exp(-tt*60)+0.3*sosfilt(bu
 # deep hit (sub drop) for key line
 tt=t(1.5);f=60*np.exp(-tt*1.5)+30;save("subdrop",np.sin(2*np.pi*np.cumsum(f)/SR)*np.exp(-tt*2.5))
 # ambient pad bed: Am F C G (A minor), 21s
-D=23.2;tt=t(D);L=np.zeros(len(tt));R=np.zeros(len(tt))
+D=24.6;tt=t(D);L=np.zeros(len(tt));R=np.zeros(len(tt))
 ch=[[220,261.63,329.63,440],[174.61,220,261.63,349.23],[130.81,196,261.63,329.63],[196,246.94,293.66,392]]
 seg=D/4
 for i,c in enumerate(ch*1):
