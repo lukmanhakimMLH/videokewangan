@@ -13,3 +13,10 @@ src/sigfonts.html
 src/package*.json
 src/graded.mp4
 kata-kata/renders/
+src2/raw.mp4
+src2/cut.mov
+src2/seg_*.mov
+src2/list.txt
+src2/*.wav
+src2/graded.mp4
+syukur-sabar/renders/

@@ -10,11 +10,11 @@
   function render(t) {
     for (const c of clips) { const s = +c.dataset.start, d = +c.dataset.duration; c.style.visibility = (t >= s && t < s + d) ? "visible" : "hidden"; }
     tl.seek(t, false);
-    seek.value = t; tc.textContent = t.toFixed(1) + " / 23.0";
+    seek.value = t; tc.textContent = t.toFixed(1) + " / __DUR__";
   }
   function loop() { render(v.currentTime); if (!v.paused) requestAnimationFrame(loop); }
   function setUI() { const p = v.paused; pp.textContent = p ? "▶" : "❚❚"; big.style.display = p ? "block" : "none"; }
-  function toggle() { if (v.paused) { if (v.ended || v.currentTime >= 22.95) v.currentTime = 0; v.play(); } else v.pause(); }
+  function toggle() { if (v.paused) { if (v.ended || v.currentTime >= __DUR__ - 0.05) v.currentTime = 0; v.play(); } else v.pause(); }
   v.addEventListener("play", () => { setUI(); requestAnimationFrame(loop); });
   v.addEventListener("pause", setUI); v.addEventListener("ended", setUI);
   v.addEventListener("seeked", () => render(v.currentTime));
