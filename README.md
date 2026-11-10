@@ -1,51 +1,62 @@
 # videokewangan — Mesin Video Affiliate TikTok
 
-Bagi **screenshot produk** → dapat **skrip + video 9:16 siap upload** (suara AI BM, caption satu‑perkataan, infografik, muzik).
+Bagi **screenshot produk** → dapat **skrip + video 9:16 siap upload**.
 
-Gaya ditiru dari video rujukan (power bank & perfume dalam kereta):
-caption besar satu perkataan di tengah, angka spec bercahaya, senarai feature, harga promo, CTA "tekan beg kuning".
+- Produk **dipotong automatik** dari screenshot (AI buang latar, BiRefNet — lesen MIT)
+- Diletak **atas dashboard kereta waktu malam** (lampu bandar bokeh, pantulan, bayang, kamera bergoyang macam dipegang tangan) — atau studio / gambar latar sendiri
+- **Suara BM** dengan intonasi ikut ayat — atau **suara sendiri** / ElevenLabs
+- Caption besar satu perkataan, infografik (angka, senarai, harga, CTA beg kuning), muzik beat + SFX bebas hak cipta
 
 ---
 
 ## Cara guna (paling senang)
 
-1. Hantar screenshot produk kat Claude (Shopee / TikTok Shop / Lazada pun boleh) + info tambahan kalau ada (harga promo, pengalaman kau guna).
-2. Claude akan:
-   - buat folder `projek/<nama-produk>/`
-   - tulis `skrip.json` ikut **Formula Skrip** bawah
-   - render `keluaran/video.mp4`
-3. Kau upload. Siap.
+Hantar screenshot produk ke Claude (Shopee / TikTok Shop / Lazada) + info: harga promo, pengalaman guna. Claude buat `projek/<produk>/skrip.json`, render, hantar video.
 
 ## Cara guna (manual)
 
 ```bash
-pip install -r requirements.txt          # perlu ffmpeg juga
-cp -r projek/contoh projek/produk-baru   # tukar produk.jpg + edit skrip.json
-python3 buat_video.py projek/produk-baru --pratonton   # semak cepat (540p)
+pip install -r requirements.txt     # perlu ffmpeg juga
+cp -r projek/contoh projek/produk-baru
+# letak screenshot, edit skrip.json
+python3 buat_video.py projek/produk-baru --pratonton   # semak cepat
 python3 buat_video.py projek/produk-baru               # final 1080x1920
 ```
 
-Keluaran dalam `projek/<nama>/keluaran/`:
-- `video.mp4` — video final
-- `skrip_teleprompter.txt` — kalau nak rakam suara sendiri / shoot sendiri
-- `caption_tiktok.txt` — caption + hashtag
+Keluaran: `projek/<nama>/keluaran/` → `video.mp4`, `skrip_teleprompter.txt`, `caption_tiktok.txt`.
+(Kali pertama, model potong latar ~220MB dimuat turun automatik.)
+
+---
+
+## Pilihan suara (`enjin_suara`)
+
+| Enjin | Kualiti | Perlu |
+|---|---|---|
+| `edge` (default) | Neural BM (Osman / Yasmin). Setiap ayat dijana berasingan dengan intonasi ikut `gaya` + tanda baca, jeda semula jadi, EQ & kompresi. Bagus, tapi masih boleh dikesan AI. | Tiada |
+| `rakaman` | **Paling natural** — suara kau sendiri. Rakam guna `skrip_teleprompter.txt`, caption disegerakkan automatik (Whisper). | `"fail_suara": "suara.m4a"` |
+| `elevenlabs` | Sangat natural, ada intonasi manusia. | API key ElevenLabs + `"voice_id"` |
+
+`gaya` setiap babak: `teruja`, `santai`, `yakin`, `serius`, `mendesak`.
+
+Tip sebutan: tulis nombor dalam perkataan, dan guna `[papar|sebut]`:
+`[10,000mAh|sepuluh ribu em ei ec]` → caption tunjuk **10,000MAH**, suara sebut betul.
 
 ---
 
 ## Formula Skrip (dari analisa video rujukan)
 
-| # | Peranan | Tujuan | Contoh ayat |
-|---|---------|--------|-------------|
-| 1 | **HOOK** | 2 saat pertama — masalah / harga mengejut | "Weh korang, aku dah lama cari power bank yang kecik tapi power." / "Nak turun ke harga Most Wanted ni lagi?" |
-| 2 | **SPEC** | Nombor besar + banding | "Bukan 2000, bukan 3000, tapi 10000 mAh." |
-| 3 | **FEATURE** | Apa dapat dalam kotak / bau / bahan | "Siap ada dua kabel…" / "Bau sweet toffee campur sikit spicy." |
-| 4 | **BUKTI** | Pengalaman sendiri | "Aku charge dari 20% ke 90% sejam je." |
-| 5 | **GUNA** | Bila/mana sesuai | "Dalam poket boleh, dalam beg boleh, dalam kereta pun boleh." |
-| 6 | **TIPS/AMARAN** *(pilihan)* | Bina kepercayaan | "Pakai waktu malam je, jangan tengah panas — nanti pening." |
-| 7 | **PROMO** | Harga + urgency | "Harga dah murah, tapi sekarang promo 11.11. Lagi murah." |
-| 8 | **CTA** | Arah ke beg kuning | "So kalau korang berminat, terus tekan beg kuning bawah ni." |
+| # | Peranan | Gaya | Contoh |
+|---|---------|------|--------|
+| 1 | **HOOK** | teruja | "Korang pernah tak, bateri telefon dah nak habis, tapi power bank pula besar dan berat?" |
+| 2 | **SPEC** | teruja | "Bukan dua ribu, bukan tiga ribu, tetapi sepuluh ribu mAh." |
+| 3 | **FEATURE** | santai | "Dalam kotak, siap ada dua kabel…" / "Baunya manis, bercampur sedikit pedas." |
+| 4 | **BUKTI** | yakin | "Aku cuba cas daripada dua puluh peratus sampai sembilan puluh peratus. Satu jam sahaja!" |
+| 5 | **GUNA** | santai | "Boleh masuk poket, masuk beg, simpan dalam kereta pun boleh." |
+| 6 | **TIPS** *(pilihan)* | serius | "Sesuai dipakai waktu malam. Jangan pakai tengah panas, nanti pening." |
+| 7 | **PROMO** | mendesak | "Harganya memang dah murah. Tapi sekarang ada promosi sebelas sebelas." |
+| 8 | **CTA** | mendesak | "Kalau berminat, tekan beg kuning di bawah ini sekarang, sebelum stok habis." |
 
-Panjang ideal: **30–45 saat**, bahasa santai (korang, aku, je, tau, weh).
+Panjang ideal **30–45 saat**. Ejaan BM standard (elak "kecik", "jugak") supaya suara sebut betul.
 
 ---
 
@@ -53,32 +64,27 @@ Panjang ideal: **30–45 saat**, bahasa santai (korang, aku, je, tau, weh).
 
 ```jsonc
 {
-  "nama_produk": "…",
-  "gambar_produk": ["produk.jpg", {"fail": "ss2.png", "potong": [0, 0.1, 1, 0.7]}],  // potong = x0,y0,x1,y1 (0..1)
-  "gambar_aku": "aku.jpg",          // gambar kau (untuk babak hook/bukti)
-  "suara": "ms-MY-OsmanNeural",     // lelaki. Perempuan: ms-MY-YasminNeural
-  "laju": "+12%",
-  "muzik": true,                    // true = beat dijana, "lagu.mp3" = guna lagu sendiri, false = tiada
+  "gambar_produk": [{"fail": "ss.jpg", "potong": [0.1, 0.15, 0.9, 0.7]}],  // potong = kawasan produk (x0,y0,x1,y1, 0..1)
+  "latar": "kereta_malam",          // kereta_malam | studio | "gambar_latar.jpg"
+  "enjin_suara": "edge",            // edge | rakaman | elevenlabs
+  "suara": "ms-MY-OsmanNeural",     // atau ms-MY-YasminNeural (perempuan)
+  "laju": "+6%",
+  "muzik": true,                    // true | "lagu.mp3" | false
   "caption_tiktok": "…",
   "babak": [
     {
-      "peranan": "SPEC",
-      "visual": "produk",            // produk | zoom | aku | aku+produk
-      "gambar": 0,                   // indeks gambar_produk
-      "fokus": [0.5, 0.4],           // untuk visual "zoom"
+      "peranan": "SPEC", "gaya": "teruja",
+      "visual": "putar",            // hero | angkat | putar | dekat | screenshot
+      "fokus": [0.5, 0.3],          // untuk "dekat"
+      "saiz": 0.4,                  // tinggi produk (pecahan skrin), pilihan
       "overlay": {"jenis": "angka", "teks": "10,000", "unit": "mAh", "label": "KAPASITI"},
-      "teks": "Bukan dua ribu, tapi 10000 mAh. *Padu* gila.",   // *perkataan* = caption kuning
-      "jeda": 0.12                   // senyap lepas babak (saat)
+      "teks": "Bukan dua ribu, tetapi [10,000mAh|sepuluh ribu em ei ec]. *Padu*!",
+      "jeda": 0.05
     }
   ]
 }
 ```
 
-Jenis `overlay`:
-- `angka` — `teks`, `unit`, `label` (nombor kira naik)
-- `senarai` — `item: [...]` (tick hijau muncul satu-satu)
-- `harga` — `label`, `asal`, `baru` (harga lama dipotong, harga baru pop)
-- `tag` — `teks`, `warna` (`kuning`/`merah`/`hijau`)
-- `cta` — `teks`, `sub` (butang kuning + anak panah ke beg kuning)
+**Visual:** `hero` (produk atas dashboard, zoom perlahan) · `angkat` (produk naik macam diangkat) · `putar` (pusing) · `dekat` (close-up) · `screenshot` (tunjuk screenshot asal — untuk harga/review).
 
-Caption: nombor & `RM` automatik jadi kuning.
+**Overlay:** `angka` · `senarai` · `harga` · `tag` · `cta` — lihat `projek/contoh/skrip.json`.

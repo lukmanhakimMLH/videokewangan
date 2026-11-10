@@ -1,3 +1,6 @@
 edge-tts>=7.0
 pillow>=10
 numpy
+scipy
+onnxruntime
+faster-whisper   # untuk enjin_suara rakaman/elevenlabs
