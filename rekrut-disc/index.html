@@ -544,8 +544,13 @@ Sila jawab *2 bahagian* di bawah dan balas dalam WhatsApp ini. Tiada jawapan bet
 ━━━━━━━━━━━━━━
 *BAHAGIAN 1: MAKLUMAT DIRI*
 ━━━━━━━━━━━━━━
-Nama, No. Tel, No. IC, Alamat, Pendidikan (SPM / Diploma / Ijazah)
-Sertakan juga *1 gambar selfie*.
+Nama penuh (ikut IC) : 
+No. tel : 
+No. IC : 
+Alamat : 
+Pendidikan (SPM / Diploma / Ijazah) : 
+
+📸 Sertakan juga *1 gambar selfie*.
 
 ━━━━━━━━━━━━━━
 *BAHAGIAN 2: GAYA PERSONALITI (20 soalan)*
@@ -561,11 +566,11 @@ ${qs}
 Terima kasih! 🙏`;
 }
 function templatText(){
-  return `Nama: 
-No Tel: 
-No IC: 
-Alamat: 
-Pendidikan: 
+  return `Nama penuh (ikut IC) : 
+No. tel : 
+No. IC : 
+Alamat : 
+Pendidikan (SPM / Diploma / Ijazah) : 
 
 JAWAPAN (✅ Paling saya, ❌ Paling tidak saya)
 ${QUESTIONS.map((_,i)=>`${i+1}. `).join('\n')}`;
@@ -612,8 +617,8 @@ function parseReply(txt){
     if(am){ const n=+am[1]-1; if(n>=0 && n<QUESTIONS.length){ const ord=orderFor(n), m=am[2].toUpperCase(), l=am[3].toUpperCase();
       if(m===l) out.problems.push(`Soalan ${n+1}: huruf ✅ dan ❌ sama (${m})`); else out.ans[n]={m:ord[LETTERS.indexOf(m)], l:ord[LETTERS.indexOf(l)]}; }
       lastField=null; continue; }
-    const fm = line.match(/^([^:：]{1,25})\s*[:：]\s*(.*)$/);
-    if(fm){ const hit = F.find(([re])=>re.test(fm[1].trim())); if(hit){ out.fields[hit[1]] = fm[2].trim(); lastField = hit[1]==='alamat'?'alamat':null; continue; } }
+    const fm = line.match(/^([^:：]{1,50})\s*[:：]\s*(.*)$/);
+    if(fm){ const hit = F.find(([re])=>re.test(fm[1].replace(/\([^)]*\)/g,'').trim())); if(hit){ out.fields[hit[1]] = fm[2].trim(); lastField = hit[1]==='alamat'?'alamat':null; continue; } }
     if(lastField==='alamat' && line && !/^jawapan/i.test(line) && !/^\d/.test(line)) out.fields.alamat += (out.fields.alamat?', ':'')+line;
     else lastField=null;
   }
