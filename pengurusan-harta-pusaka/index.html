@@ -1,0 +1,589 @@
+<!doctype html>
+<html lang="ms">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Pengurusan Harta Pusaka</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Sora:wght@500;600;700&display=swap">
+<style>
+/* Layout: navy header band seperti slaid taklimat, kemudian 4 langkah bertingkat (Laporan → Hutang → Aset → Hibah), ringkasan hibah melekat di sisi pada skrin lebar */
+:root{
+  --navy:#13232f; --navy-2:#1d3444; --gold:#c9a24a; --gold-ink:#8a6a1f;
+  --bg:#f3f1ec; --surface:#ffffff; --surface-2:#f8f6f1; --line:#e2ddd1;
+  --fg:#16232c; --muted:#5d6a72; --accent:#13232f; --on-accent:#ffffff;
+  --good:#1f7a4d; --good-bg:#e4f3eb; --warn:#9a5b00; --warn-bg:#fbefd9; --bad:#b3261e; --bad-bg:#fbe5e3;
+  --f-display:"Sora",ui-sans-serif,system-ui,sans-serif;
+  --f-body:"Manrope",ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0e1820; --surface:#16232d; --surface-2:#1b2a35; --line:#2a3b48;
+  --fg:#e9edf0; --muted:#9aa8b2; --accent:#c9a24a; --on-accent:#13232f; --gold-ink:#d9b45e;
+  --good:#6fd19c; --good-bg:#173528; --warn:#f0b75a; --warn-bg:#3a2b12; --bad:#ff8a80; --bad-bg:#3d1c1a;
+  color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0e1820; --surface:#16232d; --surface-2:#1b2a35; --line:#2a3b48;
+  --fg:#e9edf0; --muted:#9aa8b2; --accent:#c9a24a; --on-accent:#13232f; --gold-ink:#d9b45e;
+  --good:#6fd19c; --good-bg:#173528; --warn:#f0b75a; --warn-bg:#3a2b12; --bad:#ff8a80; --bad-bg:#3d1c1a;
+  color-scheme:dark}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{background:var(--bg);color:var(--fg);font-family:var(--f-body);font-size:15px;line-height:1.5}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--navy)}
+.wrap{max-width:1120px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+h1,h2,h3{font-family:var(--f-display);text-wrap:balance;margin:0;line-height:1.2}
+.num{font-variant-numeric:tabular-nums}
+
+header.top{background:var(--navy);color:#fff}
+header.top .wrap{padding-block:28px 26px;display:grid;gap:10px}
+.eyebrow{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--gold);font-weight:700}
+header.top h1{font-size:clamp(26px,5vw,38px);font-weight:700}
+header.top h1 span{display:block;width:84px;height:5px;background:#d6453a;margin-top:12px;border-radius:1px}
+header.top p{margin:0;color:#c7d0d6;max-width:62ch}
+.privacy{display:inline-flex;gap:8px;align-items:center;font-size:13px;color:#e8d9b0;background:#ffffff12;border:1px solid #ffffff22;padding:6px 10px;border-radius:999px;width:fit-content}
+
+main .wrap{padding-block:24px 64px;display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:24px;align-items:start}
+@media (max-width:900px){main .wrap{grid-template-columns:minmax(0,1fr)}}
+.steps{display:grid;gap:20px;min-width:0}
+
+section.step{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:20px;display:grid;gap:14px;min-width:0}
+.step-head{display:flex;gap:12px;align-items:baseline;flex-wrap:wrap;justify-content:space-between}
+.step-head h2{font-size:19px;display:flex;gap:10px;align-items:baseline}
+.step-no{font-family:var(--f-display);font-size:13px;color:var(--gold-ink);font-weight:700;letter-spacing:.08em}
+.hint{color:var(--muted);font-size:13.5px;margin:0}
+
+.drop{border:2px dashed var(--line);border-radius:12px;padding:22px;display:grid;gap:10px;justify-items:center;text-align:center;background:var(--surface-2);cursor:pointer;transition:border-color .15s}
+.drop:hover,.drop.over,.drop:focus-within{border-color:var(--gold)}
+.drop strong{font-family:var(--f-display);font-size:16px}
+.chips{display:flex;gap:6px;flex-wrap:wrap;justify-content:center}
+.chip{font-size:12px;font-weight:700;letter-spacing:.04em;padding:3px 9px;border-radius:999px;border:1px solid var(--line);color:var(--muted);background:var(--surface)}
+.chip.sample{background:var(--warn-bg);color:var(--warn);border-color:transparent}
+.chip.ok{background:var(--good-bg);color:var(--good);border-color:transparent}
+.chip.bad{background:var(--bad-bg);color:var(--bad);border-color:transparent}
+.status{font-size:13.5px;padding:10px 12px;border-radius:10px;background:var(--surface-2);border:1px solid var(--line)}
+.status.err{background:var(--bad-bg);color:var(--bad);border-color:transparent}
+.status.ok{background:var(--good-bg);color:var(--good);border-color:transparent}
+
+.client{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px}
+label.f{display:grid;gap:4px;font-size:12px;font-weight:700;color:var(--muted);letter-spacing:.03em;min-width:0}
+input,select{font:inherit;font-size:15px;color:var(--fg);background:var(--surface-2);border:1px solid var(--line);border-radius:8px;padding:9px 10px;width:100%;min-width:0}
+input:focus-visible,select:focus-visible,button:focus-visible{outline:2px solid var(--gold);outline-offset:1px}
+input.money{text-align:right;font-variant-numeric:tabular-nums}
+
+button{font:inherit;font-weight:700;cursor:pointer;border-radius:9px;padding:9px 14px;border:1px solid var(--line);background:var(--surface);color:var(--fg)}
+button.primary{background:var(--accent);color:var(--on-accent);border-color:var(--accent)}
+button.ghost{background:transparent}
+button.x{padding:6px 10px;color:var(--muted);font-size:13px}
+.row-actions{display:flex;gap:8px;flex-wrap:wrap}
+
+.list{display:grid;gap:10px}
+.item{border:1px solid var(--line);border-radius:12px;padding:12px;display:grid;gap:10px;background:var(--surface-2);border-left:4px solid var(--line)}
+.item.covered{border-left-color:var(--good)}
+.item.arrears{border-left-color:var(--bad)}
+.item-top{display:flex;justify-content:space-between;gap:8px;align-items:center;flex-wrap:wrap}
+.item-title{font-weight:700;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.code{font-size:11px;font-weight:700;letter-spacing:.05em;color:var(--muted);border:1px solid var(--line);padding:1px 6px;border-radius:5px;background:var(--surface)}
+.grid4{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+.grid3{display:grid;grid-template-columns:1.1fr 1.6fr 1fr;gap:10px}
+@media (max-width:560px){.grid4{grid-template-columns:repeat(2,minmax(0,1fr))}.grid3{grid-template-columns:minmax(0,1fr)}}
+.check{display:flex;gap:8px;align-items:center;font-size:13.5px;font-weight:600}
+.check input{width:18px;height:18px;accent-color:var(--good)}
+.empty{color:var(--muted);font-size:14px;padding:14px;border:1px dashed var(--line);border-radius:10px;text-align:center}
+.subtotal{display:flex;justify-content:space-between;font-weight:700;padding:4px 2px;border-top:1px solid var(--line);padding-top:10px}
+
+.rate{display:flex;gap:12px;flex-wrap:wrap;align-items:end}
+.rate label.f{width:150px}
+
+aside.summary{position:sticky;top:calc(env(safe-area-inset-top,0px) + 16px);background:var(--navy);color:#fff;border-radius:16px;padding:20px;display:grid;gap:14px}
+@media (max-width:900px){aside.summary{position:static}}
+aside .eyebrow{color:var(--gold)}
+.big{font-family:var(--f-display);font-size:34px;font-weight:700;color:var(--gold);line-height:1.1}
+.big small{display:block;font-family:var(--f-body);font-size:13px;color:#c7d0d6;font-weight:500;margin-top:6px}
+dl.calc{margin:0;display:grid;gap:7px;font-size:14px}
+dl.calc div{display:flex;justify-content:space-between;gap:10px}
+dl.calc dt{color:#c7d0d6}
+dl.calc dd{margin:0;font-weight:700;font-variant-numeric:tabular-nums;text-align:right}
+dl.calc .sep{border-top:1px solid #ffffff26;padding-top:8px}
+dl.calc .minus dd{color:#9fe0bc}
+.bar{height:10px;border-radius:999px;background:#ffffff1a;overflow:hidden;display:flex}
+.bar i{display:block;height:100%}
+.legend{display:flex;gap:12px;flex-wrap:wrap;font-size:12px;color:#c7d0d6}
+.legend b{display:inline-block;width:9px;height:9px;border-radius:2px;margin-right:5px;vertical-align:middle}
+.note{font-size:12.5px;color:#c7d0d6;margin:0}
+aside button{background:var(--gold);color:var(--navy);border-color:var(--gold)}
+aside .warnbox{background:#d6453a26;border:1px solid #d6453a66;color:#ffd7d3;border-radius:10px;padding:8px 10px;font-size:13px}
+textarea#copyFallback{width:100%;min-height:120px;font:12px/1.4 ui-monospace,monospace;border-radius:8px;padding:8px;background:var(--surface-2);color:var(--fg);border:1px solid var(--line)}
+footer{color:var(--muted);font-size:12.5px}
+footer .wrap{padding-block:0 32px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <div class="eyebrow">Perancangan Harta</div>
+    <h1>Pengurusan Harta Pusaka<span></span></h1>
+    <p>Muat naik laporan kredit (CCRIS / CTOS / Experian / Credit Bureau Malaysia). Data pelanggan dan hutang disenaraikan secara automatik, kemudian senaraikan aset untuk kira kos pengurusan pusaka dan jumlah hibah yang diperlukan.</p>
+    <div class="privacy">🔒 Fail diproses dalam pelayar ini sahaja. Tiada data dihantar ke mana-mana.</div>
+  </div>
+</header>
+
+<main>
+  <div class="wrap">
+    <div class="steps">
+
+      <!-- 1. Laporan -->
+      <section class="step" id="s-report">
+        <div class="step-head">
+          <h2><span class="step-no">LANGKAH 1</span> Laporan Kredit</h2>
+          <span class="chip sample" id="sampleChip">Data contoh</span>
+        </div>
+        <label class="drop" id="drop" for="file">
+          <strong>Pilih atau seret fail PDF laporan kredit</strong>
+          <span class="hint">PDF asal yang dimuat turun (bukan imej / imbasan)</span>
+          <div class="chips"><span class="chip">CCRIS</span><span class="chip">CTOS</span><span class="chip">EXPERIAN</span><span class="chip">CBM</span></div>
+          <input type="file" id="file" accept="application/pdf,.pdf" hidden>
+        </label>
+        <div id="pwBox" class="row-actions" hidden>
+          <label class="f" style="flex:1 1 200px">KATA LALUAN PDF (biasanya No. IC)
+            <input type="password" id="pw" autocomplete="off">
+          </label>
+          <button class="primary" id="pwBtn" type="button" style="align-self:end">Buka</button>
+        </div>
+        <div class="status" id="status">Memaparkan contoh berdasarkan laporan CBM dalam slaid taklimat. Muat naik laporan pelanggan untuk menggantikannya.</div>
+
+        <div class="client">
+          <label class="f">NAMA PELANGGAN<input id="c-name" type="text"></label>
+          <label class="f">NO. KAD PENGENALAN<input id="c-ic" type="text" inputmode="numeric"></label>
+          <label class="f">SUMBER LAPORAN<input id="c-source" type="text"></label>
+          <label class="f">TARIKH LAPORAN<input id="c-date" type="text"></label>
+        </div>
+      </section>
+
+      <!-- 2. Hutang -->
+      <section class="step" id="s-debts">
+        <div class="step-head">
+          <h2><span class="step-no">LANGKAH 2</span> Senarai Hutang</h2>
+          <button class="ghost" id="addDebt" type="button">+ Tambah hutang</button>
+        </div>
+        <p class="hint">Semak setiap baki. Tandakan <b>Dilindungi MRTA / MRTT / Takaful</b> jika hutang itu akan dijelaskan oleh perlindungan sedia ada apabila pelanggan meninggal dunia.</p>
+        <div class="list" id="debtList"></div>
+        <div class="status" id="debtCheck" hidden></div>
+        <div class="subtotal num"><span>Jumlah hutang</span><span id="debtTotal">RM 0.00</span></div>
+      </section>
+
+      <!-- 3. Aset -->
+      <section class="step" id="s-assets">
+        <div class="step-head">
+          <h2><span class="step-no">LANGKAH 3</span> Senarai Aset</h2>
+          <button class="ghost" id="addAsset" type="button">+ Tambah aset</button>
+        </div>
+        <p class="hint">Aset bercagar (rumah, kereta) dicadangkan daripada laporan dengan nilai anggaran = had pinjaman asal. Kemas kini kepada nilai pasaran semasa, dan tambah simpanan, KWSP, ASB, tanah, emas dan lain-lain.</p>
+        <div class="list" id="assetList"></div>
+        <div class="subtotal num"><span>Jumlah aset</span><span id="assetTotal">RM 0.00</span></div>
+      </section>
+
+      <!-- 4. Tetapan -->
+      <section class="step" id="s-settings">
+        <div class="step-head"><h2><span class="step-no">LANGKAH 4</span> Kos &amp; Keperluan Waris</h2></div>
+        <div class="rate">
+          <label class="f">KOS PENGURUSAN (%)<input id="rate" class="money" type="number" min="0" max="100" step="0.5" value="5"></label>
+          <label class="f" style="flex:1 1 220px">DANA TAMBAHAN UNTUK WARIS (RM)<input id="extra" class="money" type="text" inputmode="decimal" value="0"></label>
+        </div>
+        <p class="hint">Kos pengurusan pusaka dikira atas jumlah nilai aset (yuran guaman, duti setem, penilaian, pentadbiran). Dana tambahan pilihan: contohnya nafkah keluarga 12 bulan atau kos pendidikan anak.</p>
+      </section>
+    </div>
+
+    <aside class="summary" aria-live="polite">
+      <div class="eyebrow">Keperluan Hibah</div>
+      <div class="big num" id="hibah">RM 0<small id="hibahRound"></small></div>
+      <div class="bar" id="bar"></div>
+      <div class="legend"><span><b style="background:#e07a6f"></b>Hutang</span><span><b style="background:#c9a24a"></b>Kos pusaka</span><span><b style="background:#7fb3d5"></b>Dana waris</span></div>
+      <dl class="calc">
+        <div><dt>Jumlah aset</dt><dd id="r-assets">–</dd></div>
+        <div><dt>Jumlah hutang</dt><dd id="r-debts">–</dd></div>
+        <div class="minus"><dt>Tolak: dilindungi MRTA/takaful</dt><dd id="r-covered">–</dd></div>
+        <div class="sep"><dt>Hutang perlu dijelaskan</dt><dd id="r-unc">–</dd></div>
+        <div><dt id="r-rate-l">Kos pengurusan pusaka 5%</dt><dd id="r-cost">–</dd></div>
+        <div><dt>Dana tambahan waris</dt><dd id="r-extra">–</dd></div>
+        <div class="sep"><dt>Harta bersih kepada waris tanpa hibah</dt><dd id="r-net">–</dd></div>
+      </dl>
+      <div class="warnbox" id="warn" hidden></div>
+      <p class="note">Hibah takaful dibayar terus kepada penerima yang dinamakan, di luar harta pusaka dan faraid, jadi waris boleh jelaskan hutang dan kos tanpa menunggu pusaka selesai dibahagi.</p>
+      <button type="button" id="copy">Salin ringkasan</button>
+      <textarea id="copyFallback" hidden readonly aria-label="Ringkasan untuk disalin"></textarea>
+    </aside>
+  </div>
+</main>
+<footer><div class="wrap">Anggaran sahaja untuk tujuan perancangan. Bacaan automatik laporan kredit boleh tersilap; sentiasa semak dengan laporan asal. Pastikan data peribadi dan laporan kredit dikendalikan secara sulit.</div></footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js"></script>
+<script>
+(function(){
+'use strict';
+
+/* ---------- Kod kemudahan CCRIS ---------- */
+const FACILITY = {
+  HSLNFNCE:{label:'Pinjaman Perumahan', asset:'Hartanah'},
+  PELNFNCE:{label:'Pinjaman Peribadi'},
+  PCPASCAR:{label:'Sewa Beli Kereta', asset:'Kenderaan'},
+  PCOTHVEH:{label:'Sewa Beli Kenderaan Lain', asset:'Kenderaan'},
+  PCMTRCYC:{label:'Sewa Beli Motosikal', asset:'Kenderaan'},
+  CRDTCARD:{label:'Kad Kredit'},
+  CHRGCARD:{label:'Kad Caj'},
+  OVRDRAFT:{label:'Overdraf'},
+  OTLNFNCE:{label:'Pinjaman / Pembiayaan Lain'},
+  RVOLVCRD:{label:'Kredit Pusingan'},
+  BLDGFNCE:{label:'Pembiayaan Bangunan', asset:'Hartanah'},
+  PURCHSHR:{label:'Pembiayaan Saham', asset:'Saham'},
+  PRCHLAND:{label:'Pembiayaan Tanah', asset:'Hartanah'},
+  PURCLAND:{label:'Pembiayaan Tanah', asset:'Hartanah'},
+  PTPTN:{label:'Pinjaman PTPTN'}
+};
+const KNOWN_RE = new RegExp('\\b(' + Object.keys(FACILITY).join('|') + ')\\b');
+const GENERIC_RE = /\b((?=[A-Z]{6,9}\b)[A-Z]*(?:FNCE|LOAN|CARD|VEH|DRFT|CAR))\b/;
+const MONEY_RE = /\d{1,3}(?:,\d{3})+\.\d{2}|\d+\.\d{2}/g;
+const ASSET_TYPES = ['Hartanah','Kenderaan','Simpanan Bank','KWSP','ASB / Unit Amanah','Saham','Emas','Perniagaan','Tanah','Lain-lain'];
+
+/* ---------- State ---------- */
+let uid = 1;
+const state = { client:{name:'',ic:'',source:'',date:''}, debts:[], assets:[], rate:5, extra:0, reportTotal:null };
+
+function sample(){
+  state.client = {name:'CONTOH PELANGGAN', ic:'800101-14-5555', source:'Credit Bureau Malaysia (contoh)', date:'14/01/2025'};
+  state.debts = [
+    mkDebt({code:'HSLNFNCE', lender:'CB', capacity:'Joint', limit:275689, balance:161448, installment:1575, col:'Properties', arrears:0}),
+    mkDebt({code:'PELNFNCE', lender:'OTH', capacity:'Own', limit:30000, balance:17663, installment:1320, col:'Clean', arrears:0}),
+    mkDebt({code:'PCPASCAR', lender:'CB', capacity:'Own', limit:57900, balance:57363, installment:686, col:'MVehs', arrears:0})
+  ];
+  state.reportTotal = 236474;
+  state.assets = suggestAssets(state.debts);
+  state.assets.push(mkAsset({type:'KWSP', desc:'Akaun 1 & 2 (contoh)', value:85000}));
+  state.assets.push(mkAsset({type:'Simpanan Bank', desc:'Akaun simpanan (contoh)', value:12000}));
+}
+function mkDebt(d){
+  const f = FACILITY[d.code] || {};
+  return Object.assign({id:uid++, code:'', label:f.label || (d.code ? 'Kemudahan kredit' : 'Hutang lain'), lender:'', capacity:'', limit:0, balance:0, installment:0, col:'', arrears:0, covered:false, saa:false}, d, {label:d.label || f.label || (d.code ? 'Kemudahan kredit' : 'Hutang lain')});
+}
+function mkAsset(a){ return Object.assign({id:uid++, type:'Lain-lain', desc:'', value:0, est:false}, a); }
+
+function suggestAssets(debts){
+  const out = [];
+  debts.forEach(d => {
+    let type = (FACILITY[d.code]||{}).asset;
+    if(!type && /propert/i.test(d.col)) type = 'Hartanah';
+    if(!type && /veh|mvh/i.test(d.col)) type = 'Kenderaan';
+    if(!type) return;
+    out.push(mkAsset({type, desc:'Cagaran ' + d.label + (d.limit ? ' (had RM' + fmt(d.limit,0) + ')' : ''), value:d.limit || d.balance, est:true}));
+  });
+  return out;
+}
+
+/* ---------- Format ---------- */
+function fmt(n, dp){ dp = dp==null?2:dp; return (Number(n)||0).toLocaleString('en-MY',{minimumFractionDigits:dp,maximumFractionDigits:dp}); }
+function rm(n, dp){ return 'RM ' + fmt(n, dp); }
+function parseMoney(s){ const v = parseFloat(String(s).replace(/[^0-9.\-]/g,'')); return isFinite(v) ? v : 0; }
+function esc(s){ return String(s==null?'':s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+
+/* ---------- PDF → baris teks ---------- */
+async function pdfToLines(data, password){
+  const task = pdfjsLib.getDocument({data, password: password || undefined, isEvalSupported:false});
+  let doc;
+  try { doc = await task.promise; }
+  catch(e){ if(e && (e.name === 'PasswordException' || e.pw)) throw {pw:true, reason: e.code || e.reason}; throw e; }
+  const lines = [];
+  for(let p=1; p<=doc.numPages; p++){
+    const page = await doc.getPage(p);
+    const tc = await page.getTextContent();
+    const rows = [];
+    tc.items.forEach(it => {
+      if(!it.str || !it.str.trim()) return;
+      const x = it.transform[4], y = it.transform[5];
+      let row = rows.find(r => Math.abs(r.y - y) < 2.5);
+      if(!row){ row = {y, items:[]}; rows.push(row); }
+      row.items.push({x, s:it.str});
+    });
+    rows.sort((a,b) => b.y - a.y);
+    rows.forEach(r => { r.items.sort((a,b)=>a.x-b.x); lines.push(r.items.map(i=>i.s.trim()).join(' ').replace(/\s+/g,' ')); });
+  }
+  return lines;
+}
+
+/* ---------- Bacaan laporan ---------- */
+function parseReport(lines){
+  const text = lines.join('\n');
+  const flat = lines.join(' ');
+  const res = {client:{name:'',ic:'',source:'',date:''}, debts:[], total:null};
+
+  if(/CTOS/i.test(flat)) res.client.source = 'CTOS';
+  else if(/Experian|RAM\s*Credit/i.test(flat)) res.client.source = 'Experian';
+  else if(/Credit\s*Bureau\s*Malaysia/i.test(flat)) res.client.source = 'Credit Bureau Malaysia';
+  else if(/CCRIS|Bank\s*Negara/i.test(flat)) res.client.source = 'CCRIS (BNM)';
+  else res.client.source = 'Laporan kredit';
+
+  const icM = flat.match(/\b(\d{2})(0[1-9]|1[0-2])([0-2]\d|3[01])-?(\d{2})-?(\d{4})\b/);
+  if(icM) res.client.ic = icM[1]+icM[2]+icM[3]+'-'+icM[4]+'-'+icM[5];
+
+  for(const l of lines){
+    const m = l.match(/^(?:Customer\s+|Subject\s+|Full\s+)?(?:Name|Nama)(?:\s+of\s+Subject)?\s*[:\-]?\s*([A-Z][A-Z@'.\/\- ]{3,80})/i);
+    if(m && !/compan|business|syarikat|^name\s*$/i.test(m[1])){
+      res.client.name = m[1].replace(/\s+(?:IC|NRIC|New\s*IC|Old\s*IC|No\.?|ID)\b.*$/i,'').trim();
+      if(res.client.name.length > 3) break;
+    }
+  }
+  const dM = flat.match(/Report\s*Date\s*:?\s*(\d{1,2}\/\d{1,2}\/\d{4})/i) || flat.match(/Tarikh\s*Laporan\s*:?\s*(\d{1,2}\/\d{1,2}\/\d{4})/i);
+  if(dM) res.client.date = dM[1];
+
+  const tM = flat.match(/Total\s+Outstanding(?:\s+Balance)?\s*:?\s*(?:\(RM\)\s*)?(?:RM\s*)?([\d,]+\.\d{2})/i);
+  if(tM) res.total = parseMoney(tM[1]);
+
+  let section = 'outstanding';
+  lines.forEach((l, i) => {
+    if(/Special\s+Attention/i.test(l)) section = 'saa';
+    else if(/Credit\s+Application|Application\s+for\s+Credit|Permohonan\s+Kredit/i.test(l)) section = 'application';
+    else if(/Outstanding\s+Credit/i.test(l)) section = 'outstanding';
+    if(section === 'application') return;
+
+    const km = l.match(KNOWN_RE) || l.match(GENERIC_RE);
+    if(!km) return;
+    const code = km[1];
+    const after = l.slice(km.index + code.length);
+    const amts = (after.match(MONEY_RE) || []).map(parseMoney);
+    if(!amts.length) return;
+
+    const d = {code, balance:amts[0], installment:amts[1] || 0, saa: section === 'saa'};
+    const colM = after.match(/\b(?:MTH|BUL|ANN|QTR|REV|IRR|BMT)\b\s+([A-Za-z][A-Za-z]+)/);
+    if(colM) d.col = colM[1];
+    const tail = colM ? after.slice(after.indexOf(colM[0]) + colM[0].length) : '';
+    const digits = (tail.match(/(?:^|\s)(\d)(?=\s|$)/g) || []).map(s => +s.trim());
+    d.arrears = digits.length ? Math.max(...digits) : 0;
+
+    for(let j = i-1; j >= Math.max(0, i-2); j--){
+      const pl = lines[j];
+      if(KNOWN_RE.test(pl) || GENERIC_RE.test(pl)) break;
+      const pa = pl.match(MONEY_RE);
+      if(pa && /\d{2}\/\d{2}\/\d{4}/.test(pl)){
+        d.limit = parseMoney(pa[pa.length-1]);
+        const cap = pl.match(/\b(Own|Joint|Sendiri|Bersama)\b/i); if(cap) d.capacity = cap[1];
+        const lt = pl.match(/\b(CB|OTH|IB|DFI|NBFI|PB)\b/); if(lt) d.lender = lt[1];
+        break;
+      }
+    }
+    if(!FACILITY[code]) d.label = 'Kemudahan kredit (' + code + ')';
+    res.debts.push(mkDebt(d));
+  });
+  return res;
+}
+
+/* ---------- Render ---------- */
+const $ = id => document.getElementById(id);
+
+function renderClient(){
+  $('c-name').value = state.client.name; $('c-ic').value = state.client.ic;
+  $('c-source').value = state.client.source; $('c-date').value = state.client.date;
+}
+
+function renderDebts(){
+  const el = $('debtList');
+  if(!state.debts.length){ el.innerHTML = '<div class="empty">Tiada hutang dikesan. Tambah secara manual jika ada.</div>'; return; }
+  el.innerHTML = state.debts.map(d => `
+    <div class="item ${d.covered?'covered':''} ${d.arrears>0||d.saa?'arrears':''}" data-id="${d.id}">
+      <div class="item-top">
+        <div class="item-title">${esc(d.label)} ${d.code?`<span class="code">${esc(d.code)}</span>`:''}
+          ${d.capacity?`<span class="chip">${esc(d.capacity)}</span>`:''}
+          ${d.saa?'<span class="chip bad">Perhatian Khas</span>':''}
+          ${d.arrears>0?`<span class="chip bad">Tunggakan ${d.arrears} bln</span>`:(d.code?'<span class="chip ok">Bayaran teratur</span>':'')}
+        </div>
+        <button class="x" type="button" data-del-debt="${d.id}" aria-label="Buang hutang">Buang</button>
+      </div>
+      <div class="grid4">
+        <label class="f">JENIS<input id="d-${d.id}-label" data-f="label" value="${esc(d.label)}"></label>
+        <label class="f">BAKI (RM)<input id="d-${d.id}-balance" data-f="balance" class="money" inputmode="decimal" value="${fmt(d.balance)}"></label>
+        <label class="f">ANSURAN/BULAN<input id="d-${d.id}-installment" data-f="installment" class="money" inputmode="decimal" value="${fmt(d.installment)}"></label>
+        <label class="f">HAD ASAL<input id="d-${d.id}-limit" data-f="limit" class="money" inputmode="decimal" value="${fmt(d.limit)}"></label>
+      </div>
+      <label class="check"><input type="checkbox" id="d-${d.id}-covered" data-f="covered" ${d.covered?'checked':''}> Dilindungi MRTA / MRTT / Takaful</label>
+    </div>`).join('');
+}
+
+function renderAssets(){
+  const el = $('assetList');
+  if(!state.assets.length){ el.innerHTML = '<div class="empty">Belum ada aset. Tekan “Tambah aset”.</div>'; return; }
+  el.innerHTML = state.assets.map(a => `
+    <div class="item" data-id="${a.id}">
+      <div class="item-top">
+        <div class="item-title">${esc(a.type)} ${a.est?'<span class="chip sample">Anggaran, sila kemas kini</span>':''}</div>
+        <button class="x" type="button" data-del-asset="${a.id}" aria-label="Buang aset">Buang</button>
+      </div>
+      <div class="grid3">
+        <label class="f">KATEGORI<select id="a-${a.id}-type" data-f="type">${ASSET_TYPES.map(t=>`<option ${t===a.type?'selected':''}>${t}</option>`).join('')}</select></label>
+        <label class="f">KETERANGAN<input id="a-${a.id}-desc" data-f="desc" value="${esc(a.desc)}" placeholder="cth. Rumah teres Shah Alam"></label>
+        <label class="f">NILAI SEMASA (RM)<input id="a-${a.id}-value" data-f="value" class="money" inputmode="decimal" value="${fmt(a.value)}"></label>
+      </div>
+    </div>`).join('');
+}
+
+function compute(){
+  const A = state.assets.reduce((s,a)=>s+(+a.value||0),0);
+  const D = state.debts.reduce((s,d)=>s+(+d.balance||0),0);
+  const C = state.debts.filter(d=>d.covered).reduce((s,d)=>s+(+d.balance||0),0);
+  const U = D - C;
+  const cost = A * (state.rate/100);
+  const E = +state.extra || 0;
+  const H = U + cost + E;
+  return {A,D,C,U,cost,E,H,net:A-U-cost, round:Math.ceil(H/10000)*10000};
+}
+
+function renderSummary(){
+  const r = compute();
+  $('debtTotal').textContent = rm(r.D);
+  $('assetTotal').textContent = rm(r.A);
+  $('hibah').innerHTML = rm(r.H) + `<small>Cadangan perlindungan: <b>${rm(r.round,0)}</b> (dibundarkan ke RM10,000)</small>`;
+  $('r-assets').textContent = rm(r.A);
+  $('r-debts').textContent = rm(r.D);
+  $('r-covered').textContent = '− ' + rm(r.C);
+  $('r-unc').textContent = rm(r.U);
+  $('r-rate-l').textContent = 'Kos pengurusan pusaka ' + fmt(state.rate, state.rate%1?1:0) + '%';
+  $('r-cost').textContent = rm(r.cost);
+  $('r-extra').textContent = rm(r.E);
+  $('r-net').textContent = rm(r.net);
+  const tot = r.H || 1;
+  $('bar').innerHTML = `<i style="width:${r.U/tot*100}%;background:#e07a6f"></i><i style="width:${r.cost/tot*100}%;background:#c9a24a"></i><i style="width:${r.E/tot*100}%;background:#7fb3d5"></i>`;
+  const w = $('warn');
+  const arrears = state.debts.filter(d=>d.arrears>0||d.saa).length;
+  const msgs = [];
+  if(r.net < 0) msgs.push('Hutang dan kos melebihi nilai aset sebanyak ' + rm(-r.net) + '. Tanpa hibah, waris tidak menerima apa-apa dan aset mungkin perlu dijual.');
+  if(arrears) msgs.push(arrears + ' akaun ada tunggakan atau dalam Perhatian Khas. Selesaikan sebelum memohon perlindungan baharu.');
+  w.hidden = !msgs.length; w.innerHTML = msgs.map(esc).join('<br>');
+
+  const chk = $('debtCheck');
+  if(state.reportTotal){
+    const diff = Math.abs(state.reportTotal - r.D);
+    chk.hidden = false;
+    chk.className = 'status ' + (diff < 1 ? 'ok' : 'err');
+    chk.textContent = diff < 1 ? 'Sepadan dengan jumlah baki dalam laporan: ' + rm(state.reportTotal) + '.'
+      : 'Jumlah baki dalam laporan ' + rm(state.reportTotal) + ' berbeza ' + rm(diff) + ' daripada senarai di atas. Semak semula.';
+  } else chk.hidden = true;
+}
+
+function renderAll(){ renderClient(); renderDebts(); renderAssets(); renderSummary(); }
+
+/* ---------- Events ---------- */
+['name','ic','source','date'].forEach(k => $('c-'+k).addEventListener('input', e => { state.client[k] = e.target.value; }));
+
+function bindList(listId, arr, rerender){
+  const el = $(listId);
+  el.addEventListener('input', e => {
+    const item = e.target.closest('.item'); const f = e.target.dataset.f; if(!item || !f) return;
+    const obj = arr().find(x => x.id == item.dataset.id); if(!obj) return;
+    if(e.target.type === 'checkbox'){ obj[f] = e.target.checked; item.classList.toggle('covered', obj.covered); }
+    else if(e.target.classList.contains('money')) obj[f] = parseMoney(e.target.value);
+    else obj[f] = e.target.value;
+    if(f === 'value') obj.est = false;
+    renderSummary();
+  });
+  el.addEventListener('change', e => { if(e.target.tagName === 'SELECT'){ rerender(); } });
+  el.addEventListener('focusout', e => { if(e.target.classList.contains('money')) e.target.value = fmt(parseMoney(e.target.value)); });
+}
+bindList('debtList', () => state.debts, renderDebts);
+bindList('assetList', () => state.assets, renderAssets);
+
+document.addEventListener('click', e => {
+  const dd = e.target.closest('[data-del-debt]'), da = e.target.closest('[data-del-asset]');
+  if(dd){ state.debts = state.debts.filter(d => d.id != dd.dataset.delDebt); renderDebts(); renderSummary(); }
+  if(da){ state.assets = state.assets.filter(a => a.id != da.dataset.delAsset); renderAssets(); renderSummary(); }
+});
+$('addDebt').addEventListener('click', () => { const d = mkDebt({label:'Hutang lain'}); state.debts.push(d); renderDebts(); renderSummary(); $('d-'+d.id+'-label').focus(); });
+$('addAsset').addEventListener('click', () => { const a = mkAsset({type:'Simpanan Bank'}); state.assets.push(a); renderAssets(); renderSummary(); $('a-'+a.id+'-desc').focus(); });
+$('rate').addEventListener('input', e => { state.rate = Math.max(0, parseFloat(e.target.value) || 0); renderSummary(); });
+$('extra').addEventListener('input', e => { state.extra = parseMoney(e.target.value); renderSummary(); });
+$('extra').addEventListener('focusout', e => { e.target.value = fmt(parseMoney(e.target.value)); });
+
+/* ---------- Upload ---------- */
+let pendingBuf = null;
+function setStatus(msg, cls){ const s = $('status'); s.className = 'status ' + (cls||''); s.textContent = msg; }
+
+async function handleFile(file){
+  if(!file) return;
+  if(!/pdf$/i.test(file.type) && !/\.pdf$/i.test(file.name)){ setStatus('Fail ini bukan PDF. Muat naik PDF laporan kredit asal.', 'err'); return; }
+  pendingBuf = await file.arrayBuffer();
+  await processPdf();
+}
+async function processPdf(password){
+  if(typeof pdfjsLib === 'undefined'){ setStatus('Pembaca PDF gagal dimuatkan. Semak sambungan internet dan cuba lagi.', 'err'); return; }
+  setStatus('Membaca laporan…');
+  try{
+    const lines = await pdfToLines(pendingBuf.slice(0), password);
+    $('pwBox').hidden = true;
+    if(lines.join('').replace(/\s/g,'').length < 40){
+      setStatus('PDF ini tiada teks (mungkin imbasan atau tangkapan skrin). Gunakan PDF asal dari CTOS / Experian / CBM, atau isi hutang secara manual di bawah.', 'err');
+      return;
+    }
+    const r = parseReport(lines);
+    state.client = Object.assign({name:'',ic:'',source:'',date:''}, r.client);
+    state.debts = r.debts;
+    state.reportTotal = r.total;
+    state.assets = suggestAssets(r.debts);
+    $('sampleChip').hidden = true;
+    renderAll();
+    const D = r.debts.reduce((s,d)=>s+d.balance,0);
+    if(r.debts.length) setStatus(`${r.client.source}: ${r.debts.length} kemudahan kredit dikesan, jumlah baki ${rm(D)}. Semak setiap baris sebelum guna.`, 'ok');
+    else setStatus(`${r.client.source}: tiada kemudahan kredit aktif dapat dibaca. Jika pelanggan ada hutang, tambah secara manual.`, 'err');
+  } catch(e){
+    if(e && e.pw){
+      $('pwBox').hidden = false;
+      setStatus(password ? 'Kata laluan salah. Cuba lagi.' : 'PDF ini dilindungi kata laluan. Masukkan kata laluan (biasanya No. IC tanpa sengkang).', 'err');
+      $('pw').focus();
+    } else {
+      console.error(e);
+      setStatus('Fail tidak dapat dibaca: ' + (e && e.message ? e.message : 'ralat tidak diketahui') + '.', 'err');
+    }
+  }
+}
+$('file').addEventListener('change', e => { handleFile(e.target.files[0]); e.target.value = ''; });
+$('pwBtn').addEventListener('click', () => processPdf($('pw').value.trim()));
+$('pw').addEventListener('keydown', e => { if(e.key === 'Enter') processPdf($('pw').value.trim()); });
+const drop = $('drop');
+['dragenter','dragover'].forEach(ev => drop.addEventListener(ev, e => { e.preventDefault(); drop.classList.add('over'); }));
+['dragleave','drop'].forEach(ev => drop.addEventListener(ev, e => { e.preventDefault(); drop.classList.remove('over'); }));
+drop.addEventListener('drop', e => handleFile(e.dataTransfer.files[0]));
+
+/* ---------- Salin ringkasan ---------- */
+function summaryText(){
+  const r = compute(); const c = state.client;
+  const L = [];
+  L.push('PENGURUSAN HARTA PUSAKA – RINGKASAN');
+  L.push('Nama: ' + (c.name||'-') + ' | IC: ' + (c.ic||'-'));
+  L.push('Sumber: ' + (c.source||'-') + (c.date ? ' (' + c.date + ')' : ''));
+  L.push(''); L.push('HUTANG');
+  state.debts.forEach((d,i) => L.push(`${i+1}. ${d.label}: ${rm(d.balance)}${d.installment?` (ansuran ${rm(d.installment)}/bln)`:''}${d.covered?' [dilindungi]':''}`));
+  L.push('Jumlah hutang: ' + rm(r.D));
+  L.push(''); L.push('ASET');
+  state.assets.forEach((a,i) => L.push(`${i+1}. ${a.type}${a.desc?' – '+a.desc:''}: ${rm(a.value)}`));
+  L.push('Jumlah aset: ' + rm(r.A));
+  L.push(''); L.push('PENGIRAAN HIBAH');
+  L.push('Hutang perlu dijelaskan: ' + rm(r.U));
+  L.push(`Kos pengurusan pusaka (${state.rate}%): ` + rm(r.cost));
+  if(r.E) L.push('Dana tambahan waris: ' + rm(r.E));
+  L.push('KEPERLUAN HIBAH: ' + rm(r.H));
+  L.push('Cadangan perlindungan: ' + rm(r.round,0));
+  return L.join('\n');
+}
+$('copy').addEventListener('click', () => {
+  const t = summaryText(), btn = $('copy'), fb = $('copyFallback');
+  const done = () => { btn.textContent = 'Disalin'; setTimeout(()=>btn.textContent='Salin ringkasan', 1600); };
+  const fallback = () => { fb.hidden = false; fb.value = t; fb.focus(); fb.select(); btn.textContent = 'Pilih teks di bawah dan salin'; };
+  try { navigator.clipboard.writeText(t).then(done, fallback); } catch(e){ fallback(); }
+});
+
+/* ---------- Mula dengan contoh ---------- */
+sample();
+renderAll();
+window.__parseReport = parseReport;
+})();
+</script>
+</body>
+</html>
