@@ -1,0 +1,513 @@
+<!doctype html>
+<html lang="ms">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0f5132">
+<title>Klien Unit Trust</title>
+<style>
+:root{
+  --bg:#f4f6f5; --card:#ffffff; --ink:#15211b; --muted:#5d6b64; --line:#dfe5e2;
+  --brand:#0f6b44; --brand-ink:#ffffff; --brand-soft:#e3f1ea;
+  --pos:#0f7a3f; --neg:#c0392b; --warn:#b26a00; --chip:#eef2f0;
+  --shadow:0 1px 2px rgba(0,0,0,.06),0 2px 8px rgba(0,0,0,.04);
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    --bg:#0e1411; --card:#172019; --ink:#e7efe9; --muted:#9aaba2; --line:#26332c;
+    --brand:#3fbf7f; --brand-ink:#08130d; --brand-soft:#1b3326;
+    --pos:#4fd18b; --neg:#ff7b6b; --warn:#f0b04a; --chip:#1f2a24;
+    --shadow:none;
+  }
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+header{position:sticky;top:0;z-index:5;background:var(--brand);color:var(--brand-ink);padding:12px 16px;display:flex;align-items:center;gap:10px}
+header h1{font-size:17px;margin:0;flex:1}
+header button{background:transparent;color:inherit;border:1px solid currentColor;opacity:.9}
+nav.tabs{display:flex;gap:4px;padding:8px 16px;background:var(--card);border-bottom:1px solid var(--line);position:sticky;top:50px;z-index:4;overflow-x:auto}
+nav.tabs button{background:transparent;border:0;color:var(--muted);padding:8px 12px;border-radius:8px;font-weight:600;white-space:nowrap}
+nav.tabs button.on{background:var(--brand-soft);color:var(--brand)}
+main{max-width:980px;margin:0 auto;padding:16px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;box-shadow:var(--shadow);margin-bottom:12px}
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.spacer{flex:1}
+button,.btn{font:inherit;font-weight:600;padding:9px 14px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer}
+button.pri{background:var(--brand);border-color:var(--brand);color:var(--brand-ink)}
+button.danger{color:var(--neg);border-color:var(--neg);background:transparent}
+button.sm{padding:5px 10px;font-size:13px}
+input,select,textarea{font:inherit;width:100%;padding:9px 10px;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink)}
+label{display:block;font-size:12px;color:var(--muted);margin:8px 0 3px;font-weight:600}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:0 10px}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-bottom:12px}
+.kpi{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 12px}
+.kpi .l{font-size:12px;color:var(--muted)}
+.kpi .v{font-size:18px;font-weight:700;margin-top:2px;font-variant-numeric:tabular-nums}
+.pos{color:var(--pos)} .neg{color:var(--neg)} .muted{color:var(--muted)}
+.num{font-variant-numeric:tabular-nums;text-align:right;white-space:nowrap}
+.client{display:flex;align-items:center;gap:12px;cursor:pointer}
+.client:hover{border-color:var(--brand)}
+.avatar{width:40px;height:40px;border-radius:50%;background:var(--brand-soft);color:var(--brand);display:grid;place-items:center;font-weight:700;flex:none}
+.client .nm{font-weight:700}
+.client .sub{font-size:12px;color:var(--muted)}
+.tbl{width:100%;border-collapse:collapse;font-size:13.5px}
+.tbl th{font-size:11.5px;text-transform:uppercase;letter-spacing:.03em;color:var(--muted);text-align:left;font-weight:700;padding:6px 6px;border-bottom:1px solid var(--line)}
+.tbl td{padding:7px 6px;border-bottom:1px solid var(--line);vertical-align:top}
+.tbl th.num{text-align:right}
+.scroll{overflow-x:auto}
+.chip{display:inline-block;font-size:11.5px;font-weight:700;padding:2px 8px;border-radius:999px;background:var(--chip)}
+.chip.buy{color:var(--pos)} .chip.red{color:var(--neg)} .chip.dist{color:var(--warn)}
+.bar{height:8px;border-radius:99px;background:var(--chip);overflow:hidden}
+.bar > i{display:block;height:100%;background:var(--brand)}
+.bar.red > i{background:var(--neg)}
+h2{font-size:16px;margin:0 0 8px} h3{font-size:14px;margin:14px 0 6px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
+.fundcard .t{font-weight:700}
+.metric{display:flex;justify-content:space-between;font-size:13.5px;padding:3px 0}
+.metric span:first-child{color:var(--muted)}
+dialog{border:0;border-radius:16px;padding:0;width:min(560px,94vw);background:var(--card);color:var(--ink)}
+dialog::backdrop{background:rgba(0,0,0,.45)}
+dialog .hd{padding:14px 16px;border-bottom:1px solid var(--line);font-weight:700;display:flex;align-items:center}
+dialog .bd{padding:6px 16px 14px;max-height:70vh;overflow:auto}
+dialog .ft{padding:12px 16px;border-top:1px solid var(--line);display:flex;gap:8px;justify-content:flex-end}
+.hint{font-size:12px;color:var(--muted);margin-top:4px}
+.empty{text-align:center;color:var(--muted);padding:28px 10px}
+.back{background:transparent;border:0;color:var(--brand);padding:4px 0;margin-bottom:6px}
+.toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:10px;font-weight:600;z-index:99;opacity:0;transition:opacity .2s;pointer-events:none}
+.toast.on{opacity:1}
+@media (max-width:560px){ .grid2{grid-template-columns:1fr} .hide-sm{display:none} main{padding:12px} }
+</style>
+</head>
+<body>
+<header>
+  <h1>📊 Klien Unit Trust</h1>
+  <button class="sm" onclick="openBackup()">Backup</button>
+</header>
+<nav class="tabs">
+  <button data-tab="dash" class="on">Ringkasan</button>
+  <button data-tab="clients">Klien</button>
+  <button data-tab="funds">Dana &amp; Harga</button>
+</nav>
+<main id="app"></main>
+
+<dialog id="dlg"><form method="dialog" id="dlgForm"><div class="hd"><span id="dlgTitle"></span></div><div class="bd" id="dlgBody"></div><div class="ft" id="dlgFt"></div></form></dialog>
+<div class="toast" id="toast"></div>
+
+<script>
+/* ============ STORAGE ============ */
+const KEY = 'ut-client-app-v1';
+let DB = load();
+function load(){
+  try{ const s = localStorage.getItem(KEY); if(s) return JSON.parse(s); }catch(e){}
+  return {clients:[], funds:[], tx:[]};
+}
+function save(){ try{ localStorage.setItem(KEY, JSON.stringify(DB)); }catch(e){ toast('Gagal simpan: '+e.message); } }
+const uid = () => Date.now().toString(36)+Math.random().toString(36).slice(2,7);
+const today = () => new Date().toISOString().slice(0,10);
+
+/* ============ FORMAT ============ */
+const rm  = n => 'RM ' + (n||0).toLocaleString('en-MY',{minimumFractionDigits:2,maximumFractionDigits:2});
+const u4  = n => (n||0).toLocaleString('en-MY',{minimumFractionDigits:2,maximumFractionDigits:4});
+const nav4= n => (n||0).toLocaleString('en-MY',{minimumFractionDigits:4,maximumFractionDigits:4});
+const pct = n => (isFinite(n)? (n>=0?'+':'') + (n*100).toFixed(2)+'%' : '–');
+const pctPlain = n => (isFinite(n)? (n*100).toFixed(1)+'%' : '–');
+const cls = n => n>0.00001?'pos':(n<-0.00001?'neg':'muted');
+const esc = s => String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const fdate = d => d ? new Date(d+'T00:00:00').toLocaleDateString('ms-MY',{day:'2-digit',month:'short',year:'numeric'}) : '–';
+const fund = id => DB.funds.find(f=>f.id===id);
+const client = id => DB.clients.find(c=>c.id===id);
+function toast(m){ const t=document.getElementById('toast'); t.textContent=m; t.classList.add('on'); clearTimeout(t._h); t._h=setTimeout(()=>t.classList.remove('on'),2200); }
+
+/* ============ CALC ============ */
+// Kira pegangan bagi satu klien + satu dana (kaedah kos purata)
+function holding(clientId, fundId){
+  const list = DB.tx.filter(t=>t.clientId===clientId && t.fundId===fundId)
+    .sort((a,b)=> a.date.localeCompare(b.date) || (a.created||0)-(b.created||0));
+  let units=0, cost=0, invested=0, unitsIn=0, unitsOut=0, proceeds=0, realised=0, distUnits=0, distValue=0, firstDate=null, lastDate=null;
+  for(const t of list){
+    if(!firstDate) firstDate=t.date; lastDate=t.date;
+    if(t.type==='buy'){ units+=t.units; cost+=t.amount; invested+=t.amount; unitsIn+=t.units; }
+    else if(t.type==='dist'){ units+=t.units; unitsIn+=t.units; distUnits+=t.units; distValue+=t.units*t.price; }
+    else if(t.type==='redeem'){
+      const avg = units>0 ? cost/units : 0;
+      const costOut = avg*t.units;
+      cost-=costOut; units-=t.units; unitsOut+=t.units;
+      proceeds+=t.amount; realised+=t.amount-costOut;
+    }
+  }
+  if(Math.abs(units)<1e-6){ units=0; cost=0; }
+  const f = fund(fundId); const nav = f? f.nav : 0;
+  const value = units*nav;
+  const unreal = value-cost;
+  const totalRet = realised+unreal;
+  return { fundId, units, cost, avgCost: units>0?cost/units:0, invested, unitsIn, unitsOut, proceeds, realised,
+    distUnits, distValue, value, unreal, unrealPct: cost>0?unreal/cost:NaN, totalRet, totalRetPct: invested>0?totalRet/invested:NaN,
+    redeemPct: unitsIn>0?unitsOut/unitsIn:0, nav, firstDate, lastDate, count:list.length };
+}
+function clientSummary(clientId){
+  const fids=[...new Set(DB.tx.filter(t=>t.clientId===clientId).map(t=>t.fundId))];
+  const hs=fids.map(fid=>holding(clientId,fid));
+  const s={hs, invested:0, value:0, cost:0, proceeds:0, realised:0, unreal:0, unitsIn:0, unitsOut:0, distValue:0};
+  hs.forEach(h=>{ s.invested+=h.invested; s.value+=h.value; s.cost+=h.cost; s.proceeds+=h.proceeds; s.realised+=h.realised; s.unreal+=h.unreal; s.distValue+=h.distValue; });
+  s.totalRet=s.realised+s.unreal;
+  s.totalRetPct = s.invested>0 ? s.totalRet/s.invested : NaN;
+  s.redeemPct = s.invested>0 ? (s.invested - s.cost)/s.invested : 0; // % modal yang telah dikeluarkan
+  return s;
+}
+function unitsAvailable(clientId,fundId,excludeTxId){
+  let u=0; DB.tx.filter(t=>t.clientId===clientId&&t.fundId===fundId&&t.id!==excludeTxId).forEach(t=>{ u += t.type==='redeem' ? -t.units : t.units; });
+  return u;
+}
+
+/* ============ ROUTER ============ */
+let view={tab:'dash'};
+document.querySelectorAll('nav.tabs button').forEach(b=>b.onclick=()=>go({tab:b.dataset.tab}));
+function go(v){ view=v; document.querySelectorAll('nav.tabs button').forEach(b=>b.classList.toggle('on',b.dataset.tab===v.tab)); render(); window.scrollTo(0,0); }
+function render(){
+  const app=document.getElementById('app');
+  if(view.tab==='dash') app.innerHTML=viewDash();
+  else if(view.tab==='clients') app.innerHTML = view.clientId ? viewClient(view.clientId) : viewClients();
+  else if(view.tab==='funds') app.innerHTML=viewFunds();
+}
+
+/* ============ VIEWS ============ */
+function viewDash(){
+  let aum=0, inv=0, ret=0, prc=0;
+  const rows = DB.clients.map(c=>{ const s=clientSummary(c.id); aum+=s.value; inv+=s.invested; ret+=s.totalRet; prc+=s.proceeds; return {c,s}; })
+    .sort((a,b)=>b.s.value-a.s.value);
+  const byFund={}; DB.clients.forEach(c=>clientSummary(c.id).hs.forEach(h=>{ byFund[h.fundId]=(byFund[h.fundId]||0)+h.value; }));
+  const fundRows=Object.entries(byFund).filter(([,v])=>v>0).sort((a,b)=>b[1]-a[1]);
+  const stale = DB.funds.filter(f=>!f.navDate || (Date.now()-new Date(f.navDate))/864e5>7);
+  return `
+  <div class="kpis">
+    <div class="kpi"><div class="l">Jumlah AUM (nilai semasa)</div><div class="v">${rm(aum)}</div></div>
+    <div class="kpi"><div class="l">Jumlah dilabur</div><div class="v">${rm(inv)}</div></div>
+    <div class="kpi"><div class="l">Jumlah pulangan</div><div class="v ${cls(ret)}">${rm(ret)}<div style="font-size:13px">${pct(inv>0?ret/inv:NaN)}</div></div></div>
+    <div class="kpi"><div class="l">Klien</div><div class="v">${DB.clients.length}</div></div>
+  </div>
+  ${stale.length?`<div class="card" style="border-color:var(--warn)"><b class="" style="color:var(--warn)">⚠ ${stale.length} dana</b> harga belum dikemaskini lebih 7 hari: ${stale.map(f=>esc(f.name)).join(', ')}</div>`:''}
+  <div class="card"><h2>Klien ikut nilai</h2>
+  ${rows.length? `<div class="scroll"><table class="tbl"><tr><th>Klien</th><th class="num">Nilai</th><th class="num hide-sm">Dilabur</th><th class="num">Pulangan</th></tr>
+    ${rows.map(({c,s})=>`<tr style="cursor:pointer" onclick="openClient('${c.id}')"><td><b>${esc(c.name)}</b></td><td class="num">${rm(s.value)}</td><td class="num hide-sm">${rm(s.invested)}</td><td class="num ${cls(s.totalRet)}">${pct(s.totalRetPct)}</td></tr>`).join('')}
+  </table></div>` : `<div class="empty">Belum ada klien. Pergi tab <b>Klien</b> untuk tambah.</div>`}
+  </div>
+  ${fundRows.length?`<div class="card"><h2>Agihan AUM ikut dana</h2>
+    ${fundRows.map(([fid,v])=>`<div style="margin:8px 0"><div class="row"><span>${esc(fund(fid)?.name||'?')}</span><span class="spacer"></span><span class="num">${rm(v)} · ${pctPlain(v/aum)}</span></div><div class="bar"><i style="width:${(v/aum*100).toFixed(1)}%"></i></div></div>`).join('')}
+  </div>`:''}`;
+}
+
+function viewClients(){
+  const q=(view.q||'').toLowerCase();
+  const list=DB.clients.filter(c=>!q||c.name.toLowerCase().includes(q)||(c.ic||'').includes(q)||(c.phone||'').includes(q))
+    .sort((a,b)=>a.name.localeCompare(b.name));
+  return `
+  <div class="row" style="margin-bottom:12px">
+    <input placeholder="Cari nama / IC / telefon…" value="${esc(view.q||'')}" oninput="view.q=this.value;document.getElementById('clist').innerHTML=clientListHTML()" style="flex:1;min-width:180px">
+    <button class="pri" onclick="editClient()">+ Klien</button>
+  </div>
+  <div id="clist">${clientListHTML(list)}</div>`;
+}
+function clientListHTML(list){
+  if(!list){ const q=(view.q||'').toLowerCase(); list=DB.clients.filter(c=>!q||c.name.toLowerCase().includes(q)||(c.ic||'').includes(q)||(c.phone||'').includes(q)).sort((a,b)=>a.name.localeCompare(b.name)); }
+  if(!list.length) return `<div class="card empty">Tiada klien${view.q?' dijumpai':''}.</div>`;
+  return list.map(c=>{ const s=clientSummary(c.id); const n=s.hs.filter(h=>h.units>0).length;
+    return `<div class="card client" onclick="openClient('${c.id}')">
+      <div class="avatar">${esc(c.name.trim().split(/\s+/).slice(0,2).map(w=>w[0]).join('').toUpperCase())}</div>
+      <div style="flex:1;min-width:0"><div class="nm">${esc(c.name)}</div><div class="sub">${n} dana · ${esc(c.phone||'')}</div></div>
+      <div class="num"><div><b>${rm(s.value)}</b></div><div class="${cls(s.totalRet)}" style="font-size:12.5px">${pct(s.totalRetPct)}</div></div>
+    </div>`; }).join('');
+}
+
+// Tekan nama klien -> buka profil + terus minta update harga pasaran
+function openClient(id){
+  view={tab:'clients', clientId:id};
+  document.querySelectorAll('nav.tabs button').forEach(b=>b.classList.toggle('on',b.dataset.tab==='clients'));
+  render(); window.scrollTo(0,0);
+  const fids=clientSummary(id).hs.filter(h=>h.units>0).map(h=>h.fundId);
+  if(fids.length) updatePrices(fids, client(id).name);
+}
+
+function viewClient(id){
+  const c=client(id); if(!c){ view={tab:'clients'}; return viewClients(); }
+  const s=clientSummary(id);
+  const active=s.hs.filter(h=>h.units>0).sort((a,b)=>b.value-a.value);
+  const closed=s.hs.filter(h=>h.units<=0);
+  const txs=DB.tx.filter(t=>t.clientId===id).sort((a,b)=>b.date.localeCompare(a.date)||(b.created||0)-(a.created||0));
+  return `
+  <button class="back" onclick="go({tab:'clients'})">‹ Semua klien</button>
+  <div class="card">
+    <div class="row"><div class="avatar">${esc(c.name.trim().split(/\s+/).slice(0,2).map(w=>w[0]).join('').toUpperCase())}</div>
+      <div style="flex:1"><h2 style="margin:0">${esc(c.name)}</h2><div class="muted" style="font-size:13px">${[c.ic&&('IC: '+esc(c.ic)), c.phone&&('☎ '+esc(c.phone)), c.email&&esc(c.email)].filter(Boolean).join(' · ')}</div></div>
+      <button class="sm" onclick="editClient('${id}')">Edit</button></div>
+    ${c.risk||c.dob||c.notes?`<div style="margin-top:8px;font-size:13px">${c.risk?`<span class="chip">Risiko: ${esc(c.risk)}</span> `:''}${c.dob?`<span class="chip">Lahir: ${fdate(c.dob)}</span> `:''}${c.notes?`<div class="muted" style="margin-top:6px;white-space:pre-wrap">${esc(c.notes)}</div>`:''}</div>`:''}
+  </div>
+  <div class="row" style="margin-bottom:12px">
+    <button class="pri" onclick="editTx(null,'${id}','buy')">+ Pelaburan</button>
+    <button onclick="editTx(null,'${id}','redeem')">− Redeem</button>
+    <button onclick="editTx(null,'${id}','dist')">+ Agihan</button>
+    <span class="spacer"></span>
+    ${active.length?`<button onclick="updatePrices(${esc(JSON.stringify(active.map(h=>h.fundId)))}, '${esc(c.name).replace(/'/g,"\\'")}')">↻ Update harga</button>`:''}
+  </div>
+
+  <h3>Prestasi keseluruhan</h3>
+  <div class="kpis">
+    <div class="kpi"><div class="l">Nilai pasaran semasa</div><div class="v">${rm(s.value)}</div></div>
+    <div class="kpi"><div class="l">Jumlah dilabur</div><div class="v">${rm(s.invested)}</div></div>
+    <div class="kpi"><div class="l">Untung/rugi belum realis</div><div class="v ${cls(s.unreal)}">${rm(s.unreal)}</div></div>
+    <div class="kpi"><div class="l">Untung/rugi realis (redeem)</div><div class="v ${cls(s.realised)}">${rm(s.realised)}</div></div>
+    <div class="kpi"><div class="l">Jumlah pulangan</div><div class="v ${cls(s.totalRet)}">${rm(s.totalRet)}<div style="font-size:13px">${pct(s.totalRetPct)}</div></div></div>
+    <div class="kpi"><div class="l">Telah redeem</div><div class="v">${rm(s.proceeds)}<div style="font-size:13px" class="muted">${pctPlain(s.redeemPct)} modal dikeluarkan</div></div></div>
+  </div>
+
+  <h3>Pegangan semasa</h3>
+  ${active.length? active.map(h=>holdingCard(h,s.value)).join('') : `<div class="card empty">Tiada pegangan aktif. Tekan <b>+ Pelaburan</b>.</div>`}
+  ${closed.length?`<h3>Dana yang telah dijual habis</h3>${closed.map(h=>holdingCard(h,s.value)).join('')}`:''}
+
+  <h3>Sejarah transaksi</h3>
+  <div class="card scroll">${txs.length?`<table class="tbl">
+    <tr><th>Tarikh</th><th>Jenis</th><th>Dana</th><th class="num">Harga (NAV)</th><th class="num">Unit</th><th class="num">Amaun</th><th></th></tr>
+    ${txs.map(t=>`<tr>
+      <td style="white-space:nowrap">${fdate(t.date)}</td>
+      <td>${t.type==='buy'?'<span class="chip buy">Labur</span>':t.type==='redeem'?'<span class="chip red">Redeem</span>':'<span class="chip dist">Agihan</span>'}</td>
+      <td>${esc(fund(t.fundId)?.name||'?')}${t.charge?`<div class="muted" style="font-size:11.5px">Caj jualan ${t.charge}%</div>`:''}${t.note?`<div class="muted" style="font-size:11.5px">${esc(t.note)}</div>`:''}</td>
+      <td class="num">${nav4(t.price)}</td>
+      <td class="num">${t.type==='redeem'?'−':''}${u4(t.units)}</td>
+      <td class="num">${t.type==='dist'?'<span class="muted">'+rm(t.units*t.price)+'</span>':rm(t.amount)}</td>
+      <td><button class="sm" onclick="editTx('${t.id}')">✎</button></td></tr>`).join('')}
+  </table>`:`<div class="empty">Belum ada transaksi.</div>`}</div>
+  <div class="row"><span class="spacer"></span><button class="sm" onclick="exportClientCSV('${id}')">Export CSV klien</button></div>`;
+}
+
+function holdingCard(h,total){
+  const f=fund(h.fundId)||{name:'?'};
+  return `<div class="card fundcard">
+    <div class="row"><div style="flex:1;min-width:0"><div class="t">${esc(f.name)}</div>
+      <div class="muted" style="font-size:12px">${esc(f.house||'')}${f.house?' · ':''}NAV ${nav4(f.nav)} @ ${fdate(f.navDate)}</div></div>
+      <div class="num"><b>${rm(h.value)}</b><div class="${cls(h.unreal)}" style="font-size:12.5px">${pct(h.unrealPct)}</div></div></div>
+    <div class="grid2" style="margin-top:8px">
+      <div>
+        <div class="metric"><span>Unit dipegang</span><span class="num">${u4(h.units)}</span></div>
+        <div class="metric"><span>Kos purata / unit</span><span class="num">${nav4(h.avgCost)}</span></div>
+        <div class="metric"><span>Kos baki</span><span class="num">${rm(h.cost)}</span></div>
+        <div class="metric"><span>Jumlah dilabur</span><span class="num">${rm(h.invested)}</span></div>
+        <div class="metric"><span>Pelaburan pertama</span><span class="num">${fdate(h.firstDate)}</span></div>
+      </div>
+      <div>
+        <div class="metric"><span>U/R belum realis</span><span class="num ${cls(h.unreal)}">${rm(h.unreal)}</span></div>
+        <div class="metric"><span>U/R realis</span><span class="num ${cls(h.realised)}">${rm(h.realised)}</span></div>
+        <div class="metric"><span>Jumlah pulangan</span><span class="num ${cls(h.totalRet)}">${rm(h.totalRet)} (${pct(h.totalRetPct)})</span></div>
+        <div class="metric"><span>Hasil redeem</span><span class="num">${rm(h.proceeds)}</span></div>
+        ${h.distUnits?`<div class="metric"><span>Unit agihan</span><span class="num">${u4(h.distUnits)}</span></div>`:''}
+      </div>
+    </div>
+    <div style="margin-top:8px"><div class="row" style="font-size:12.5px"><span class="muted">Unit telah diredeem</span><span class="spacer"></span><b>${pctPlain(h.redeemPct)}</b> <span class="muted">(${u4(h.unitsOut)} / ${u4(h.unitsIn)} unit)</span></div>
+      <div class="bar red"><i style="width:${Math.min(100,h.redeemPct*100).toFixed(1)}%"></i></div></div>
+    ${total>0&&h.value>0?`<div style="margin-top:6px;font-size:12.5px" class="muted">${pctPlain(h.value/total)} daripada portfolio klien</div>`:''}
+  </div>`;
+}
+
+function viewFunds(){
+  const list=[...DB.funds].sort((a,b)=>a.name.localeCompare(b.name));
+  return `
+  <div class="row" style="margin-bottom:12px"><span class="muted" style="flex:1">Harga NAV di sini dikongsi oleh semua klien.</span>
+    ${list.length?`<button onclick="updatePrices(DB.funds.map(f=>f.id),'Semua dana')">↻ Update semua</button>`:''}
+    <button class="pri" onclick="editFund()">+ Dana</button></div>
+  ${list.length? list.map(f=>{
+    const hist=(f.history||[]).slice(-2); const prev=hist.length>1?hist[0].nav:null; const ch=prev?f.nav/prev-1:NaN;
+    let holders=0, units=0; DB.clients.forEach(c=>{ const h=holding(c.id,f.id); if(h.units>0){holders++; units+=h.units;} });
+    return `<div class="card"><div class="row">
+      <div style="flex:1;min-width:0"><div style="font-weight:700">${esc(f.name)}</div>
+        <div class="muted" style="font-size:12px">${[f.house,f.category,f.code].filter(Boolean).map(esc).join(' · ')}</div>
+        <div class="muted" style="font-size:12px">${holders} klien · ${u4(units)} unit · AUM ${rm(units*f.nav)}</div></div>
+      <div class="num"><b>${nav4(f.nav)}</b><div style="font-size:12px" class="${cls(ch)}">${isFinite(ch)?pct(ch):''}</div><div class="muted" style="font-size:11.5px">${fdate(f.navDate)}</div></div>
+    </div>
+    <div class="row" style="margin-top:8px"><button class="sm" onclick="updatePrices(['${f.id}'],'${esc(f.name).replace(/'/g,"\\'")}')">Update harga</button><button class="sm" onclick="showHistory('${f.id}')">Sejarah harga</button><button class="sm" onclick="editFund('${f.id}')">Edit</button></div></div>`;
+  }).join('') : `<div class="card empty">Belum ada dana. Tambah dana dulu (contoh: Public Ittikal Fund), lepas tu boleh rekod pelaburan klien.</div>`}`;
+}
+
+/* ============ DIALOG ============ */
+const dlg=document.getElementById('dlg');
+function modal(title, body, buttons){
+  document.getElementById('dlgTitle').textContent=title;
+  document.getElementById('dlgBody').innerHTML=body;
+  const ft=document.getElementById('dlgFt'); ft.innerHTML='';
+  buttons.forEach(b=>{ const el=document.createElement('button'); el.type='button'; el.textContent=b.label; if(b.cls) el.className=b.cls;
+    el.onclick=()=>{ if(b.fn){ const r=b.fn(); if(r===false) return; } dlg.close(); }; ft.appendChild(el); });
+  dlg.showModal();
+}
+const val=id=>document.getElementById(id)?.value?.trim()??'';
+const num=id=>parseFloat(val(id).replace(/,/g,''));
+
+/* --- Klien --- */
+function editClient(id){
+  const c=id?client(id):{};
+  modal(id?'Edit klien':'Klien baru', `
+    <label>Nama penuh *</label><input id="c_name" value="${esc(c.name||'')}">
+    <div class="grid2"><div><label>No. IC</label><input id="c_ic" value="${esc(c.ic||'')}"></div>
+    <div><label>Tarikh lahir</label><input id="c_dob" type="date" value="${esc(c.dob||'')}"></div>
+    <div><label>Telefon</label><input id="c_phone" type="tel" value="${esc(c.phone||'')}"></div>
+    <div><label>Email</label><input id="c_email" type="email" value="${esc(c.email||'')}"></div></div>
+    <label>Profil risiko</label><select id="c_risk">${['','Konservatif','Sederhana konservatif','Sederhana','Sederhana agresif','Agresif'].map(r=>`<option ${r===(c.risk||'')?'selected':''}>${r}</option>`).join('')}</select>
+    <label>Nota</label><textarea id="c_notes" rows="3">${esc(c.notes||'')}</textarea>`,
+  [ ...(id?[{label:'Padam',cls:'danger',fn:()=>{ if(!confirm('Padam klien ini dan SEMUA transaksinya?')) return false; DB.clients=DB.clients.filter(x=>x.id!==id); DB.tx=DB.tx.filter(t=>t.clientId!==id); save(); go({tab:'clients'}); toast('Klien dipadam'); }}]:[]),
+    {label:'Batal'},
+    {label:'Simpan',cls:'pri',fn:()=>{
+      const name=val('c_name'); if(!name){ toast('Nama wajib diisi'); return false; }
+      const data={name, ic:val('c_ic'), dob:val('c_dob'), phone:val('c_phone'), email:val('c_email'), risk:val('c_risk'), notes:val('c_notes')};
+      if(id) Object.assign(c,data); else { const n={id:uid(),created:Date.now(),...data}; DB.clients.push(n); id=n.id; }
+      save(); go({tab:'clients',clientId:id}); toast('Disimpan');
+    }}]);
+}
+
+/* --- Dana --- */
+function editFund(id, after){
+  const f=id?fund(id):{};
+  modal(id?'Edit dana':'Dana baru', `
+    <label>Nama dana *</label><input id="f_name" value="${esc(f.name||'')}" placeholder="cth: Public Islamic Opportunities Fund">
+    <div class="grid2"><div><label>Syarikat pengurusan</label><input id="f_house" value="${esc(f.house||'')}" placeholder="cth: Public Mutual"></div>
+    <div><label>Kod dana</label><input id="f_code" value="${esc(f.code||'')}"></div>
+    <div><label>Kategori</label><input id="f_cat" value="${esc(f.category||'')}" placeholder="Ekuiti / Bon / Pasaran wang…"></div>
+    <div><label>Caj jualan biasa (%)</label><input id="f_charge" inputmode="decimal" value="${f.charge??''}"></div>
+    <div><label>Harga NAV semasa (RM) *</label><input id="f_nav" inputmode="decimal" value="${f.nav??''}"></div>
+    <div><label>Tarikh harga</label><input id="f_date" type="date" value="${esc(f.navDate||today())}"></div></div>`,
+  [ ...(id?[{label:'Padam',cls:'danger',fn:()=>{ if(DB.tx.some(t=>t.fundId===id)){ alert('Dana ini ada transaksi klien. Padam transaksi dulu.'); return false; } if(!confirm('Padam dana?')) return false; DB.funds=DB.funds.filter(x=>x.id!==id); save(); render(); }}]:[]),
+    {label:'Batal'},
+    {label:'Simpan',cls:'pri',fn:()=>{
+      const name=val('f_name'), nav=num('f_nav'); if(!name||!(nav>0)){ toast('Nama & harga NAV wajib'); return false; }
+      const data={name, house:val('f_house'), code:val('f_code'), category:val('f_cat'), charge: isFinite(num('f_charge'))?num('f_charge'):null};
+      const d=val('f_date')||today();
+      if(id){ Object.assign(f,data); if(f.nav!==nav||f.navDate!==d) setNav(f,nav,d); }
+      else { const n={id:uid(),...data,nav:0,navDate:null,history:[]}; setNav(n,nav,d); DB.funds.push(n); id=n.id; }
+      save(); if(after) after(id); else render(); toast('Dana disimpan');
+    }}]);
+}
+function setNav(f,nav,date){
+  f.history=f.history||[];
+  const i=f.history.findIndex(h=>h.date===date);
+  if(i>=0) f.history[i].nav=nav; else f.history.push({date,nav});
+  f.history.sort((a,b)=>a.date.localeCompare(b.date));
+  const last=f.history[f.history.length-1]; f.nav=last.nav; f.navDate=last.date;
+}
+
+/* --- Update harga pasaran --- */
+function updatePrices(fids, label){
+  fids=fids.filter(fund); if(!fids.length) return;
+  modal('Update harga pasaran — '+label, `
+    <label>Tarikh harga</label><input id="p_date" type="date" value="${today()}">
+    ${fids.map(fid=>{ const f=fund(fid); return `<label>${esc(f.name)} <span style="font-weight:400">(terakhir ${nav4(f.nav)} @ ${fdate(f.navDate)})</span></label>
+      <input id="p_${fid}" inputmode="decimal" value="${f.nav}" onfocus="this.select()">`; }).join('')}
+    <div class="hint">Masukkan harga NAV terkini. Tekan "Langkau" kalau harga masih sama.</div>`,
+  [{label:'Langkau'},{label:'Simpan harga',cls:'pri',fn:()=>{
+    const d=val('p_date')||today(); let n=0;
+    for(const fid of fids){ const v=num('p_'+fid); const f=fund(fid); if(v>0 && (v!==f.nav || d!==f.navDate)){ setNav(f,v,d); n++; } }
+    save(); render(); toast(n?`${n} harga dikemaskini`:'Tiada perubahan');
+  }}]);
+}
+function showHistory(fid){
+  const f=fund(fid); const h=[...(f.history||[])].reverse();
+  modal('Sejarah harga — '+f.name, h.length?`<table class="tbl"><tr><th>Tarikh</th><th class="num">NAV</th><th class="num">Perubahan</th><th></th></tr>
+    ${h.map((x,i)=>{ const p=h[i+1]; const ch=p?x.nav/p.nav-1:NaN; return `<tr><td>${fdate(x.date)}</td><td class="num">${nav4(x.nav)}</td><td class="num ${cls(ch)}">${isFinite(ch)?pct(ch):''}</td>
+      <td>${h.length>1?`<button type="button" class="sm" onclick="delHist('${fid}','${x.date}')">✕</button>`:''}</td></tr>`; }).join('')}</table>`:'<div class="empty">Tiada sejarah</div>',
+  [{label:'Tutup'}]);
+}
+function delHist(fid,date){ const f=fund(fid); if(f.history.length<2) return; f.history=f.history.filter(h=>h.date!==date); const last=f.history[f.history.length-1]; f.nav=last.nav; f.navDate=last.date; save(); render(); showHistory(fid); }
+
+/* --- Transaksi --- */
+function editTx(txId, clientId, type){
+  const t = txId ? DB.tx.find(x=>x.id===txId) : {type, clientId, date:today()};
+  clientId=t.clientId; type=t.type;
+  if(!DB.funds.length){ toast('Tambah dana dulu'); editFund(null,()=>editTx(null,clientId,type)); return; }
+  let fundOpts;
+  if(type==='redeem' || type==='dist'){
+    const held=clientSummary(clientId).hs.filter(h=>h.units>0||h.fundId===t.fundId).map(h=>h.fundId);
+    if(!held.length){ toast('Klien tiada pegangan'); return; }
+    fundOpts=held;
+  } else fundOpts=[...DB.funds].sort((a,b)=>a.name.localeCompare(b.name)).map(f=>f.id);
+  const title={buy:'Pelaburan baru',redeem:'Redemption',dist:'Agihan / dividen (laburan semula)'}[type];
+  modal((txId?'Edit — ':'')+title+' · '+client(clientId).name, `
+    <label>Dana *</label><select id="t_fund" onchange="txFundChanged('${type}')">${fundOpts.map(fid=>`<option value="${fid}" ${fid===t.fundId?'selected':''}>${esc(fund(fid).name)}</option>`).join('')}</select>
+    ${type!=='buy'?`<div class="hint" id="t_avail"></div>`:''}
+    <div class="grid2">
+      <div><label>Tarikh *</label><input id="t_date" type="date" value="${esc(t.date)}"></div>
+      <div><label>Harga NAV seunit (RM) *</label><input id="t_price" inputmode="decimal" value="${t.price??''}" oninput="txCalc('${type}','price')"></div>
+      ${type==='buy'?`
+      <div><label>Amaun pelaburan kasar (RM) *</label><input id="t_amount" inputmode="decimal" value="${t.amount??''}" oninput="txCalc('buy','amount')"></div>
+      <div><label>Caj jualan (%)</label><input id="t_charge" inputmode="decimal" value="${t.charge??''}" oninput="txCalc('buy','charge')"></div>
+      <div><label>Unit diperoleh *</label><input id="t_units" inputmode="decimal" value="${t.units??''}" oninput="txCalc('buy','units')"></div>`:''}
+      ${type==='redeem'?`
+      <div><label>Unit diredeem *</label><input id="t_units" inputmode="decimal" value="${t.units??''}" oninput="txCalc('redeem','units')"></div>
+      <div><label>Amaun diterima (RM) *</label><input id="t_amount" inputmode="decimal" value="${t.amount??''}" oninput="txCalc('redeem','amount')"></div>
+      <div style="align-self:end"><button type="button" class="sm" onclick="redeemAll()">Redeem semua unit</button></div>`:''}
+      ${type==='dist'?`
+      <div><label>Unit agihan diterima *</label><input id="t_units" inputmode="decimal" value="${t.units??''}"></div>`:''}
+    </div>
+    <label>Nota</label><input id="t_note" value="${esc(t.note||'')}" placeholder="cth: EPF i-Invest / tunai / no. transaksi">
+    ${type==='buy'?`<div class="hint">Unit dikira automatik = (amaun ÷ (1 + caj%)) ÷ NAV. Boleh ubah ikut slip sebenar.</div>`:''}
+    ${type==='redeem'?`<div class="hint">Amaun dikira automatik = unit × NAV. Ubah jika ada caj redemption.</div>`:''}`,
+  [ ...(txId?[{label:'Padam',cls:'danger',fn:()=>{ if(!confirm('Padam transaksi ini?')) return false; DB.tx=DB.tx.filter(x=>x.id!==txId); save(); render(); toast('Dipadam'); }}]:[]),
+    {label:'Batal'},
+    {label:'Simpan',cls:'pri',fn:()=>{
+      const fundId=val('t_fund'), date=val('t_date'), price=num('t_price'), units=num('t_units');
+      if(!fundId||!date||!(price>0)||!(units>0)){ toast('Lengkapkan dana, tarikh, harga & unit'); return false; }
+      const data={fundId,date,price,units,note:val('t_note')};
+      if(type==='buy'){ data.amount=num('t_amount'); data.charge=isFinite(num('t_charge'))?num('t_charge'):0; if(!(data.amount>0)){ toast('Masukkan amaun'); return false; } }
+      if(type==='redeem'){ data.amount=num('t_amount'); if(!(data.amount>=0)){ toast('Masukkan amaun diterima'); return false; }
+        const avail=unitsAvailable(clientId,fundId,txId); if(units>avail+1e-6){ toast(`Unit melebihi pegangan (${u4(avail)})`); return false; } }
+      if(type==='dist') data.amount=0;
+      if(txId) Object.assign(t,data); else DB.tx.push({id:uid(),created:Date.now(),clientId,type,...data});
+      // harga transaksi lebih baru dari harga semasa -> jadikan harga semasa
+      const f=fund(fundId); if(!f.navDate || date>=f.navDate) setNav(f,price,date);
+      save(); render(); toast('Transaksi disimpan');
+    }}]);
+  window._txClient=clientId; window._txId=txId;
+  if(!txId) txFundChanged(type, true); else txFundChanged(type, false);
+}
+function txFundChanged(type, fill){
+  const f=fund(val('t_fund')); if(!f) return;
+  if(fill!==false){ document.getElementById('t_price').value=f.nav; if(type==='buy'&&f.charge!=null&&document.getElementById('t_charge')) document.getElementById('t_charge').value=f.charge; }
+  const a=document.getElementById('t_avail');
+  if(a){ const av=unitsAvailable(window._txClient,f.id,window._txId); a.textContent=`Pegangan: ${u4(av)} unit · NAV terkini ${nav4(f.nav)} · anggaran ${rm(av*f.nav)}`; }
+  if(fill!==false) txCalc(type,'price');
+}
+function txCalc(type, src){
+  const price=num('t_price'), el=id=>document.getElementById(id);
+  if(type==='buy'){
+    const amt=num('t_amount'), ch=num('t_charge')||0;
+    if(src!=='units' && amt>0 && price>0) el('t_units').value=(amt/(1+ch/100)/price).toFixed(4);
+  } else if(type==='redeem'){
+    const u=num('t_units');
+    if(src!=='amount' && u>0 && price>0) el('t_amount').value=(u*price).toFixed(2);
+  }
+}
+function redeemAll(){ const av=unitsAvailable(window._txClient,val('t_fund'),window._txId); document.getElementById('t_units').value=+av.toFixed(4); txCalc('redeem','units'); }
+
+/* ============ BACKUP / EXPORT ============ */
+function download(name, text, type){ const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([text],{type})); a.download=name; document.body.appendChild(a); a.click(); setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove();},500); }
+function openBackup(){
+  modal('Backup & pulih data', `
+    <p style="font-size:14px">Data disimpan dalam browser peranti ini sahaja. <b>Buat backup selalu</b> — kalau clear browser / tukar phone, data hilang tanpa backup.</p>
+    <p class="muted" style="font-size:13px">${DB.clients.length} klien · ${DB.funds.length} dana · ${DB.tx.length} transaksi</p>
+    <div class="row"><button type="button" class="pri" onclick="download('backup-klien-ut-${today()}.json',JSON.stringify(DB,null,1),'application/json');toast('Backup dimuat turun')">Muat turun backup (.json)</button>
+    <button type="button" onclick="exportAllCSV()">Export semua transaksi (.csv)</button></div>
+    <label style="margin-top:14px">Pulih dari fail backup</label><input type="file" accept=".json,application/json" onchange="importFile(this)">
+    <div class="hint">Pulih akan menggantikan semua data sedia ada.</div>`,
+  [{label:'Tutup'}]);
+}
+function importFile(inp){
+  const file=inp.files[0]; if(!file) return;
+  const r=new FileReader(); r.onload=()=>{ try{ const d=JSON.parse(r.result); if(!Array.isArray(d.clients)||!Array.isArray(d.funds)||!Array.isArray(d.tx)) throw new Error('Format tidak sah');
+    if(!confirm(`Gantikan data semasa dengan backup (${d.clients.length} klien, ${d.tx.length} transaksi)?`)) return;
+    DB=d; save(); dlg.close(); go({tab:'dash'}); toast('Data dipulihkan'); }catch(e){ alert('Gagal baca fail: '+e.message); } };
+  r.readAsText(file);
+}
+function csvRows(txs){
+  const q=s=>'"'+String(s??'').replace(/"/g,'""')+'"';
+  const head=['Klien','IC','Tarikh','Jenis','Dana','Harga NAV','Unit','Amaun (RM)','Caj jualan %','Nota'];
+  return [head.map(q).join(',')].concat(txs.map(t=>{ const c=client(t.clientId)||{}; return [c.name,c.ic,t.date,{buy:'Pelaburan',redeem:'Redeem',dist:'Agihan'}[t.type],fund(t.fundId)?.name,t.price,t.type==='redeem'?-t.units:t.units,t.type==='dist'?'':t.amount,t.charge??'',t.note].map(q).join(','); })).join('\n');
+}
+function exportAllCSV(){ download(`transaksi-ut-${today()}.csv`, '﻿'+csvRows([...DB.tx].sort((a,b)=>a.date.localeCompare(b.date))), 'text/csv'); }
+function exportClientCSV(id){ const c=client(id); download(`${c.name.replace(/\W+/g,'_')}-${today()}.csv`, '﻿'+csvRows(DB.tx.filter(t=>t.clientId===id).sort((a,b)=>a.date.localeCompare(b.date))), 'text/csv'); }
+
+render();
+</script>
+</body>
+</html>
