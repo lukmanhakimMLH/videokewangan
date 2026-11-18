@@ -238,7 +238,15 @@ function viewClient(id){
     <div class="row"><div class="avatar">${esc(c.name.trim().split(/\s+/).slice(0,2).map(w=>w[0]).join('').toUpperCase())}</div>
       <div style="flex:1"><h2 style="margin:0">${esc(c.name)}</h2><div class="muted" style="font-size:13px">${[c.ic&&('IC: '+esc(c.ic)), c.phone&&('☎ '+esc(c.phone)), c.email&&esc(c.email)].filter(Boolean).join(' · ')}</div></div>
       <button class="sm" onclick="editClient('${id}')">Edit</button></div>
-    ${c.risk||c.dob||c.notes?`<div style="margin-top:8px;font-size:13px">${c.risk?`<span class="chip">Risiko: ${esc(c.risk)}</span> `:''}${c.dob?`<span class="chip">Lahir: ${fdate(c.dob)}</span> `:''}${c.notes?`<div class="muted" style="margin-top:6px;white-space:pre-wrap">${esc(c.notes)}</div>`:''}</div>`:''}
+    ${c.risk||c.dob?`<div style="margin-top:8px;font-size:13px">${c.risk?`<span class="chip">Risiko: ${esc(c.risk)}</span> `:''}${c.dob?`<span class="chip">Lahir: ${fdate(c.dob)}</span> `:''}</div>`:''}
+    <details style="margin-top:10px"><summary style="cursor:pointer;font-weight:700;color:var(--brand)">Detail Kenanga</summary>
+      <div style="margin-top:6px">${CFIELDS.map(([k,l],i)=>{ const v=k==='salary'?salaryText(c[k]):c[k];
+        return `<div class="metric" style="gap:12px;border-bottom:1px solid var(--line);padding:6px 0"><span>${i+1}. ${l}</span><span style="text-align:right;white-space:pre-wrap">${v?esc(v):'<span class="muted">–</span>'}</span></div>`; }).join('')}
+      ${c.icFront||c.icBack?`<div class="row" style="margin-top:8px">${[c.icFront,c.icBack].filter(Boolean).map(s=>`<img src="${s}" onclick="viewImage(this.src)" style="width:140px;border-radius:8px;cursor:zoom-in;border:1px solid var(--line)">`).join('')}</div>`:''}
+      ${c.notes?`<div class="muted" style="margin-top:8px;white-space:pre-wrap;font-size:13px">${esc(c.notes)}</div>`:''}
+      <div class="row" style="margin-top:10px"><button class="sm" onclick="copyDetail('${id}')">📋 Salin detail (WhatsApp)</button>
+        ${(()=>{ const miss=CFIELDS.filter(([k])=>!c[k]&&k!=='addr2').length+(!c.icFront?1:0); return miss?`<span class="muted" style="font-size:12.5px">${miss} maklumat belum lengkap</span>`:'<span class="pos" style="font-size:12.5px">✓ Lengkap</span>'; })()}</div>
+      </div></details>
   </div>
   <div class="row" style="margin-bottom:12px">
     <button class="pri" onclick="editTx(null,'${id}','buy')">+ Pelaburan</button>
@@ -338,21 +346,82 @@ const val=id=>document.getElementById(id)?.value?.trim()??'';
 const num=id=>parseFloat(val(id).replace(/,/g,''));
 
 /* --- Klien --- */
+/* Medan detail klien (ikut borang Kenanga) */
+const CFIELDS=[
+  ['name','Nama Client'],['mother','Nama Ibu'],['marital','Status perkahwinan'],['email','Email'],
+  ['company','Company Name & Address'],['phone','Number Fon'],['ic','IC Number'],['birthPlace','Tempat Lahir'],
+  ['job','Jawatan Pekerjaan'],['bizType','Jenis perniagaan company'],['edu','Level Education'],['yearsWork','Total Bekerja Berapa Tahun'],
+  ['epf','No. KWSP'],['addr2','Alamat Selain dari IC'],['taxNo','No Incometax'],['salary','Gaji tahunan']
+];
+function salaryText(v){ const n=parseFloat(String(v||'').replace(/[^\d.]/g,'')); return v? (isFinite(n)&&/^[\d.,\sRMrm]+$/.test(v)? rm(n): v) : ''; }
+function detailText(c){
+  return 'Detail Kenanga :\n'+CFIELDS.map(([k,l],i)=>{
+    let v = k==='salary'?salaryText(c[k]):(c[k]||'');
+    if(k==='ic') { l='Ic Copy & Ic Number'; v=(c.ic||'')+((c.icFront||c.icBack)?' (copy IC ada)':''); }
+    return `${i+1}. *${l} :* ${v}`; }).join('\n');
+}
+function copyDetail(id){
+  const t=detailText(client(id));
+  (navigator.clipboard?navigator.clipboard.writeText(t):Promise.reject()).then(()=>toast('Detail disalin — paste kat WhatsApp'))
+    .catch(()=>{ modal('Salin detail',`<textarea rows="18" readonly onfocus="this.select()">${esc(t)}</textarea>`,[{label:'Tutup'}]); });
+}
+// Kecilkan gambar IC supaya muat dalam storan browser
+function readImage(inp, targetId){
+  const file=inp.files[0]; if(!file) return;
+  const img=new Image(); const url=URL.createObjectURL(file);
+  img.onload=()=>{ const max=1280, s=Math.min(1,max/Math.max(img.width,img.height));
+    const cv=document.createElement('canvas'); cv.width=Math.round(img.width*s); cv.height=Math.round(img.height*s);
+    cv.getContext('2d').drawImage(img,0,0,cv.width,cv.height); URL.revokeObjectURL(url);
+    const data=cv.toDataURL('image/jpeg',0.75);
+    document.getElementById(targetId).value=data;
+    document.getElementById(targetId+'_pv').innerHTML=`<img src="${data}" style="max-width:100%;border-radius:8px;margin-top:6px">`; };
+  img.onerror=()=>toast('Fail bukan gambar'); img.src=url;
+}
+function clearImage(targetId){ document.getElementById(targetId).value=''; document.getElementById(targetId+'_pv').innerHTML=''; }
+function viewImage(src){ const w=window.open(); if(w) w.document.write(`<img src="${src}" style="max-width:100%">`); }
+function icField(id,label,v){
+  return `<div><label>${label}</label><input type="hidden" id="${id}" value="${esc(v||'')}">
+    <input type="file" accept="image/*" onchange="readImage(this,'${id}')">
+    <div id="${id}_pv">${v?`<img src="${v}" style="max-width:100%;border-radius:8px;margin-top:6px">`:''}</div>
+    ${v?`<button type="button" class="sm" style="margin-top:4px" onclick="clearImage('${id}')">Buang gambar</button>`:''}</div>`;
+}
+
 function editClient(id){
   const c=id?client(id):{};
+  const sel=(id,opts,v)=>`<select id="${id}">${opts.map(o=>`<option ${o===(v||'')?'selected':''}>${o}</option>`).join('')}${v&&!opts.includes(v)?`<option selected>${esc(v)}</option>`:''}</select>`;
   modal(id?'Edit klien':'Klien baru', `
-    <label>Nama penuh *</label><input id="c_name" value="${esc(c.name||'')}">
-    <div class="grid2"><div><label>No. IC</label><input id="c_ic" value="${esc(c.ic||'')}"></div>
-    <div><label>Tarikh lahir</label><input id="c_dob" type="date" value="${esc(c.dob||'')}"></div>
-    <div><label>Telefon</label><input id="c_phone" type="tel" value="${esc(c.phone||'')}"></div>
-    <div><label>Email</label><input id="c_email" type="email" value="${esc(c.email||'')}"></div></div>
-    <label>Profil risiko</label><select id="c_risk">${['','Konservatif','Sederhana konservatif','Sederhana','Sederhana agresif','Agresif'].map(r=>`<option ${r===(c.risk||'')?'selected':''}>${r}</option>`).join('')}</select>
+    <label>1. Nama Client *</label><input id="c_name" value="${esc(c.name||'')}">
+    <label>2. Nama Ibu</label><input id="c_mother" value="${esc(c.mother||'')}">
+    <div class="grid2">
+      <div><label>3. Status perkahwinan</label>${sel('c_marital',['','Bujang','Berkahwin','Bercerai','Balu / Duda'],c.marital)}</div>
+      <div><label>4. Email</label><input id="c_email" type="email" value="${esc(c.email||'')}"></div>
+    </div>
+    <label>5. Company Name &amp; Address</label><textarea id="c_company" rows="3">${esc(c.company||'')}</textarea>
+    <div class="grid2">
+      <div><label>6. Number Fon</label><input id="c_phone" type="tel" value="${esc(c.phone||'')}"></div>
+      <div><label>7. IC Number</label><input id="c_ic" value="${esc(c.ic||'')}" placeholder="850101-14-5555"></div>
+    </div>
+    <div class="grid2">${icField('c_icFront','7. IC Copy (depan)',c.icFront)}${icField('c_icBack','7. IC Copy (belakang)',c.icBack)}</div>
+    <div class="grid2">
+      <div><label>8. Tempat Lahir</label><input id="c_birthPlace" value="${esc(c.birthPlace||'')}"></div>
+      <div><label>Tarikh lahir</label><input id="c_dob" type="date" value="${esc(c.dob||'')}"></div>
+      <div><label>9. Jawatan Pekerjaan</label><input id="c_job" value="${esc(c.job||'')}"></div>
+      <div><label>10. Jenis perniagaan company</label><input id="c_bizType" value="${esc(c.bizType||'')}"></div>
+      <div><label>11. Level Education</label>${sel('c_edu',['','SPM','STPM','Sijil','Diploma','Ijazah Sarjana Muda','Ijazah Sarjana','PhD','Lain-lain'],c.edu)}</div>
+      <div><label>12. Total Bekerja (tahun)</label><input id="c_yearsWork" inputmode="numeric" value="${esc(c.yearsWork||'')}"></div>
+      <div><label>13. No. KWSP</label><input id="c_epf" value="${esc(c.epf||'')}"></div>
+      <div><label>15. No Incometax</label><input id="c_taxNo" value="${esc(c.taxNo||'')}"></div>
+      <div><label>16. Gaji tahunan (RM)</label><input id="c_salary" inputmode="decimal" value="${esc(c.salary||'')}"></div>
+      <div><label>Profil risiko</label>${sel('c_risk',['','Konservatif','Sederhana konservatif','Sederhana','Sederhana agresif','Agresif'],c.risk)}</div>
+    </div>
+    <label>14. Alamat Selain dari IC (jika ada)</label><textarea id="c_addr2" rows="2">${esc(c.addr2||'')}</textarea>
     <label>Nota</label><textarea id="c_notes" rows="3">${esc(c.notes||'')}</textarea>`,
   [ ...(id?[{label:'Padam',cls:'danger',fn:()=>{ if(!confirm('Padam klien ini dan SEMUA transaksinya?')) return false; DB.clients=DB.clients.filter(x=>x.id!==id); DB.tx=DB.tx.filter(t=>t.clientId!==id); save(); go({tab:'clients'}); toast('Klien dipadam'); }}]:[]),
     {label:'Batal'},
     {label:'Simpan',cls:'pri',fn:()=>{
       const name=val('c_name'); if(!name){ toast('Nama wajib diisi'); return false; }
-      const data={name, ic:val('c_ic'), dob:val('c_dob'), phone:val('c_phone'), email:val('c_email'), risk:val('c_risk'), notes:val('c_notes')};
+      const data={name};
+      ['mother','marital','email','company','phone','ic','icFront','icBack','birthPlace','dob','job','bizType','edu','yearsWork','epf','taxNo','salary','risk','addr2','notes'].forEach(k=>data[k]=val('c_'+k));
       if(id) Object.assign(c,data); else { const n={id:uid(),created:Date.now(),...data}; DB.clients.push(n); id=n.id; }
       save(); go({tab:'clients',clientId:id}); toast('Disimpan');
     }}]);
