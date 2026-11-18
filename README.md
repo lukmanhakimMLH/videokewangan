@@ -1,6 +1,6 @@
 # videokewangan
 
-## Perancang Kewangan Bulanan (`app/`)
+## Apps Bijak Kewangan Lukman (`app/`)
 
 App web (PWA) untuk rancang kewangan setiap bulan — buka `app/index.html` di browser, atau host folder `app/` (GitHub Pages / Netlify) dan "Add to Home Screen" di telefon.
 
