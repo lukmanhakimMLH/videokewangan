@@ -393,8 +393,10 @@ function parseReport(lines){
   const icM = flat.match(/\b(\d{2})(0[1-9]|1[0-2])([0-2]\d|3[01])-?(\d{2})-?(\d{4})\b/);
   if(icM) res.client.ic = icM[1]+icM[2]+icM[3]+'-'+icM[4]+'-'+icM[5];
 
-  const LABEL_ONLY = /^(?:Customer\s+|Subject\s+|Full\s+)?(?:Name|Nama)(?:\s+(?:of\s+)?(?:the\s+)?(?:Subject|Subjek))?\s*:?\s*$/i;
-  for(let i=0; i<lines.length; i++){
+  const LABEL_ONLY = /^(?:Customer\s+|Subject\s+|Full\s+)?(?:Name|Nama)(?:\s+(?:of\s+)?(?:the\s+)?(?:Subject|Subjek))?(?:\s*\(Your\s+input\))?\s*:?\s*$/i;
+  const reqM = flat.match(/(?:@|At)\s+the\s+request\s+of\s+([A-Z][A-Z@'.\/\- ]{3,80}?)\s*\(/i);
+  if(reqM) res.client.name = reqM[1].trim();
+  for(let i=0; i<lines.length && !res.client.name; i++){
     const l = lines[i];
     if(LABEL_ONLY.test(l)){
       const nx = (lines[i+1] || '').trim();
@@ -410,6 +412,7 @@ function parseReport(lines){
   const DATE = '(\\d{1,2}\\/\\d{1,2}\\/\\d{4}|\\d{1,2}\\s+[A-Za-z]{3,9}\\s+\\d{4})';
   const dM = flat.match(new RegExp('Report\\s*Date\\s*:?\\s*' + DATE, 'i')) || flat.match(new RegExp('Tarikh\\s*Laporan\\s*:?\\s*' + DATE, 'i'));
   if(dM) res.client.date = dM[1];
+  else { const iso = flat.match(/\bDate\s*:\s*(\d{4})-(\d{2})-(\d{2})/i); if(iso) res.client.date = iso[3]+'/'+iso[2]+'/'+iso[1]; }
 
   const tM = flat.match(/Total\s+Outstanding(?:\s+Balance)?\s*:?\s*(?:\(RM\)\s*)?(?:RM\s*)?([\d,]+\.\d{2})/i);
   if(tM) res.total = parseMoney(tM[1]);
@@ -433,21 +436,26 @@ function parseReport(lines){
     const d = {code, balance:amts[0], installment:amts[1] || 0, saa: section === 'saa'};
     const colM = after.match(/\b(?:MTH|BUL|ANN|QTR|REV|IRR|BMT)\b\s+([A-Za-z][A-Za-z]+)/);
     if(colM) d.col = colM[1];
-    const tail = colM ? after.slice(after.indexOf(colM[0]) + colM[0].length) : '';
+    const termM = after.match(/\b(?:MTH|BUL|ANN|QTR|REV|IRR|BMT)\b(.*)$/);
+    const tail = colM ? after.slice(after.indexOf(colM[0]) + colM[0].length) : (termM ? termM[1] : '');
     const digits = (tail.match(/(?:^|\s)(\d)(?=\s|$)/g) || []).map(s => +s.trim());
     d.arrears = digits.length ? Math.max(...digits) : 0;
 
-    for(let j = i-1; j >= Math.max(0, i-2); j--){
+    const nameParts = [];
+    for(let j = i-1; j >= Math.max(0, i-4); j--){
       const pl = lines[j];
-      if(KNOWN_RE.test(pl) || GENERIC_RE.test(pl)) break;
+      if(KNOWN_RE.test(pl) || GENERIC_RE.test(pl) || /Outstanding\s+Credit|Total/i.test(pl)) break;
+      if(/^[A-Za-z][A-Za-z .&'()-]{1,30}$/.test(pl)) { nameParts.unshift({j, t:pl.trim()}); continue; }
       const pa = pl.match(MONEY_RE);
-      if(pa && /\d{2}\/\d{2}\/\d{4}/.test(pl)){
+      if(pa && /\d{2}[\/-]\d{2}[\/-]\d{4}/.test(pl) && d.limit == null){
+        const nb = lines[j-1]; if(nb && /^[A-Za-z][A-Za-z .&'()-]{1,30}$/.test(nb) && !/Outstanding|Credit\s+Kredit/i.test(nb)) nameParts.unshift({j:j-1, t:nb.trim()});
         d.limit = parseMoney(pa[pa.length-1]);
         const cap = pl.match(/\b(Own|Joint|Sendiri|Bersama)\b/i); if(cap) d.capacity = cap[1];
         const lt = pl.match(/\b(CB|OTH|IB|DFI|NBFI|PB)\b/); if(lt) d.lender = lt[1];
         break;
       }
     }
+    if(nameParts.length){ nameParts.sort((a,b)=>a.j-b.j); d.lender = nameParts.map(x=>x.t).join(' '); }
     if(!FACILITY[code]) d.label = 'Kemudahan kredit (' + code + ')';
     res.debts.push(mkDebt(d));
   });
