@@ -83,6 +83,8 @@ li{margin:3px 0}
 .modal-bg{position:fixed;inset:0;background:#0007;z-index:20;display:flex;align-items:center;justify-content:center;padding:16px}
 .modal{background:var(--card);border-radius:var(--radius);padding:18px;max-width:360px;width:100%}
 .sync{font-size:11px;color:var(--muted)}
+pre.preview{white-space:pre-wrap;font:13px/1.4 system-ui,sans-serif;background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:10px;max-height:260px;overflow:auto;margin:8px 0}
+.ok{color:var(--S)}.err{color:#d32f2f}
 .toast{position:fixed;left:50%;bottom:80px;transform:translateX(-50%);background:var(--accent);color:var(--bg);padding:10px 16px;border-radius:10px;z-index:9;font-weight:600}
 @media (max-width:420px){.kv{grid-template-columns:90px 1fr}.bars .bar .lbl{width:90px}}
 </style>
@@ -295,7 +297,11 @@ async function viewList(){
     <div class="disc-stats">
       ${'DISC'.split('').map(k=>`<div class="stat ${f.disc===k?'on':''}" data-disc="${k}" style="background:var(--${k});${k==='I'?'color:#222':''}"><b>${dcnt(k)}</b><span class="small">${NAMES[k]}</span></div>`).join('')}
     </div>
-    <div class="row" style="margin:12px 0">
+    <div class="row" style="margin:12px 0 0">
+      <button class="grow" onclick="go('#/hantar')">📤 Hantar Borang WhatsApp</button>
+      <button class="grow" onclick="go('#/tampal')">📥 Tampal Jawapan</button>
+    </div>
+    <div class="row" style="margin:8px 0 12px">
       <input class="grow" id="q" placeholder="Cari nama / telefon / IC" value="${esc(f.q)}">
       ${f.disc ? `<button class="btn-sm" id="clrDisc">✕ ${f.disc==='-'?'Belum DISC':NAMES[f.disc]}</button>` : `<button class="btn-sm" id="noDisc">Belum DISC</button>`}
     </div>
@@ -379,7 +385,7 @@ async function viewProfile(id){
   const d = a.disc, P = d && PROFILE[d.primary];
   $('#app').innerHTML = `
     <div class="card" style="text-align:center">
-      <div style="display:flex;justify-content:center">${avatar(a,'lg')}</div>
+      <div style="display:flex;justify-content:center">${avatar(a,'lg')}</div>${a.foto?'':`<button class="btn-sm" style="margin-top:6px" onclick="go('#/edit/${a.id}')">📷 Tambah gambar</button>`}
       <h2 style="margin:10px 0 2px">${esc(a.nama)}</h2>
       <div class="muted small">${icInfo(a.ic)}</div>
       <div class="row" style="justify-content:center;margin-top:6px">
@@ -406,7 +412,7 @@ async function viewProfile(id){
       </dl>
     </div>
     ${d ? discResultHTML(d) + `<button class="btn-sm" onclick="go('#/disc/${a.id}')">Ulang Ujian DISC</button>`
-        : `<div class="card empty"><p>Calon ini belum jawab soalan DISC.</p><button class="btn-primary" onclick="go('#/disc/${a.id}')">Mula Ujian DISC (20 soalan)</button></div>`}
+        : `<div class="card empty"><p>Calon ini belum jawab soalan DISC.</p><div class="row" style="justify-content:center"><button class="btn-primary" onclick="go('#/disc/${a.id}')">Jawab Sekarang (20 soalan)</button><button onclick="go('#/hantar/${a.id}')">📤 Hantar via WhatsApp</button></div></div>`}
     <div class="card" style="margin-top:12px">
       <h3 style="margin-top:0">Sejarah Status</h3>
       <div class="hist">${(a.history||[]).slice().reverse().map(h=>`<div>${fmtDate(h.date)} — <b>${STAGE_NAME[h.status]}</b></div>`).join('')||'-'}</div>
@@ -525,6 +531,150 @@ async function viewSettings(){
   };
 }
 
+
+/* ===================== WHATSAPP: HANTAR & TAMPAL ===================== */
+const LETTERS = ['A','B','C','D'];
+function borangText(){
+  const qs = QUESTIONS.map((Q,i)=>`*${i+1}. ${Q.q}*\n` + orderFor(i).map((k,j)=>`${LETTERS[j]}. ${Q.o[k]}`).join('\n')).join('\n\n');
+  return `Assalamualaikum & salam sejahtera 👋
+Terima kasih atas minat untuk menyertai kerjaya takaful bersama kami.
+
+Sila jawab *2 bahagian* di bawah dan balas dalam WhatsApp ini. Tiada jawapan betul atau salah — jawab ikut diri sebenar 🙂
+
+━━━━━━━━━━━━━━
+*BAHAGIAN 1: MAKLUMAT DIRI*
+━━━━━━━━━━━━━━
+Nama, No. Tel, No. IC, Alamat, Pendidikan (SPM / Diploma / Ijazah)
+Sertakan juga *1 gambar selfie*.
+
+━━━━━━━━━━━━━━
+*BAHAGIAN 2: GAYA PERSONALITI (20 soalan)*
+━━━━━━━━━━━━━━
+Setiap soalan, pilih *2 huruf*:
+✅ Huruf pertama = PALING macam saya
+❌ Huruf kedua = PALING TIDAK macam saya
+
+${qs}
+
+━━━━━━━━━━━━━━
+👉 *Untuk balas:* salin templat jawapan yang saya hantar selepas ini, isi, dan hantar semula. Contoh: *1. B D*
+Terima kasih! 🙏`;
+}
+function templatText(){
+  return `Nama: 
+No Tel: 
+No IC: 
+Alamat: 
+Pendidikan: 
+
+JAWAPAN (✅ Paling saya, ❌ Paling tidak saya)
+${QUESTIONS.map((_,i)=>`${i+1}. `).join('\n')}`;
+}
+async function copyText(t){
+  try{ await navigator.clipboard.writeText(t); toast('Disalin ✓'); return; }catch{}
+  const ta=document.createElement('textarea'); ta.value=t; ta.style.position='fixed'; ta.style.opacity='0'; document.body.appendChild(ta);
+  ta.select(); let ok=false; try{ ok=document.execCommand('copy'); }catch{} ta.remove();
+  toast(ok?'Disalin ✓':'Tak dapat salin — guna butang WhatsApp');
+}
+
+async function viewHantar(id){
+  const a = id ? await DB.get(id) : null;
+  $('#app').innerHTML = `
+    <h2>📤 Hantar Borang via WhatsApp</h2>
+    <div class="card">
+      <label>No. WhatsApp calon (boleh kosong — pilih kenalan dalam WhatsApp)</label>
+      <input id="waTel" type="tel" inputmode="tel" value="${esc(a?.tel)}" placeholder="012-3456789">
+      <h3>Langkah 1 — Hantar soalan</h3>
+      <div class="row"><a class="btn btn-primary grow" id="wa1" target="_blank">💬 Hantar Borang</a><button id="cp1">📋 Salin</button></div>
+      <h3>Langkah 2 — Hantar templat jawapan</h3>
+      <p class="small muted" style="margin:0 0 6px">Mesej pendek berasingan supaya calon senang tekan lama → Salin → isi → hantar balik.</p>
+      <div class="row"><a class="btn btn-primary grow" id="wa2" target="_blank">💬 Hantar Templat</a><button id="cp2">📋 Salin</button></div>
+      <h3>Langkah 3</h3>
+      <p class="small" style="margin:0">Bila calon balas, tekan lama mesej dia → <b>Copy</b> → buka <a href="#/tampal">📥 Tampal Jawapan</a>.</p>
+    </div>
+    <details class="card"><summary><b>Lihat mesej borang</b></summary><pre class="preview">${esc(borangText())}</pre></details>`;
+  const upd = () => { const n=waNum($('#waTel').value); const base='https://wa.me/'+(n||'')+'?text=';
+    $('#wa1').href = base+encodeURIComponent(borangText()); $('#wa2').href = base+encodeURIComponent(templatText()); };
+  $('#waTel').oninput=upd; upd();
+  $('#cp1').onclick=()=>copyText(borangText()); $('#cp2').onclick=()=>copyText(templatText());
+}
+
+function parseReply(txt){
+  const out = {fields:{}, ans: QUESTIONS.map(()=>({m:null,l:null})), problems:[]};
+  const F = [
+    [/^(?:nama(?:\s*penuh)?)$/i,'nama'], [/^(?:no\.?\s*)?(?:tel(?:efon)?|hp|phone|whatsapp)$/i,'tel'],
+    [/^(?:no\.?\s*)?(?:ic|k\/?p|kad\s*pengenalan|mykad)$/i,'ic'], [/^alamat$/i,'alamat'], [/^pendidikan$/i,'pendidikan'],
+  ];
+  const lines = txt.replace(/\r/g,'').split('\n').map(l=>l.replace(/[*_~]/g,'').trim());
+  let lastField=null;
+  for(const line of lines){
+    const am = line.match(/^(\d{1,2})\s*[.)\-:]?\s*([A-D])\s*[,\/&\-–\s]*\s*([A-D])\s*$/i);
+    if(am){ const n=+am[1]-1; if(n>=0 && n<QUESTIONS.length){ const ord=orderFor(n), m=am[2].toUpperCase(), l=am[3].toUpperCase();
+      if(m===l) out.problems.push(`Soalan ${n+1}: huruf ✅ dan ❌ sama (${m})`); else out.ans[n]={m:ord[LETTERS.indexOf(m)], l:ord[LETTERS.indexOf(l)]}; }
+      lastField=null; continue; }
+    const fm = line.match(/^([^:：]{1,25})\s*[:：]\s*(.*)$/);
+    if(fm){ const hit = F.find(([re])=>re.test(fm[1].trim())); if(hit){ out.fields[hit[1]] = fm[2].trim(); lastField = hit[1]==='alamat'?'alamat':null; continue; } }
+    if(lastField==='alamat' && line && !/^jawapan/i.test(line) && !/^\d/.test(line)) out.fields.alamat += (out.fields.alamat?', ':'')+line;
+    else lastField=null;
+  }
+  const f=out.fields;
+  if(f.ic) f.ic = fmtIC(f.ic);
+  if(f.pendidikan!==undefined){ const p=f.pendidikan.toLowerCase();
+    f.pendidikan = /ijazah|degree|sarjana|master|phd|bachelor/.test(p)?'Ijazah (Degree)':/dip/.test(p)?'Diploma':/spm|spmv/.test(p)?'SPM':(p?'Lain-lain':''); }
+  out.answered = out.ans.filter(x=>x.m&&x.l).length;
+  return out;
+}
+const sameTel = (a,b) => a && b && waNum(a)===waNum(b);
+const sameIC = (a,b) => a && b && a.replace(/\D/g,'')===b.replace(/\D/g,'');
+
+async function viewTampal(){
+  $('#app').innerHTML = `
+    <h2>📥 Tampal Jawapan WhatsApp</h2>
+    <div class="card">
+      <p class="small muted" style="margin-top:0">Dalam WhatsApp: tekan lama mesej balasan calon → <b>Copy</b> → tampal di bawah. Kalau calon balas dalam beberapa mesej, tampal semuanya sekali.</p>
+      <textarea id="paste" style="min-height:180px" placeholder="Nama: Ahmad&#10;No Tel: 0123456789&#10;...&#10;1. B D&#10;2. A C"></textarea>
+    </div>
+    <div id="res"></div>`;
+  const ta=$('#paste');
+  const run = async () => {
+    const r = parseReply(ta.value), f = r.fields;
+    if(!ta.value.trim()){ $('#res').innerHTML=''; return; }
+    const all = await DB.all();
+    const match = all.find(a=>sameIC(a.ic,f.ic)) || all.find(a=>sameTel(a.tel,f.tel));
+    const missingQ = r.ans.map((x,i)=>x.m&&x.l?null:i+1).filter(Boolean);
+    const disc = r.answered===QUESTIONS.length ? scoreDisc(r.ans) : null;
+    const name = f.nama || match?.nama;
+    $('#res').innerHTML = `
+      <div class="card">
+        <h3 style="margin-top:0">Semak</h3>
+        <dl class="kv">
+          <dt>Nama</dt><dd>${f.nama?esc(f.nama):'<span class="err">tiada</span>'}</dd>
+          <dt>Telefon</dt><dd>${f.tel?esc(f.tel):'<span class="err">tiada</span>'}</dd>
+          <dt>No. IC</dt><dd>${esc(f.ic)||'-'} <span class="small muted">${icInfo(f.ic)}</span></dd>
+          <dt>Alamat</dt><dd>${esc(f.alamat)||'-'}</dd>
+          <dt>Pendidikan</dt><dd>${esc(f.pendidikan)||'-'}</dd>
+          <dt>Jawapan DISC</dt><dd class="${disc?'ok':'err'}"><b>${r.answered}/${QUESTIONS.length}</b>${missingQ.length&&missingQ.length<QUESTIONS.length?` — belum: ${missingQ.join(', ')}`:''}</dd>
+          ${disc?`<dt>Keputusan</dt><dd><span class="badge ${disc.primary}">${disc.style} · ${NAMES[disc.primary]}</span></dd>`:''}
+        </dl>
+        ${r.problems.length?`<p class="small err">${r.problems.map(esc).join('<br>')}</p>`:''}
+        ${match?`<p class="small">🔁 Padan dengan calon sedia ada: <b>${esc(match.nama)}</b> — maklumat akan dikemaskini.</p>`:''}
+        ${!disc && r.answered>0?`<p class="small muted">Boleh simpan maklumat dulu; DISC dikira bila semua 20 dijawab.</p>`:''}
+        <button class="btn-primary" id="imp" style="width:100%" ${name&&(f.tel||match)?'':'disabled'}>${match?'Kemaskini':'Simpan'} Calon</button>
+        ${name&&(f.tel||match)?'':'<p class="small err">Perlu sekurang-kurangnya Nama & No. Tel.</p>'}
+      </div>`;
+    const btn=$('#imp'); if(btn) btn.onclick = async () => {
+      const now=Date.now(), base = match || {id:uid(), status:'prospek', createdAt:now, history:[{status:'prospek',date:now}], pendidikan:'SPM', foto:''};
+      const rec = {...base, updatedAt:now};
+      for(const k of ['nama','tel','ic','alamat','pendidikan']) if(f[k]) rec[k]=f[k];
+      if(disc) rec.disc = {...disc, answers:r.ans, sumber:'whatsapp'};
+      if(!rec.sumber) rec.sumber='WhatsApp';
+      await DB.put(rec); toast(disc?`Disimpan · ${disc.style}`:'Disimpan');
+      go('#/calon/'+rec.id);
+    };
+  };
+  ta.oninput = () => { clearTimeout(ta._t); ta._t=setTimeout(run,300); };
+}
+
 /* ===================== ROUTER ===================== */
 async function route(){
   const h = location.hash || '#/';
@@ -536,6 +686,8 @@ async function route(){
   if(view==='calon') return viewProfile(id);
   if(view==='disc') return viewQuiz(id);
   if(view==='tetapan') return viewSettings();
+  if(view==='hantar') return viewHantar(id);
+  if(view==='tampal') return viewTampal();
   return viewList();
 }
 window.addEventListener('hashchange', route);
