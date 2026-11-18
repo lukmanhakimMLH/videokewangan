@@ -1,0 +1,585 @@
+<!doctype html>
+<html lang="ms">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0f7a55">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Kewangan">
+<link rel="manifest" href="manifest.webmanifest">
+<title>Perancang Kewangan Bulanan</title>
+<style>
+:root{
+  --bg:#f3f6f4; --card:#ffffff; --ink:#13201a; --muted:#66756d; --line:#e2e9e5;
+  --brand:#0f7a55; --brand2:#2fb47f; --brand-soft:#e6f4ee; --danger:#c8423b; --warn:#c98a12;
+  --field:#eef3f0; --shadow:0 6px 24px rgba(16,40,30,.07);
+}
+:root[data-theme="dark"]{
+  --bg:#0d1512; --card:#15211c; --ink:#e7f0eb; --muted:#93a59b; --line:#24342d;
+  --brand:#2fb47f; --brand2:#5fd6a3; --brand-soft:#1a3a2d; --field:#1c2b24; --shadow:none;
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;-webkit-text-size-adjust:100%}
+button,input,select,textarea{font:inherit;color:inherit}
+.wrap{max-width:720px;margin:0 auto;padding:0 16px 96px}
+header.top{position:sticky;top:0;z-index:10;background:var(--bg);padding:14px 16px 0;max-width:720px;margin:0 auto}
+.brandrow{display:flex;align-items:center;gap:12px}
+.logo{width:48px;height:48px;border-radius:14px;background:linear-gradient(135deg,var(--brand),var(--brand2));color:#fff;display:grid;place-items:center;font-weight:800;font-size:18px;flex:none}
+.brandtxt{flex:1;min-width:0}
+.brandtxt b{display:block;font-size:16px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.brandtxt small{color:var(--muted)}
+.sel{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:10px 12px}
+.iconbtn{width:44px;height:44px;border-radius:14px;border:1px solid var(--line);background:var(--card);cursor:pointer;flex:none}
+nav.tabs{display:flex;gap:8px;overflow-x:auto;padding:12px 0;scrollbar-width:none;border-bottom:1px solid var(--line)}
+nav.tabs::-webkit-scrollbar{display:none}
+nav.tabs button{flex:none;border:1px solid var(--line);background:var(--card);border-radius:999px;padding:10px 18px;font-weight:600;color:var(--muted);cursor:pointer}
+nav.tabs button.on{background:var(--brand);color:#fff;border-color:var(--brand)}
+.eyebrow{color:var(--brand);letter-spacing:.14em;font-size:12px;font-weight:700;text-transform:uppercase;margin:20px 0 4px}
+h1{font-size:28px;margin:0 0 4px}
+h2{font-size:20px;margin:28px 0 4px}
+.sub{color:var(--muted);margin:0 0 14px}
+.monthnav{display:flex;gap:10px;align-items:center;margin:16px 0}
+.monthnav button{width:48px;height:48px;border-radius:14px;border:1px solid var(--line);background:var(--card);cursor:pointer;font-size:18px}
+.monthnav .m{flex:1;text-align:center;background:var(--brand-soft);border-radius:14px;padding:13px;font-weight:600;color:var(--muted)}
+.monthnav .m::before{content:"";display:inline-block;width:9px;height:9px;border-radius:50%;background:var(--brand);margin-right:8px;vertical-align:middle;box-shadow:0 0 0 4px rgba(47,180,127,.2)}
+.hero{background:linear-gradient(135deg,#0b5a3f,#159067 60%,#35b985);color:#fff;border-radius:24px;padding:22px;position:relative;overflow:hidden}
+.hero.neg{background:linear-gradient(135deg,#7a1f1a,#b53a32 60%,#d9675c)}
+.hero small{opacity:.85}
+.hero .big{font-size:38px;font-weight:800;margin:6px 0}
+.hero .mini{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:16px}
+.hero .mini div{background:rgba(255,255,255,.12);border-radius:14px;padding:10px;font-size:12px;min-width:0}
+.hero .mini b{display:block;font-size:14px;margin-top:4px;word-break:break-word}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:16px;box-shadow:var(--shadow)}
+.card .lbl{color:var(--muted);font-size:13px}
+.card .val{font-size:22px;font-weight:800;margin:6px 0;word-break:break-word}
+.card .note{color:var(--brand);font-size:13px}
+.note.bad{color:var(--danger)}
+.list{display:flex;flex-direction:column;gap:10px;margin-top:12px}
+.item{display:flex;gap:12px;align-items:center;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:12px 14px}
+.item .dot{width:38px;height:38px;border-radius:12px;display:grid;place-items:center;font-size:18px;flex:none;background:var(--brand-soft)}
+.item .main{flex:1;min-width:0}
+.item .main b{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.item .main small{color:var(--muted)}
+.item .amt{font-weight:700;text-align:right;white-space:nowrap}
+.item .amt small{display:block;font-weight:400;color:var(--muted);font-size:12px}
+.item .x{border:0;background:none;color:var(--muted);cursor:pointer;font-size:18px;padding:4px}
+.bar{height:8px;background:var(--field);border-radius:99px;overflow:hidden;margin-top:6px}
+.bar i{display:block;height:100%;background:var(--brand2);border-radius:99px}
+.bar i.over{background:var(--danger)}
+.btn{border:0;border-radius:14px;padding:13px 18px;font-weight:700;cursor:pointer;background:var(--brand);color:#fff}
+.btn.ghost{background:var(--card);color:var(--ink);border:1px solid var(--line)}
+.btn.block{width:100%;margin-top:12px}
+.empty{text-align:center;color:var(--muted);padding:24px;border:1px dashed var(--line);border-radius:16px;margin-top:12px}
+.pill{display:inline-block;font-size:11px;padding:2px 8px;border-radius:99px;background:var(--brand-soft);color:var(--brand);font-weight:600;margin-left:4px}
+.pill.bad{background:#fbe5e3;color:var(--danger)}
+.chk{width:24px;height:24px;accent-color:var(--brand);flex:none}
+/* donut + legend */
+.donutwrap{display:flex;gap:16px;align-items:center;flex-wrap:wrap}
+.donutwrap svg{flex:none}
+.legend{flex:1;min-width:200px;display:flex;flex-direction:column;gap:8px}
+.legend div{display:flex;align-items:center;gap:8px;font-size:14px}
+.legend i{width:12px;height:12px;border-radius:4px;flex:none}
+.legend span{flex:1}
+.legend b{white-space:nowrap}
+.cf{display:flex;align-items:flex-end;gap:10px;height:170px;padding-top:10px}
+.cf .col{flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;height:100%}
+.cf .bars{flex:1;display:flex;align-items:flex-end;gap:3px;width:100%;justify-content:center}
+.cf .bars i{width:42%;max-width:18px;border-radius:6px 6px 2px 2px;display:block;min-height:2px}
+.cf small{color:var(--muted);font-size:11px}
+.cf .cur small{color:var(--brand);font-weight:700}
+.keyrow{display:flex;gap:14px;font-size:12px;color:var(--muted);margin-top:8px}
+.keyrow i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px;vertical-align:-1px}
+/* sheet */
+.sheet-bg{position:fixed;inset:0;background:rgba(10,20,15,.45);backdrop-filter:blur(4px);z-index:50;display:none;align-items:flex-end;justify-content:center}
+.sheet-bg.on{display:flex}
+.sheet{background:var(--card);width:100%;max-width:720px;max-height:92vh;border-radius:26px 26px 0 0;display:flex;flex-direction:column}
+.sheet .hd{display:flex;align-items:center;justify-content:space-between;padding:18px 20px;border-bottom:1px solid var(--line)}
+.sheet .hd b{font-size:20px}
+.sheet .bd{padding:8px 20px 12px;overflow-y:auto}
+.sheet .ft{display:flex;gap:10px;padding:12px 20px calc(12px + env(safe-area-inset-bottom));border-top:1px solid var(--line)}
+.sheet .ft .btn{flex:1}
+label.f{display:block;margin-top:12px;color:var(--muted);font-size:14px}
+label.f input,label.f select,label.f textarea{display:block;width:100%;margin-top:6px;background:var(--field);border:1px solid transparent;border-radius:14px;padding:13px 14px;font-size:16px}
+label.f input:focus,label.f select:focus{outline:none;border-color:var(--brand)}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.calc{background:var(--brand-soft);border-radius:14px;padding:12px 14px;margin-top:14px;font-size:14px;line-height:1.6}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 18px;border-radius:99px;z-index:99;opacity:0;transition:.25s;pointer-events:none}
+.toast.on{opacity:1}
+.fab{position:fixed;right:20px;bottom:calc(20px + env(safe-area-inset-bottom));width:58px;height:58px;border-radius:20px;border:0;background:var(--brand);color:#fff;font-size:28px;box-shadow:0 10px 24px rgba(15,122,85,.35);cursor:pointer;z-index:20}
+.seg{display:flex;background:var(--field);border-radius:14px;padding:4px;margin-top:12px}
+.seg button{flex:1;border:0;background:none;padding:10px;border-radius:10px;font-weight:600;color:var(--muted);cursor:pointer}
+.seg button.on{background:var(--card);color:var(--ink);box-shadow:var(--shadow)}
+@media (max-width:420px){
+  .brandtxt small{display:none}
+  .sel{max-width:108px;padding:10px 8px}
+  .item{gap:8px;padding:12px 10px}
+  .item .dot{width:32px;height:32px;font-size:16px}
+  .item .amt{font-size:14px}
+  .hero .big{font-size:32px}
+  .card .val{font-size:19px}
+  h1{font-size:24px}
+}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="brandrow">
+    <div class="logo">RM</div>
+    <div class="brandtxt"><b>Perancang Kewangan</b><small>Setiap ringgit ada tujuan.</small></div>
+    <select id="profileSel" class="sel" aria-label="Profil"></select>
+    <button class="iconbtn" id="themeBtn" aria-label="Tukar tema">◐</button>
+  </div>
+  <nav class="tabs" id="tabs">
+    <button data-tab="home" class="on">⌂ Utama</button>
+    <button data-tab="income">＋ Pendapatan</button>
+    <button data-tab="expense">◫ Perbelanjaan</button>
+    <button data-tab="debt">▤ Hutang</button>
+    <button data-tab="settings">⚙ Tetapan</button>
+  </nav>
+</header>
+
+<main class="wrap">
+  <div class="monthnav">
+    <button id="prevM" aria-label="Bulan sebelum">‹</button>
+    <div class="m" id="monthLbl"></div>
+    <button id="nextM" aria-label="Bulan seterusnya">›</button>
+  </div>
+  <section id="view"></section>
+</main>
+
+<button class="fab" id="fab" aria-label="Tambah">＋</button>
+
+<div class="sheet-bg" id="sheetBg">
+  <div class="sheet" role="dialog" aria-modal="true">
+    <div class="hd"><b id="sheetTitle"></b><button class="iconbtn" id="sheetClose" aria-label="Tutup">✕</button></div>
+    <div class="bd" id="sheetBody"></div>
+    <div class="ft"><button class="btn ghost" id="sheetCancel">Batal</button><button class="btn" id="sheetSave">Simpan</button></div>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+/* ================= DATA ================= */
+const KEY = 'perancang-kewangan-v1';
+const BANKS = ['Maybank','CIMB','Public Bank','RHB','Hong Leong','AmBank','Bank Islam','Bank Rakyat','BSN','Affin','Alliance','UOB','OCBC','HSBC','Standard Chartered','Agrobank','MBSB','Al Rajhi','GXBank','Boost Bank','AEON Bank','Lain-lain'];
+const INCOME_TYPES = {gaji:'Gaji bersih',elaun:'Elaun / OT',bisnes:'Bisnes / sampingan',sewa:'Sewa',dividen:'Dividen / pelaburan',lain:'Lain-lain'};
+const CATS = {
+  makan:{n:'Makanan & dapur',i:'🍚',c:'#2fb47f'},
+  utiliti:{n:'Bil & utiliti',i:'💡',c:'#3b82c4'},
+  transport:{n:'Minyak & tol',i:'⛽',c:'#e0912f'},
+  rumah:{n:'Sewa / rumah',i:'🏠',c:'#8b5cc4'},
+  anak:{n:'Anak & sekolah',i:'🎒',c:'#d9577a'},
+  takaful:{n:'Insurans / takaful',i:'🛡️',c:'#1f9aa3'},
+  telefon:{n:'Telefon & internet',i:'📱',c:'#5468d6'},
+  ibubapa:{n:'Ibu bapa / keluarga',i:'❤️',c:'#c4453b'},
+  simpanan:{n:'Simpanan / pelaburan',i:'💰',c:'#b8a21f'},
+  hiburan:{n:'Hiburan & langganan',i:'🎬',c:'#9a6b3c'},
+  belanja:{n:'Shopping',i:'🛍️',c:'#d46fc0'},
+  sedekah:{n:'Zakat / sedekah',i:'🤲',c:'#4c9a5c'},
+  lain:{n:'Lain-lain',i:'📦',c:'#8a948f'}
+};
+const DEBT_KINDS = {
+  rumah:{n:'Pinjaman rumah',i:'🏡',g:'loan'},
+  kereta:{n:'Pinjaman kereta',i:'🚗',g:'loan'},
+  peribadi:{n:'Pinjaman peribadi',i:'💼',g:'loan'},
+  ptptn:{n:'PTPTN',i:'🎓',g:'loan'},
+  motor:{n:'Pinjaman motor',i:'🏍️',g:'loan'},
+  lainloan:{n:'Pinjaman lain',i:'📄',g:'loan'},
+  kad:{n:'Kad kredit',i:'💳',g:'card'},
+  paylater:{n:'PayLater / ansuran',i:'🛒',g:'card'}
+};
+const PAYLATER = {
+  'Beli Sekarang, Bayar Kemudian':['Shopee SPayLater','Atome','Grab PayLater','Boost PayFlex','TikTok PayLater','Lain-lain PayLater'],
+  'Ansuran Kad Kredit':['Maybank EzyPay','CIMB Instalment','Public Bank EPP','RHB Instalment','UOB EPP','Hong Leong Flexi','Lain-lain kad']
+};
+const PAYMETHOD = ['Tunai','Debit / FPX','eWallet','Kad kredit','PayLater'];
+
+let S = load();
+let cur = ym(new Date());
+let tab = 'home';
+
+function blankProfile(){return {incomes:[],expenses:[],debts:[],budgets:{},paid:{}}}
+function load(){
+  try{const s=JSON.parse(localStorage.getItem(KEY)); if(s&&s.profiles) return s;}catch(e){}
+  return {active:'Suami',theme:'auto',profiles:{'Suami':blankProfile(),'Isteri':blankProfile()}};
+}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){toast('Gagal simpan (storan penuh?)');}}
+const P = () => S.profiles[S.active];
+const uid = () => Math.random().toString(36).slice(2,10)+Date.now().toString(36).slice(-4);
+
+/* ================= UTIL ================= */
+function ym(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')}
+function addM(k,n){const [y,m]=k.split('-').map(Number);return ym(new Date(y,m-1+n,1))}
+function mDiff(a,b){const [y1,m1]=a.split('-').map(Number),[y2,m2]=b.split('-').map(Number);return (y2-y1)*12+(m2-m1)}
+const MN=['Januari','Februari','Mac','April','Mei','Jun','Julai','Ogos','September','Oktober','November','Disember'];
+const MS=['Jan','Feb','Mac','Apr','Mei','Jun','Jul','Ogo','Sep','Okt','Nov','Dis'];
+function mLabel(k){const [y,m]=k.split('-').map(Number);return MN[m-1]+' '+y}
+function rm(n){n=Number(n)||0;return (n<0?'-':'')+'RM '+Math.abs(n).toLocaleString('en-MY',{minimumFractionDigits:2,maximumFractionDigits:2})}
+function rmShort(n){n=Number(n)||0;const a=Math.abs(n);return a>=1000?(n/1000).toFixed(a>=10000?0:1)+'k':Math.round(n)+''}
+function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+const num = v => { const n=parseFloat(String(v).replace(/,/g,'')); return isFinite(n)?n:0; };
+function toast(t){const el=document.getElementById('toast');el.textContent=t;el.classList.add('on');clearTimeout(toast.t);toast.t=setTimeout(()=>el.classList.remove('on'),1800)}
+
+/* ================= CALC ================= */
+// Income/expense entries are tied to a month; recurring ones repeat every month from their start month.
+function inMonth(e,k){ if(e.recurring) return e.month<=k && (!e.until || k<=e.until); return e.month===k; }
+function incomesOf(k){return P().incomes.filter(e=>inMonth(e,k))}
+function expensesOf(k){return P().expenses.filter(e=>inMonth(e,k))}
+// Debts: monthly instalment from startMonth for `tenure` months (0 = ongoing, e.g. credit card).
+function debtEnd(d){return d.tenure>0?addM(d.start,d.tenure-1):null}
+function debtActive(d,k){return d.start<=k && (!debtEnd(d) || k<=debtEnd(d))}
+function debtRemaining(d,k){
+  if(!(d.tenure>0)) return Math.max(0,num(d.balance));
+  const paidMonths = Math.max(0,Math.min(d.tenure, mDiff(d.start,k)+1));
+  return Math.max(0, d.monthly*(d.tenure-paidMonths));
+}
+function totals(k){
+  const inc=incomesOf(k), exp=expensesOf(k), debts=P().debts.filter(d=>debtActive(d,k));
+  const income=inc.reduce((a,e)=>a+num(e.amount),0);
+  const salary=inc.filter(e=>e.type==='gaji').reduce((a,e)=>a+num(e.amount),0);
+  const expense=exp.reduce((a,e)=>a+num(e.amount),0);
+  const loans=debts.filter(d=>DEBT_KINDS[d.kind].g==='loan'), cards=debts.filter(d=>DEBT_KINDS[d.kind].g==='card');
+  const loanM=loans.reduce((a,d)=>a+num(d.monthly),0), cardM=cards.reduce((a,d)=>a+num(d.monthly),0);
+  const all=P().debts;
+  const loanBal=all.filter(d=>DEBT_KINDS[d.kind].g==='loan').reduce((a,d)=>a+debtRemaining(d,k),0);
+  const cardBal=all.filter(d=>DEBT_KINDS[d.kind].g==='card').reduce((a,d)=>a+debtRemaining(d,k),0);
+  const budget=Object.values(P().budgets).reduce((a,b)=>a+num(b),0);
+  const savings=exp.filter(e=>e.cat==='simpanan').reduce((a,e)=>a+num(e.amount),0);
+  return {inc,exp,debts,income,salary,expense,loanM,cardM,debtM:loanM+cardM,loanBal,cardBal,budget,savings,balance:income-expense-loanM-cardM};
+}
+
+/* ================= RENDER ================= */
+function render(){
+  document.getElementById('monthLbl').textContent=mLabel(cur);
+  document.querySelectorAll('#tabs button').forEach(b=>b.classList.toggle('on',b.dataset.tab===tab));
+  const ps=document.getElementById('profileSel');
+  ps.innerHTML=Object.keys(S.profiles).map(n=>`<option ${n===S.active?'selected':''}>${esc(n)}</option>`).join('');
+  document.getElementById('fab').style.display = ['income','expense','debt'].includes(tab)?'block':'none';
+  const v=document.getElementById('view');
+  v.innerHTML = ({home:viewHome,income:viewIncome,expense:viewExpense,debt:viewDebt,settings:viewSettings})[tab]();
+  bindView();
+}
+
+function greet(){const h=new Date().getHours();return h<12?'Selamat pagi':h<15?'Selamat tengah hari':h<19?'Selamat petang':'Selamat malam'}
+
+function viewHome(){
+  const t=totals(cur);
+  const pct=t.budget?Math.round(t.expense/t.budget*100):null;
+  const segs=[];
+  const byCat={};
+  t.exp.forEach(e=>byCat[e.cat]=(byCat[e.cat]||0)+num(e.amount));
+  Object.entries(byCat).forEach(([c,v])=>segs.push({n:CATS[c]?.n||c,v,c:CATS[c]?.c||'#888'}));
+  if(t.loanM) segs.push({n:'Bayaran pinjaman',v:t.loanM,c:'#0b5a3f'});
+  if(t.cardM) segs.push({n:'Kad & PayLater',v:t.cardM,c:'#e05a4f'});
+  segs.sort((a,b)=>b.v-a.v);
+  const out=segs.reduce((a,s)=>a+s.v,0);
+  const dsr = t.income? (t.debtM/t.income*100):0;
+
+  return `
+  <div class="eyebrow">Pusat kawalan kewangan</div>
+  <h1>${greet()}, ${esc(S.active)}</h1>
+  <p class="sub">Kedudukan kewangan anda untuk ${mLabel(cur)}.</p>
+
+  <div class="hero ${t.balance<0?'neg':''}">
+    <small>Baki boleh guna</small>
+    <div class="big">${rm(t.balance)}</div>
+    <small>Pendapatan tolak perbelanjaan & bayaran hutang</small>
+    <div class="mini">
+      <div>Gaji bersih<b>${rm(t.salary)}</b></div>
+      <div>Simpanan<b>${rm(t.savings)}</b></div>
+      <div>Jumlah hutang<b>${rm(t.loanBal+t.cardBal)}</b></div>
+    </div>
+  </div>
+
+  <div class="grid2">
+    <div class="card"><div class="lbl">Jumlah pendapatan</div><div class="val">${rm(t.income)}</div><div class="note">${t.inc.length} sumber</div></div>
+    <div class="card"><div class="lbl">Jumlah perbelanjaan</div><div class="val">${rm(t.expense)}</div><div class="note ${pct>100?'bad':''}">${pct===null?'Tiada bajet ditetapkan':pct+'% daripada bajet'}</div></div>
+    <div class="card"><div class="lbl">Baki pinjaman</div><div class="val">${rm(t.loanBal)}</div><div class="note">${rm(t.loanM)} sebulan</div></div>
+    <div class="card"><div class="lbl">Kad & PayLater</div><div class="val">${rm(t.cardBal)}</div><div class="note">${rm(t.cardM)} sebulan</div></div>
+  </div>
+
+  <div class="card" style="margin-top:12px">
+    <div class="lbl">Nisbah hutang kepada pendapatan (DSR)</div>
+    <div class="val">${dsr.toFixed(1)}% ${dsr>60?'<span class="pill bad">Tinggi</span>':dsr>40?'<span class="pill bad">Berhati-hati</span>':t.income?'<span class="pill">Sihat</span>':''}</div>
+    <div class="bar"><i class="${dsr>60?'over':''}" style="width:${Math.min(100,dsr)}%"></i></div>
+    <div class="note" style="color:var(--muted);margin-top:8px">Bank biasanya selesa jika bayaran hutang bulanan bawah 40–60% pendapatan.</div>
+  </div>
+
+  <h2>Pecahan duit keluar</h2>
+  <p class="sub">Ke mana ${rm(out)} pergi bulan ini${t.income?` (${Math.round(out/t.income*100)}% daripada pendapatan)`:''}.</p>
+  <div class="card">${out?donut(segs,out):'<div class="empty" style="margin:0">Belum ada perbelanjaan atau hutang untuk bulan ini.</div>'}</div>
+
+  <h2>Aliran tunai</h2>
+  <p class="sub">Pendapatan berbanding duit keluar, 6 bulan terakhir.</p>
+  <div class="card">${cashflow()}</div>
+  `;
+}
+
+function donut(segs,total){
+  const R=60,C=2*Math.PI*R; let off=0;
+  const arcs=segs.map(s=>{const len=s.v/total*C; const a=`<circle r="${R}" cx="80" cy="80" fill="none" stroke="${s.c}" stroke-width="26" stroke-dasharray="${Math.max(0,len-2)} ${C}" stroke-dashoffset="${-off}" transform="rotate(-90 80 80)"/>`; off+=len; return a;}).join('');
+  const leg=segs.map(s=>`<div><i style="background:${s.c}"></i><span>${esc(s.n)}</span><b>${rm(s.v)}</b><small style="color:var(--muted);width:38px;text-align:right">${Math.round(s.v/total*100)}%</small></div>`).join('');
+  return `<div class="donutwrap"><svg width="160" height="160" viewBox="0 0 160 160">${arcs}<text x="80" y="76" text-anchor="middle" font-size="11" fill="currentColor" opacity=".6">Jumlah</text><text x="80" y="94" text-anchor="middle" font-size="15" font-weight="800" fill="currentColor">${rmShort(total)}</text></svg><div class="legend">${leg}</div></div>`;
+}
+
+function cashflow(){
+  const ms=[...Array(6)].map((_,i)=>addM(cur,i-5));
+  const data=ms.map(k=>{const t=totals(k);return {k,i:t.income,o:t.expense+t.debtM}});
+  const mx=Math.max(1,...data.flatMap(d=>[d.i,d.o]));
+  return `<div class="cf">${data.map(d=>{const m=+d.k.split('-')[1];return `<div class="col ${d.k===cur?'cur':''}" title="${mLabel(d.k)}: masuk ${rm(d.i)}, keluar ${rm(d.o)}"><div class="bars"><i style="height:${d.i/mx*100}%;background:var(--brand2)"></i><i style="height:${d.o/mx*100}%;background:#e05a4f"></i></div><small>${MS[m-1]}</small></div>`}).join('')}</div>
+  <div class="keyrow"><span><i style="background:var(--brand2)"></i>Masuk</span><span><i style="background:#e05a4f"></i>Keluar</span></div>`;
+}
+
+function viewIncome(){
+  const t=totals(cur);
+  const items=t.inc.map(e=>`<div class="item"><div class="dot">${e.type==='gaji'?'🏦':'➕'}</div><div class="main"><b>${esc(e.name||INCOME_TYPES[e.type])}</b><small>${esc(INCOME_TYPES[e.type])} · masuk ${esc(e.bank||'-')}${e.recurring?' <span class="pill">Setiap bulan</span>':''}</small></div><div class="amt">${rm(e.amount)}</div><button class="x" data-edit-inc="${e.id}" aria-label="Ubah">✎</button></div>`).join('');
+  const byBank={}; t.inc.forEach(e=>byBank[e.bank||'-']=(byBank[e.bank||'-']||0)+num(e.amount));
+  return `
+  <div class="eyebrow">Duit masuk</div><h1>Pendapatan</h1>
+  <p class="sub">Masukkan gaji bersih dan bank mana ia masuk, serta pendapatan tambahan.</p>
+  <div class="card"><div class="lbl">Jumlah pendapatan ${mLabel(cur)}</div><div class="val">${rm(t.income)}</div>
+  ${Object.keys(byBank).length?Object.entries(byBank).map(([b,v])=>`<div style="display:flex;justify-content:space-between;font-size:14px;margin-top:6px"><span>🏦 ${esc(b)}</span><b>${rm(v)}</b></div>`).join(''):''}</div>
+  ${items?`<div class="list">${items}</div>`:`<div class="empty">Belum ada pendapatan untuk bulan ini.<br><button class="btn block" data-add="income">＋ Tambah gaji</button></div>`}`;
+}
+
+function viewExpense(){
+  const t=totals(cur);
+  const byCat={}; t.exp.forEach(e=>byCat[e.cat]=(byCat[e.cat]||0)+num(e.amount));
+  const cats=Object.keys(CATS).filter(c=>byCat[c]||num(P().budgets[c]));
+  const budgetRows=cats.map(c=>{const used=byCat[c]||0,b=num(P().budgets[c]);const p=b?used/b*100:0;return `<div style="margin-top:12px"><div style="display:flex;justify-content:space-between;font-size:14px"><span>${CATS[c].i} ${CATS[c].n}</span><b>${rm(used)}${b?` <small style="color:var(--muted);font-weight:400">/ ${rm(b)}</small>`:''}</b></div>${b?`<div class="bar"><i class="${p>100?'over':''}" style="width:${Math.min(100,p)}%"></i></div>`:''}</div>`}).join('');
+  const items=[...t.exp].sort((a,b)=>(b.date||'').localeCompare(a.date||'')).map(e=>`<div class="item"><div class="dot">${CATS[e.cat]?.i||'📦'}</div><div class="main"><b>${esc(e.name||CATS[e.cat]?.n)}</b><small>${esc(CATS[e.cat]?.n||'')} · ${esc(e.method||'')}${e.recurring?' <span class="pill">Setiap bulan</span>':e.date?' · '+esc(e.date):''}</small></div><div class="amt">${rm(e.amount)}</div><button class="x" data-edit-exp="${e.id}" aria-label="Ubah">✎</button></div>`).join('');
+  return `
+  <div class="eyebrow">Duit keluar</div><h1>Perbelanjaan</h1>
+  <p class="sub">Rekod semua yang dibeli dan bil yang dibayar. Tanda "setiap bulan" untuk bil tetap.</p>
+  <div class="card"><div style="display:flex;justify-content:space-between;align-items:center"><div><div class="lbl">Jumlah ${mLabel(cur)}</div><div class="val">${rm(t.expense)}</div></div><button class="btn ghost" id="budgetBtn">Set bajet</button></div>
+  ${budgetRows||'<div class="note" style="color:var(--muted)">Tetapkan bajet ikut kategori untuk pantau perbelanjaan.</div>'}</div>
+  ${items?`<div class="list">${items}</div>`:`<div class="empty">Belum ada perbelanjaan untuk bulan ini.<br><button class="btn block" data-add="expense">＋ Tambah perbelanjaan</button></div>`}`;
+}
+
+function viewDebt(){
+  const t=totals(cur);
+  const paid=P().paid[cur]||{};
+  const row=d=>{const k=DEBT_KINDS[d.kind];const active=debtActive(d,cur);const end=debtEnd(d);const rem=debtRemaining(d,cur);
+    const prog=d.tenure>0?Math.min(100,Math.max(0,(mDiff(d.start,cur)+1)/d.tenure*100)):null;
+    return `<div class="item" style="${active?'':'opacity:.55'}">${active?`<input type="checkbox" class="chk" data-paid="${d.id}" ${paid[d.id]?'checked':''} aria-label="Sudah bayar">`:''}<div class="dot">${k.i}</div><div class="main"><b>${esc(d.name)}</b><small>${esc(d.provider||k.n)}${end?` · tamat ${mLabel(end)}`:''}${!active&&d.start>cur?' · bermula '+mLabel(d.start):''}${!active&&end&&end<cur?' · <span class="pill">Selesai</span>':''}</small>${prog!==null?`<div class="bar"><i style="width:${prog}%"></i></div>`:''}</div><div class="amt">${rm(d.monthly)}<small>baki ${rm(rem)}</small></div><button class="x" data-edit-debt="${d.id}" aria-label="Ubah">✎</button></div>`};
+  const loans=P().debts.filter(d=>DEBT_KINDS[d.kind].g==='loan'), cards=P().debts.filter(d=>DEBT_KINDS[d.kind].g==='card');
+  const paidAmt=t.debts.filter(d=>paid[d.id]).reduce((a,d)=>a+num(d.monthly),0);
+  return `
+  <div class="eyebrow">Komitmen</div><h1>Hutang</h1>
+  <p class="sub">Pinjaman, kad kredit dan PayLater. Tandakan ✓ bila sudah bayar bulan ini.</p>
+  <div class="grid2">
+    <div class="card"><div class="lbl">Bayaran bulan ini</div><div class="val">${rm(t.debtM)}</div><div class="note">${rm(paidAmt)} sudah dibayar</div></div>
+    <div class="card"><div class="lbl">Jumlah baki hutang</div><div class="val">${rm(t.loanBal+t.cardBal)}</div><div class="note">${P().debts.length} akaun</div></div>
+  </div>
+  <h2>Pinjaman</h2>
+  ${loans.length?`<div class="list">${loans.map(row).join('')}</div>`:`<div class="empty">Tiada pinjaman.</div>`}
+  <h2>Kad kredit & PayLater</h2>
+  ${cards.length?`<div class="list">${cards.map(row).join('')}</div>`:`<div class="empty">Tiada kad atau PayLater.</div>`}
+  <button class="btn block" data-add="debt">＋ Tambah hutang</button>`;
+}
+
+function viewSettings(){
+  return `
+  <div class="eyebrow">Tetapan</div><h1>Profil & data</h1>
+  <p class="sub">Data disimpan dalam peranti ini sahaja. Buat sandaran (backup) selalu.</p>
+  <div class="card">
+    <div class="lbl">Profil</div>
+    <div class="list">${Object.keys(S.profiles).map(n=>`<div class="item"><div class="dot">👤</div><div class="main"><b>${esc(n)}</b></div>${Object.keys(S.profiles).length>1?`<button class="x" data-del-prof="${esc(n)}" aria-label="Padam">🗑</button>`:''}</div>`).join('')}</div>
+    <button class="btn ghost block" id="addProf">＋ Tambah profil</button>
+  </div>
+  <div class="card" style="margin-top:12px">
+    <div class="lbl">Sandaran data</div>
+    <button class="btn block" id="exportBtn">⬇ Muat turun backup (JSON)</button>
+    <label class="btn ghost block" style="display:block;text-align:center">⬆ Pulihkan dari backup<input type="file" id="importFile" accept="application/json" hidden></label>
+    <button class="btn ghost block" id="demoBtn">Isi contoh data</button>
+    <button class="btn ghost block" id="resetBtn" style="color:var(--danger)">Padam semua data profil ini</button>
+  </div>`;
+}
+
+/* ================= FORMS ================= */
+let onSave=null;
+function openSheet(title,html,saveFn,delFn){
+  document.getElementById('sheetTitle').textContent=title;
+  document.getElementById('sheetBody').innerHTML=html+(delFn?`<button class="btn ghost block" id="sheetDel" style="color:var(--danger);margin-bottom:8px">Padam</button>`:'');
+  onSave=saveFn;
+  document.getElementById('sheetBg').classList.add('on');
+  if(delFn) document.getElementById('sheetDel').onclick=()=>{if(confirm('Padam rekod ini?')){delFn();closeSheet();save();render();toast('Dipadam')}};
+}
+function closeSheet(){document.getElementById('sheetBg').classList.remove('on');onSave=null}
+const val=id=>document.getElementById(id)?.value??'';
+const opts=(arr,sel)=>arr.map(o=>Array.isArray(o)?`<option value="${esc(o[0])}" ${o[0]===sel?'selected':''}>${esc(o[1])}</option>`:`<option ${o===sel?'selected':''}>${esc(o)}</option>`).join('');
+function today(){const d=new Date();return cur===ym(d)?d.toISOString().slice(0,10):cur+'-01'}
+
+function incomeForm(e){
+  e=e||{type:'gaji',bank:'Maybank',recurring:true,month:cur};
+  openSheet(e.id?'Ubah pendapatan':'Tambah pendapatan',`
+    <label class="f">Jenis<select id="f_type">${opts(Object.entries(INCOME_TYPES),e.type)}</select></label>
+    <label class="f">Keterangan<input id="f_name" value="${esc(e.name||'')}" placeholder="cth. Gaji Syarikat ABC"></label>
+    <label class="f">Masuk ke bank<select id="f_bank">${opts(BANKS,e.bank)}</select></label>
+    <label class="f">Jumlah bersih masuk (RM)<input id="f_amt" inputmode="decimal" value="${e.amount??''}" placeholder="0.00"></label>
+    <label class="f">Ulang<select id="f_rec">${opts([['1','Setiap bulan (mula '+mLabel(e.month)+')'],['0','Bulan ini sahaja']],e.recurring?'1':'0')}</select></label>
+  `,()=>{
+    const amount=num(val('f_amt')); if(!amount) return toast('Masukkan jumlah');
+    const rec=val('f_rec')==='1';
+    Object.assign(e,{type:val('f_type'),name:val('f_name').trim(),bank:val('f_bank'),amount,recurring:rec});
+    if(!e.id){e.id=uid();P().incomes.push(e)}
+    return true;
+  }, e.id?()=>{ if(e.recurring && e.month<cur && confirm('Hentikan mulai bulan ini sahaja (simpan rekod bulan lepas)?')){e.until=addM(cur,-1)} else P().incomes=P().incomes.filter(x=>x.id!==e.id)}:null);
+}
+
+function expenseForm(e){
+  e=e||{cat:'makan',method:'Debit / FPX',recurring:false,month:cur,date:today()};
+  openSheet(e.id?'Ubah perbelanjaan':'Tambah perbelanjaan',`
+    <label class="f">Apa yang dibeli / dibayar<input id="f_name" value="${esc(e.name||'')}" placeholder="cth. Barang dapur, bil TNB"></label>
+    <label class="f">Kategori<select id="f_cat">${opts(Object.entries(CATS).map(([k,c])=>[k,c.i+' '+c.n]),e.cat)}</select></label>
+    <div class="row2">
+      <label class="f">Jumlah (RM)<input id="f_amt" inputmode="decimal" value="${e.amount??''}" placeholder="0.00"></label>
+      <label class="f">Tarikh<input id="f_date" type="date" value="${esc(e.date||'')}"></label>
+    </div>
+    <label class="f">Cara bayar<select id="f_meth">${opts(PAYMETHOD,e.method)}</select></label>
+    <label class="f">Ulang<select id="f_rec">${opts([['0','Sekali sahaja'],['1','Setiap bulan (bil tetap)']],e.recurring?'1':'0')}</select></label>
+  `,()=>{
+    const amount=num(val('f_amt')); if(!amount) return toast('Masukkan jumlah');
+    const date=val('f_date');
+    Object.assign(e,{name:val('f_name').trim(),cat:val('f_cat'),amount,date,method:val('f_meth'),recurring:val('f_rec')==='1'});
+    if(!e.recurring && date) e.month=date.slice(0,7);
+    if(!e.id){e.id=uid();P().expenses.push(e)}
+    return true;
+  }, e.id?()=>{ if(e.recurring && e.month<cur && confirm('Hentikan mulai bulan ini sahaja (simpan rekod bulan lepas)?')){e.until=addM(cur,-1)} else P().expenses=P().expenses.filter(x=>x.id!==e.id)}:null);
+}
+
+function debtForm(d){
+  d=d||{kind:'kereta',start:cur,tenure:'',monthly:'',interest:0,fees:0,down:0};
+  const plOpts=Object.entries(PAYLATER).map(([g,a])=>`<optgroup label="${g}">${opts(a,d.provider)}</optgroup>`).join('');
+  openSheet(d.id?'Ubah hutang':'Tambah hutang',`
+    <label class="f">Jenis hutang<select id="f_kind">${opts(Object.entries(DEBT_KINDS).map(([k,v])=>[k,v.i+' '+v.n]),d.kind)}</select></label>
+    <label class="f">Nama<input id="f_name" value="${esc(d.name||'')}" placeholder="cth. Myvi, Laptop, Rumah Bangi"></label>
+    <div id="f_dyn"></div>
+    <div class="calc" id="f_calc"></div>
+  `,()=>{
+    const kind=val('f_kind'), r=debtCalc();
+    if(!r.monthly) return toast('Lengkapkan jumlah bayaran bulanan');
+    Object.assign(d,{kind,name:val('f_name').trim()||DEBT_KINDS[kind].n,provider:val('f_prov'),start:(kind==='paylater'||kind==='kad')?(val('f_start')||cur):cur,
+      tenure:r.tenure,monthly:r.monthly,balance:r.balance,price:num(val('f_price')),down:num(val('f_down')),interest:num(val('f_int')),fees:num(val('f_fee'))});
+    if(!d.id){d.id=uid();P().debts.push(d)}
+    return true;
+  }, d.id?()=>{P().debts=P().debts.filter(x=>x.id!==d.id)}:null);
+
+  const dyn=()=>{
+    const kind=val('f_kind'), g=DEBT_KINDS[kind].g;
+    let h='';
+    if(kind==='paylater'){
+      h=`<label class="f">Penyedia<select id="f_prov">${plOpts}</select></label>
+      <div class="row2"><label class="f">Bulan mula bayar<input id="f_start" type="month" value="${d.start}"></label>
+      <label class="f">Tempoh (bulan)<input id="f_ten" inputmode="numeric" value="${d.tenure||3}"></label></div>
+      <div class="row2"><label class="f">Harga barang (RM)<input id="f_price" inputmode="decimal" value="${d.price||''}"></label>
+      <label class="f">Bayaran awal (RM)<input id="f_down" inputmode="decimal" value="${d.down||0}"></label></div>
+      <div class="row2"><label class="f">Faedah / caj (%)<input id="f_int" inputmode="decimal" value="${d.interest||0}"></label>
+      <label class="f">Fi lain (RM)<input id="f_fee" inputmode="decimal" value="${d.fees||0}"></label></div>`;
+    } else if(kind==='kad'){
+      h=`<label class="f">Bank kad<select id="f_prov">${opts(BANKS,d.provider)}</select></label>
+      <div class="row2"><label class="f">Baki tertunggak (RM)<input id="f_bal" inputmode="decimal" value="${d.balance||''}"></label>
+      <label class="f">Bayar sebulan (RM)<input id="f_mon" inputmode="decimal" value="${d.monthly||''}"></label></div>
+      <label class="f">Mula<input id="f_start" type="month" value="${d.start}"></label>`;
+    } else {
+      h=`<label class="f">Bank / pemberi pinjaman<select id="f_prov">${opts(kind==='ptptn'?['PTPTN']:BANKS,d.provider)}</select></label>
+      <div class="row2"><label class="f">Ansuran bulanan (RM)<input id="f_mon" inputmode="decimal" value="${d.monthly||''}"></label>
+      <label class="f">Baki bulan lagi<input id="f_left" inputmode="numeric" value="${d.id&&d.tenure?Math.max(0,d.tenure-mDiff(d.start,cur)):''}" placeholder="cth. 84"></label></div>
+      <p class="sub" style="font-size:13px;margin-top:8px">Isi berapa bulan lagi perlu bayar (termasuk bulan ini). Baki pinjaman dikira automatik.</p>`;
+    }
+    document.getElementById('f_dyn').innerHTML=h;
+    document.querySelectorAll('#f_dyn input,#f_dyn select').forEach(i=>i.oninput=calcShow);
+    calcShow();
+  };
+  document.getElementById('f_kind').onchange=dyn; dyn();
+}
+function debtCalc(){
+  const kind=val('f_kind');
+  if(kind==='paylater'){
+    const price=num(val('f_price')),down=num(val('f_down')),pct=num(val('f_int')),fee=num(val('f_fee')),ten=Math.max(1,Math.round(num(val('f_ten'))));
+    const fin=Math.max(0,price-down), total=fin*(1+pct/100)+fee, monthly=Math.round(total/ten*100)/100;
+    return {tenure:ten,monthly,total,fin,balance:0};
+  }
+  if(kind==='kad') return {tenure:0,monthly:num(val('f_mon')),balance:num(val('f_bal'))};
+  const left=Math.max(0,Math.round(num(val('f_left')))), monthly=num(val('f_mon'));
+  // store as starting this month with `left` months
+  return {tenure:left,monthly,balance:0}; // loans start from the viewed month
+}
+function calcShow(){
+  const r=debtCalc(), el=document.getElementById('f_calc'), kind=val('f_kind');
+  if(kind==='paylater') el.innerHTML=`Jumlah dibiayai: <b>${rm(r.fin)}</b><br>Jumlah perlu bayar: <b>${rm(r.total)}</b><br>Bayaran bulanan: <b>${rm(r.monthly)}</b> × ${r.tenure} bulan`;
+  else if(kind==='kad') el.innerHTML=r.monthly&&r.balance?`Anggaran selesai dalam <b>${Math.ceil(r.balance/r.monthly)} bulan</b> jika tiada belian baru.`:'Kad kredit dikira sebagai baki semasa. Kemas kini baki bila ada statement baru.';
+  else el.innerHTML=r.monthly&&r.tenure?`Anggaran baki pinjaman: <b>${rm(r.monthly*r.tenure)}</b><br>Tamat: <b>${mLabel(addM(cur,r.tenure-1))}</b>`:'Masukkan ansuran dan baki bulan.';
+}
+
+function budgetForm(){
+  const b=P().budgets;
+  openSheet('Bajet bulanan ikut kategori',Object.entries(CATS).map(([k,c])=>`<label class="f">${c.i} ${c.n}<input data-b="${k}" inputmode="decimal" value="${b[k]||''}" placeholder="0"></label>`).join(''),()=>{
+    document.querySelectorAll('[data-b]').forEach(i=>{const v=num(i.value); if(v) b[i.dataset.b]=v; else delete b[i.dataset.b]});
+    return true;
+  });
+}
+
+/* ================= EVENTS ================= */
+function bindView(){
+  const v=document.getElementById('view');
+  v.querySelectorAll('[data-add]').forEach(b=>b.onclick=()=>addFor(b.dataset.add));
+  v.querySelectorAll('[data-edit-inc]').forEach(b=>b.onclick=()=>incomeForm(P().incomes.find(x=>x.id===b.dataset.editInc)));
+  v.querySelectorAll('[data-edit-exp]').forEach(b=>b.onclick=()=>expenseForm(P().expenses.find(x=>x.id===b.dataset.editExp)));
+  v.querySelectorAll('[data-edit-debt]').forEach(b=>b.onclick=()=>debtForm(P().debts.find(x=>x.id===b.dataset.editDebt)));
+  v.querySelectorAll('[data-paid]').forEach(c=>c.onchange=()=>{const p=P().paid[cur]=P().paid[cur]||{}; if(c.checked)p[c.dataset.paid]=true; else delete p[c.dataset.paid]; save(); render()});
+  const on=(id,fn)=>{const el=document.getElementById(id); if(el) el.onclick=fn};
+  on('budgetBtn',budgetForm);
+  on('addProf',()=>{const n=(prompt('Nama profil baru (cth. Keluarga, Ahmad):')||'').trim(); if(!n)return; if(S.profiles[n])return toast('Nama sudah wujud'); S.profiles[n]=blankProfile(); S.active=n; save(); render()});
+  v.querySelectorAll('[data-del-prof]').forEach(b=>b.onclick=()=>{const n=b.dataset.delProf; if(!confirm('Padam profil "'+n+'" dan semua datanya?'))return; delete S.profiles[n]; if(S.active===n)S.active=Object.keys(S.profiles)[0]; save(); render()});
+  on('exportBtn',()=>{const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(S,null,2)],{type:'application/json'}));a.download='kewangan-backup-'+new Date().toISOString().slice(0,10)+'.json';a.click()});
+  const imp=document.getElementById('importFile');
+  if(imp) imp.onchange=()=>{const f=imp.files[0]; if(!f)return; f.text().then(t=>{try{const d=JSON.parse(t); if(!d.profiles)throw 0; if(!confirm('Gantikan semua data sekarang dengan backup ini?'))return; S=d; save(); render(); toast('Data dipulihkan')}catch(e){toast('Fail backup tidak sah')}})};
+  on('demoBtn',()=>{if(!confirm('Tambah contoh data ke profil '+S.active+'?'))return; demo(); save(); tab='home'; render(); toast('Contoh data ditambah')});
+  on('resetBtn',()=>{if(!confirm('Padam SEMUA data profil '+S.active+'? Tindakan ini tidak boleh diundur.'))return; S.profiles[S.active]=blankProfile(); save(); render(); toast('Data dipadam')});
+}
+function addFor(t){({income:()=>incomeForm(),expense:()=>expenseForm(),debt:()=>debtForm()})[t]?.()}
+
+document.getElementById('tabs').onclick=e=>{const b=e.target.closest('button'); if(!b)return; tab=b.dataset.tab; render(); window.scrollTo({top:0})};
+document.getElementById('prevM').onclick=()=>{cur=addM(cur,-1);render()};
+document.getElementById('nextM').onclick=()=>{cur=addM(cur,1);render()};
+document.getElementById('profileSel').onchange=e=>{S.active=e.target.value;save();render()};
+document.getElementById('fab').onclick=()=>addFor(tab);
+document.getElementById('sheetClose').onclick=closeSheet;
+document.getElementById('sheetCancel').onclick=closeSheet;
+document.getElementById('sheetBg').onclick=e=>{if(e.target.id==='sheetBg')closeSheet()};
+document.getElementById('sheetSave').onclick=()=>{
+  if(!onSave) return;
+  if(onSave()===true){ save(); closeSheet(); render(); toast('Disimpan'); }
+};
+function applyTheme(){
+  const t=S.theme==='auto'?(matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'):S.theme;
+  document.documentElement.dataset.theme=t;
+}
+document.getElementById('themeBtn').onclick=()=>{S.theme=document.documentElement.dataset.theme==='dark'?'light':'dark';save();applyTheme()};
+
+function demo(){
+  const p=P(), m=cur, m3=addM(cur,-3);
+  p.incomes.push({id:uid(),type:'gaji',name:'Gaji bulanan',bank:'Maybank',amount:6850,recurring:true,month:m3},
+                 {id:uid(),type:'bisnes',name:'Jualan online',bank:'CIMB',amount:1200,recurring:false,month:m});
+  p.expenses.push({id:uid(),name:'Barang dapur',cat:'makan',amount:850,recurring:true,month:m3,method:'Debit / FPX'},
+    {id:uid(),name:'TNB + Air',cat:'utiliti',amount:240,recurring:true,month:m3,method:'Debit / FPX'},
+    {id:uid(),name:'Minyak & tol',cat:'transport',amount:450,recurring:true,month:m3,method:'eWallet'},
+    {id:uid(),name:'Unifi + Telefon',cat:'telefon',amount:210,recurring:true,month:m3,method:'Debit / FPX'},
+    {id:uid(),name:'Takaful keluarga',cat:'takaful',amount:300,recurring:true,month:m3,method:'Debit / FPX'},
+    {id:uid(),name:'Bagi mak ayah',cat:'ibubapa',amount:400,recurring:true,month:m3,method:'Debit / FPX'},
+    {id:uid(),name:'ASB',cat:'simpanan',amount:500,recurring:true,month:m3,method:'Debit / FPX'},
+    {id:uid(),name:'Baju raya anak',cat:'belanja',amount:280,recurring:false,month:m,date:m+'-12',method:'Kad kredit'});
+  p.debts.push({id:uid(),kind:'rumah',name:'Rumah',provider:'Maybank',start:addM(m,-24),tenure:420,monthly:1650},
+    {id:uid(),kind:'kereta',name:'Kereta',provider:'Public Bank',start:addM(m,-20),tenure:108,monthly:720},
+    {id:uid(),kind:'kad',name:'Kad Visa',provider:'CIMB',start:m3,tenure:0,monthly:300,balance:2400},
+    {id:uid(),kind:'paylater',name:'Telefon baru',provider:'Shopee SPayLater',start:addM(m,-1),tenure:6,monthly:250,price:1500,down:0,interest:0,fees:0});
+  p.budgets={makan:1000,utiliti:300,transport:500,telefon:250,belanja:300,hiburan:150};
+}
+
+applyTheme(); render();
+if('serviceWorker' in navigator && location.protocol.startsWith('http')) navigator.serviceWorker.register('sw.js').catch(()=>{});
+</script>
+</body>
+</html>
