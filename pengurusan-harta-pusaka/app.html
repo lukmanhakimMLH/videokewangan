@@ -38,8 +38,7 @@ header.top h1 span{display:block;width:84px;height:5px;background:#d6453a;margin
 header.top p{margin:0;color:#c7d0d6;max-width:62ch}
 .privacy{display:inline-flex;gap:8px;align-items:center;font-size:13px;color:#e8d9b0;background:#ffffff12;border:1px solid #ffffff22;padding:6px 10px;border-radius:999px;width:fit-content}
 
-main .wrap{padding-block:24px 64px;display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:24px;align-items:start}
-@media (max-width:900px){main .wrap{grid-template-columns:minmax(0,1fr)}}
+main .wrap{padding-block:24px 64px;max-width:820px}
 .steps{display:grid;gap:20px;min-width:0}
 
 section.step{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:20px;display:grid;gap:14px;min-width:0}
@@ -90,49 +89,60 @@ button.x{padding:6px 10px;color:var(--muted);font-size:13px}
 .rate{display:flex;gap:12px;flex-wrap:wrap;align-items:end}
 .rate label.f{width:150px}
 
-aside.summary{position:sticky;top:calc(env(safe-area-inset-top,0px) + 16px);background:var(--navy);color:#fff;border-radius:16px;padding:20px;display:grid;gap:14px}
-@media (max-width:900px){aside.summary{position:static}}
-aside .eyebrow{color:var(--gold)}
-.big{font-family:var(--f-display);font-size:34px;font-weight:700;color:var(--gold);line-height:1.1}
-.big small{display:block;font-family:var(--f-body);font-size:13px;color:#c7d0d6;font-weight:500;margin-top:6px}
-dl.calc{margin:0;display:grid;gap:7px;font-size:14px}
-dl.calc div{display:flex;justify-content:space-between;gap:10px}
-dl.calc dt{color:#c7d0d6}
-dl.calc dd{margin:0;font-weight:700;font-variant-numeric:tabular-nums;text-align:right}
-dl.calc .sep{border-top:1px solid #ffffff26;padding-top:8px}
-dl.calc .minus dd{color:#9fe0bc}
-.bar{height:10px;border-radius:999px;background:#ffffff1a;overflow:hidden;display:flex}
-.bar i{display:block;height:100%}
-.legend{display:flex;gap:12px;flex-wrap:wrap;font-size:12px;color:#c7d0d6}
-.legend b{display:inline-block;width:9px;height:9px;border-radius:2px;margin-right:5px;vertical-align:middle}
-.note{font-size:12.5px;color:#c7d0d6;margin:0}
-aside button{background:var(--gold);color:var(--navy);border-color:var(--gold)}
-aside .warnbox{background:#d6453a26;border:1px solid #d6453a66;color:#ffd7d3;border-radius:10px;padding:8px 10px;font-size:13px}
+section.step.sim-b{background:var(--navy);border-color:var(--navy);color:#fff}
+.sim-b .step-no{color:var(--gold)}
+section.step.sim-a{border-top:4px solid var(--bad)}
+.big{font-family:var(--f-display);font-size:clamp(30px,8vw,40px);font-weight:700;color:var(--gold);line-height:1.1}
+.note{font-size:13px;color:#c7d0d6;margin:0}
+.ledger{margin:0;display:grid;gap:0;font-size:15px;border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.ledger div{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:10px 14px;border-bottom:1px solid var(--line)}
+.ledger div:last-child{border-bottom:0}
+.ledger dt{min-width:0}
+.ledger dt small{display:block;color:var(--muted);font-size:12px}
+.ledger dd{margin:0;font-weight:700;font-variant-numeric:tabular-nums;text-align:right;white-space:nowrap}
+.ledger .out dd{color:var(--bad)}
+.ledger .sum{background:var(--surface-2);font-weight:700}
+.ledger .sum dd{font-size:17px}
+.ledger dd.neg{color:var(--bad)}
+.ledger.dark{border-color:#ffffff26}
+.ledger.dark div{border-color:#ffffff1f}
+.ledger.dark dt{color:#c7d0d6}
+.ledger.dark .sum{background:#ffffff10}
+.ledger.dark .sum dt{color:#fff}
+.ledger.dark .sum dd{color:var(--gold)}
+.inl{display:inline-flex;align-items:center;gap:4px;margin-left:4px;font-weight:600}
+.inl input{width:70px;padding:4px 6px;font-size:14px;text-align:right}
+.ledger.dark .inl input{width:110px;background:#ffffff14;color:#fff;border-color:#ffffff33}
+.verdict{border-radius:12px;padding:12px 14px;font-size:14.5px;line-height:1.45}
+.verdict strong{font-family:var(--f-display);font-size:20px;display:block}
+.verdict.bad{background:var(--bad-bg);color:var(--bad)}
+.verdict.good{background:#1f7a4d33;color:#a8ecc5}
+.tbl.dark{border-color:#ffffff26}
+.tbl.dark th{background:#ffffff10;color:#c7d0d6}
+.tbl.dark td{border-color:#ffffff1f}
+.tbl.dark td small{color:#9fb0bb}
+.tbl.dark tr.total td{background:#ffffff10}
+.tbl td.plus{color:#8fe3b4}
+.sim-b button{background:var(--gold);color:var(--navy);border-color:var(--gold)}
+.warnbox{background:var(--warn-bg);color:var(--warn);border-radius:10px;padding:10px 12px;font-size:13.5px}
 textarea#copyFallback{width:100%;min-height:120px;font:12px/1.4 ui-monospace,monospace;border-radius:8px;padding:8px;background:var(--surface-2);color:var(--fg);border:1px solid var(--line)}
 .quick{display:grid;gap:6px;padding:14px;border-radius:12px;background:var(--surface-2);border:1px solid var(--line)}
 .quick h3{font-size:15px}
 .qbtns{display:flex;flex-wrap:wrap;gap:8px;margin-top:4px}
 .qbtns button{font-size:13px;padding:7px 11px;border-radius:999px;font-weight:600}
 .qbtns button::before{content:"+ ";color:var(--gold-ink);font-weight:800}
-.compare{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
-@media (max-width:480px){.compare{grid-template-columns:minmax(0,1fr)}}
-.tile{border-radius:12px;padding:12px 14px;display:grid;gap:2px}
-.tile span{font-size:13px}
-.tile strong{font-family:var(--f-display);font-size:22px}
-.tile small{font-size:12px;opacity:.85}
-.tile.bad{background:var(--bad-bg);color:var(--bad)}
-.tile.good{background:var(--good-bg);color:var(--good)}
 .tbl{overflow-x:auto;border:1px solid var(--line);border-radius:12px}
-.tbl table{border-collapse:collapse;width:100%;min-width:440px;font-size:14px}
+.tbl table{border-collapse:collapse;width:100%;font-size:14px}
 .tbl th,.tbl td{padding:9px 10px;text-align:left;border-bottom:1px solid var(--line);vertical-align:top}
 .tbl th{font-size:11.5px;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);background:var(--surface-2)}
 .tbl th span{text-transform:none;letter-spacing:0;font-weight:500}
 .tbl td.r,.tbl th.r{text-align:right;font-variant-numeric:tabular-nums}
+.tbl td.r{white-space:nowrap}
+@media (max-width:480px){.tbl table{font-size:13px}.tbl th,.tbl td{padding:8px 7px}}
 .tbl td small{display:block;color:var(--muted);font-size:12px}
 .tbl tr:last-child td{border-bottom:0}
 .tbl tr.total td{font-weight:700;background:var(--surface-2)}
 .tbl td.zero{color:var(--bad)}
-dd.neg{color:#ff9d93}
 footer{color:var(--muted);font-size:12.5px}
 footer .wrap{padding-block:0 32px}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
@@ -212,19 +222,9 @@ footer .wrap{padding-block:0 32px}
         <div class="subtotal num"><span>Jumlah aset</span><span id="assetTotal">RM 0.00</span></div>
       </section>
 
-      <!-- 4. Tetapan -->
-      <section class="step" id="s-settings">
-        <div class="step-head"><h2><span class="step-no">LANGKAH 4</span> Kos &amp; Keperluan Waris</h2></div>
-        <div class="rate">
-          <label class="f">KOS PENGURUSAN (%)<input id="rate" class="money" type="number" min="0" max="100" step="0.5" value="5"></label>
-          <label class="f" style="flex:1 1 220px">DANA TAMBAHAN UNTUK WARIS (RM)<input id="extra" class="money" type="text" inputmode="decimal" value="0"></label>
-        </div>
-        <p class="hint">Kos pengurusan pusaka = <b id="costFormula">5% × jumlah aset</b> (yuran guaman, duti setem, penilaian, pentadbiran). Dana tambahan pilihan: contohnya nafkah keluarga 12 bulan atau kos pendidikan anak.</p>
-      </section>
-
-      <!-- 5. Faraid -->
+      <!-- 4. Waris -->
       <section class="step" id="s-faraid">
-        <div class="step-head"><h2><span class="step-no">LANGKAH 5</span> Simulasi Pembahagian Faraid</h2></div>
+        <div class="step-head"><h2><span class="step-no">LANGKAH 4</span> Maklumat Waris</h2></div>
         <div class="client">
           <label class="f">SI MATI<select id="f-gender"><option value="L">Lelaki</option><option value="P">Perempuan</option></select></label>
           <label class="f" id="f-spouse-l">PASANGAN MASIH HIDUP<select id="f-spouse"></select></label>
@@ -235,44 +235,53 @@ footer .wrap{padding-block:0 32px}
           <label class="check"><input type="checkbox" id="f-father"> Bapa masih hidup</label>
           <label class="check"><input type="checkbox" id="f-mother"> Ibu masih hidup</label>
         </div>
-        <div class="compare">
-          <div class="tile bad"><span>Harta untuk faraid <b>tanpa hibah</b></span><strong class="num" id="f-est0">–</strong><small id="f-est0-n"></small></div>
-          <div class="tile good"><span>Harta untuk faraid <b>dengan hibah</b></span><strong class="num" id="f-est1">–</strong><small>Hibah jelaskan hutang &amp; kos, aset kekal utuh</small></div>
-        </div>
         <div class="tbl"><table>
-          <thead><tr><th>Waris</th><th>Bahagian</th><th class="r">Seorang dapat<br><span>tanpa hibah</span></th><th class="r">Seorang dapat<br><span>dengan hibah</span></th></tr></thead>
-          <tbody id="f-body"></tbody>
+          <thead><tr><th>Waris</th><th>Bahagian faraid</th><th class="r">Peratus</th></tr></thead>
+          <tbody id="f-shares"></tbody>
         </table></div>
         <p class="hint" id="f-notes"></p>
         <p class="hint">Simulasi ringkas mengikut mazhab Syafie untuk pasangan, anak, ibu dan bapa sahaja (tidak termasuk adik-beradik, datuk, nenek, cucu). Sahkan dengan Mahkamah Syariah, Amanah Raya atau peguam syarie.</p>
       </section>
-    </div>
 
-    <aside class="summary" aria-live="polite">
-      <div class="eyebrow">Keperluan Hibah</div>
-      <div class="big num" id="hibah">RM 0<small id="hibahRound"></small></div>
-      <div class="bar" id="bar"></div>
-      <div class="legend"><span><b style="background:#e07a6f"></b>Hutang</span><span><b style="background:#c9a24a"></b>Kos pusaka</span><span><b style="background:#7fb3d5"></b>Dana waris</span></div>
-      <dl class="calc">
-        <div><dt>Jumlah aset</dt><dd id="r-assets">–</dd></div>
-        <div><dt>Jumlah hutang</dt><dd id="r-debts">–</dd></div>
-        <div class="minus"><dt>Tolak: dilindungi MRTA/takaful</dt><dd id="r-covered">–</dd></div>
-        <div class="sep"><dt>Hutang perlu dijelaskan</dt><dd id="r-unc">–</dd></div>
-        <div><dt id="r-rate-l">Kos pengurusan pusaka 5%</dt><dd id="r-cost">–</dd></div>
-        <div><dt>Dana tambahan waris</dt><dd id="r-extra">–</dd></div>
-      </dl>
-      <div class="eyebrow">Jika tiada hibah</div>
-      <dl class="calc">
-        <div><dt>Aset</dt><dd id="n-a">–</dd></div>
-        <div><dt>Tolak hutang perlu dijelaskan</dt><dd id="n-u">–</dd></div>
-        <div><dt>Tolak kos pengurusan</dt><dd id="n-c">–</dd></div>
-        <div class="sep"><dt id="r-net-l">Baki harta untuk waris</dt><dd id="r-net">–</dd></div>
-      </dl>
-      <div class="warnbox" id="warn" hidden></div>
-      <p class="note">Hibah takaful dibayar terus kepada penerima yang dinamakan, di luar harta pusaka dan faraid, jadi waris boleh jelaskan hutang dan kos tanpa menunggu pusaka selesai dibahagi.</p>
-      <button type="button" id="copy">Salin ringkasan</button>
-      <textarea id="copyFallback" hidden readonly aria-label="Ringkasan untuk disalin"></textarea>
-    </aside>
+      <!-- 5. Tanpa hibah -->
+      <section class="step sim-a" id="s-sim0">
+        <div class="step-head"><h2><span class="step-no">SIMULASI A</span> Tanpa Hibah</h2></div>
+        <p class="hint">Hutang dan kos pengurusan mesti dijelaskan dari harta pusaka dahulu. Hanya baki yang dibahagi ikut faraid.</p>
+        <dl class="ledger">
+          <div><dt>Nilai aset</dt><dd id="a-assets">–</dd></div>
+          <div class="out"><dt>Tolak hutang <small id="a-cov"></small></dt><dd id="a-debts">–</dd></div>
+          <div class="out"><dt>Tolak kos pengurusan <label class="inl"><input id="rate" type="number" min="0" max="100" step="0.5" value="5" aria-label="Kos pengurusan peratus">%</label> × aset</dt><dd id="a-cost">–</dd></div>
+          <div class="sum"><dt id="a-net-l">Baki untuk faraid</dt><dd id="a-net">–</dd></div>
+        </dl>
+        <div class="verdict bad" id="a-verdict"></div>
+        <div class="tbl"><table>
+          <thead id="a-head"></thead>
+          <tbody id="a-body"></tbody>
+        </table></div>
+        <div class="warnbox" id="warn" hidden></div>
+      </section>
+
+      <!-- 6. Dengan hibah -->
+      <section class="step sim-b" id="s-sim1">
+        <div class="step-head"><h2><span class="step-no">SIMULASI B</span> Dengan Hibah</h2></div>
+        <div class="big num" id="hibah">RM 0</div>
+        <p class="note" id="hibahRound"></p>
+        <dl class="ledger dark">
+          <div><dt>Hibah bayar hutang</dt><dd id="b-debts">–</dd></div>
+          <div><dt>Hibah bayar kos pengurusan pusaka</dt><dd id="b-cost">–</dd></div>
+          <div><dt>Dana tambahan waris <label class="inl"><span>RM</span><input id="extra" class="money" type="text" inputmode="decimal" value="0" aria-label="Dana tambahan waris"></label></dt><dd id="b-extra">–</dd></div>
+          <div class="sum"><dt>Jumlah hibah diperlukan</dt><dd id="b-total">–</dd></div>
+        </dl>
+        <div class="verdict good" id="b-verdict"></div>
+        <div class="tbl dark"><table>
+          <thead><tr><th>Waris</th><th class="r">Seorang dapat</th><th class="r">Lebih berbanding<br>tanpa hibah</th></tr></thead>
+          <tbody id="b-body"></tbody>
+        </table></div>
+        <p class="note">Hibah takaful dibayar terus kepada penerima yang dinamakan, di luar harta pusaka dan faraid. Penerima guna wang itu untuk jelaskan hutang dan kos, jadi aset kekal utuh dan dibahagi penuh kepada waris.</p>
+        <button type="button" id="copy">Salin ringkasan</button>
+        <textarea id="copyFallback" hidden readonly aria-label="Ringkasan untuk disalin"></textarea>
+      </section>
+    </div>
   </div>
 </main>
 <footer><div class="wrap">Anggaran sahaja untuk tujuan perancangan. Bacaan automatik laporan kredit boleh tersilap; sentiasa semak dengan laporan asal. Pastikan data peribadi dan laporan kredit dikendalikan secara sulit.</div></footer>
@@ -616,30 +625,35 @@ function renderSummary(){
   const r = compute();
   $('debtTotal').textContent = rm(r.D);
   $('assetTotal').textContent = rm(r.A);
-  $('hibah').innerHTML = rm(r.H) + `<small>Cadangan perlindungan: <b>${rm(r.round,0)}</b> (dibundarkan ke RM10,000)</small>`;
-  $('r-assets').textContent = rm(r.A);
-  $('r-debts').textContent = rm(r.D);
-  $('r-covered').textContent = '− ' + rm(r.C);
-  $('r-unc').textContent = rm(r.U);
-  $('r-rate-l').textContent = 'Kos pengurusan pusaka ' + fmt(state.rate, state.rate%1?1:0) + '%';
-  $('r-cost').textContent = rm(r.cost);
-  $('r-extra').textContent = rm(r.E);
-  $('n-a').textContent = rm(r.A);
-  $('n-u').textContent = '− ' + rm(r.U);
-  $('n-c').textContent = '− ' + rm(r.cost);
-  $('r-net-l').textContent = r.net < 0 ? 'Kekurangan (hutang melebihi aset)' : 'Baki harta untuk waris';
-  $('r-net').textContent = r.net < 0 ? '− ' + rm(-r.net) : rm(r.net);
-  $('r-net').classList.toggle('neg', r.net < 0);
-  $('costFormula').textContent = fmt(state.rate, state.rate%1?1:0) + '% × jumlah aset ' + rm(r.A) + ' = ' + rm(r.cost);
+
+  // Simulasi A
+  $('a-assets').textContent = rm(r.A);
+  $('a-debts').textContent = '− ' + rm(r.U);
+  $('a-cov').textContent = r.C ? 'Jumlah ' + rm(r.D) + ', tolak ' + rm(r.C) + ' yang dilindungi MRTA/takaful' : '';
+  $('a-cost').textContent = '− ' + rm(r.cost);
+  $('a-net-l').textContent = r.net < 0 ? 'Kekurangan' : 'Baki untuk faraid';
+  $('a-net').textContent = r.net < 0 ? '− ' + rm(-r.net) : rm(r.net);
+  $('a-net').classList.toggle('neg', r.net < 0);
+  const lost = r.U + r.cost;
+  $('a-verdict').innerHTML = r.net < 0
+    ? `<strong>Waris perlu cari ${rm(-r.net)}</strong>Semua aset (${rm(r.A)}) habis dijual atau dicairkan untuk bayar hutang dan kos, dan masih ada baki hutang ${rm(-r.net)} yang perlu dilangsaikan. Waris tidak dapat apa-apa.`
+    : `<strong>Waris hilang ${rm(lost)}</strong>Daripada aset ${rm(r.A)}, hanya ${rm(r.net)} tinggal untuk dibahagi ikut faraid${r.A ? ' (' + fmt(r.net / r.A * 100, 0) + '%)' : ''}. Aset mungkin perlu dijual untuk dapatkan tunai bayar hutang.`;
+
+  // Simulasi B
+  $('hibah').textContent = rm(r.H);
+  $('hibahRound').innerHTML = `Cadangan nilai perlindungan hibah: <b>${rm(r.round,0)}</b> (dibundarkan ke RM10,000)`;
+  $('b-debts').textContent = rm(r.U);
+  $('b-cost').textContent = rm(r.cost);
+  $('b-extra').textContent = rm(r.E);
+  $('b-total').textContent = rm(r.H);
+  $('b-verdict').innerHTML = `<strong>Aset ${rm(r.A)} kekal utuh</strong>Hutang dan kos dibayar dengan wang hibah, jadi semua aset dibahagi penuh ikut faraid${r.E ? ', dan penerima hibah dapat tambahan ' + rm(r.E) + ' tunai' : ''}.`;
+
   renderFaraid(r);
-  const tot = r.H || 1;
-  $('bar').innerHTML = `<i style="width:${r.U/tot*100}%;background:#e07a6f"></i><i style="width:${r.cost/tot*100}%;background:#c9a24a"></i><i style="width:${r.E/tot*100}%;background:#7fb3d5"></i>`;
+
   const w = $('warn');
   const arrears = state.debts.filter(d=>d.arrears>0||d.saa).length;
-  const msgs = [];
-  if(r.net < 0) msgs.push('Hutang dan kos (' + rm(r.U + r.cost) + ') lebih besar daripada aset (' + rm(r.A) + '). Tanpa hibah, semua aset habis untuk bayar hutang, waris tidak dapat apa-apa dan baki ' + rm(-r.net) + ' masih tidak berbayar.');
-  if(arrears) msgs.push(arrears + ' akaun ada tunggakan atau dalam Perhatian Khas. Selesaikan sebelum memohon perlindungan baharu.');
-  w.hidden = !msgs.length; w.innerHTML = msgs.map(esc).join('<br>');
+  w.hidden = !arrears;
+  w.textContent = arrears ? arrears + ' akaun pernah ada tunggakan atau dalam Perhatian Khas. Selesaikan sebelum memohon perlindungan hibah baharu.' : '';
 
   const chk = $('debtCheck');
   if(state.reportTotal){
@@ -686,22 +700,24 @@ function faraid(h){
 }
 
 function renderFaraid(r){
-  const h = state.faraid;
-  const est0 = Math.max(0, r.net), est1 = r.A;
-  $('f-est0').textContent = rm(est0);
-  $('f-est0-n').textContent = r.net < 0 ? 'Semua aset habis untuk hutang & kos' : 'Selepas tolak hutang & kos';
-  $('f-est1').textContent = rm(est1);
-  const {rows, notes} = faraid(h);
-  if(!rows.length){ $('f-body').innerHTML = '<tr><td colspan="4">Isi maklumat waris di atas.</td></tr>'; }
-  else {
-    $('f-body').innerHTML = rows.map(x => {
-      const each = x.n ? x.share / x.n : x.share;
-      return `<tr><td>${esc(x.who)}${x.n?` <b>× ${x.n}</b>`:''}<small>${esc(x.why)}</small></td>
-        <td>${esc(x.frac)}<small>${fmt(x.share*100,2)}%${x.n>1?' dikongsi':''}</small></td>
-        <td class="r ${est0?'':'zero'}">${rm(each*est0)}</td><td class="r">${rm(each*est1)}</td></tr>`;
-    }).join('') + `<tr class="total"><td colspan="2">Jumlah</td><td class="r">${rm(est0)}</td><td class="r">${rm(est1)}</td></tr>`;
+  const {rows, notes} = faraid(state.faraid);
+  const est0 = Math.max(0, r.net), est1 = r.A, short = Math.max(0, -r.net);
+  const who = x => `${esc(x.who)}${x.n>1?` <b>× ${x.n}</b>`:''}`;
+  const per = x => x.n ? x.share / x.n : x.share;
+  if(!rows.length){
+    const empty = '<tr><td colspan="4">Isi maklumat waris di Langkah 4.</td></tr>';
+    $('f-shares').innerHTML = $('a-body').innerHTML = $('b-body').innerHTML = empty; $('a-head').innerHTML = ''; $('f-notes').textContent = ''; return;
   }
+  $('f-shares').innerHTML = rows.map(x => `<tr><td>${who(x)}<small>${esc(x.why)}</small></td><td>${esc(x.frac)}${x.n>1?'<small>dikongsi '+x.n+' orang</small>':''}</td><td class="r">${fmt(x.share*100,2)}%</td></tr>`).join('');
   $('f-notes').textContent = notes.join(' ');
+
+  $('a-head').innerHTML = `<tr><th>Waris</th><th class="r">Seorang dapat</th>${short?'<th class="r">Seorang tanggung<br>kekurangan*</th>':''}</tr>`;
+  $('a-body').innerHTML = rows.map(x => `<tr><td>${who(x)}</td><td class="r ${est0?'':'zero'}">${rm(per(x)*est0)}</td>${short?`<td class="r zero">${rm(per(x)*short)}</td>`:''}</tr>`).join('')
+    + `<tr class="total"><td>Jumlah</td><td class="r">${rm(est0)}</td>${short?`<td class="r">${rm(short)}</td>`:''}</tr>`
+    + (short ? `<tr><td colspan="3"><small>* Anggaran jika waris berkongsi melangsaikan baki hutang ikut nisbah faraid.</small></td></tr>` : '');
+
+  $('b-body').innerHTML = rows.map(x => `<tr><td>${who(x)}</td><td class="r">${rm(per(x)*est1)}</td><td class="r plus">+ ${rm(per(x)*(est1-est0))}</td></tr>`).join('')
+    + `<tr class="total"><td>Jumlah</td><td class="r">${rm(est1)}</td><td class="r plus">+ ${rm(est1-est0)}</td></tr>`;
 }
 
 function renderFaraidInputs(){
@@ -826,17 +842,17 @@ function summaryText(){
   L.push(''); L.push('ASET');
   state.assets.forEach((a,i) => L.push(`${i+1}. ${a.type}${a.desc?' – '+a.desc:''}: ${rm(a.value)}`));
   L.push('Jumlah aset: ' + rm(r.A));
-  L.push(''); L.push('PENGIRAAN HIBAH');
-  L.push('Hutang perlu dijelaskan: ' + rm(r.U));
-  L.push(`Kos pengurusan pusaka (${state.rate}%): ` + rm(r.cost));
-  if(r.E) L.push('Dana tambahan waris: ' + rm(r.E));
-  L.push('KEPERLUAN HIBAH: ' + rm(r.H));
+  const est0 = Math.max(0, r.net), rows = faraid(state.faraid).rows;
+  const per = x => x.n ? x.share/x.n : x.share;
+  L.push(''); L.push('SIMULASI A: TANPA HIBAH');
+  L.push('Aset ' + rm(r.A) + ' - hutang ' + rm(r.U) + ' - kos pengurusan ' + state.rate + '% ' + rm(r.cost));
+  L.push(r.net < 0 ? 'KEKURANGAN: ' + rm(-r.net) + ' (waris perlu cari untuk langsaikan hutang)' : 'Baki untuk faraid: ' + rm(r.net));
+  rows.forEach(x => L.push(`- ${x.who}${x.n>1?' x'+x.n:''} (${x.frac}): seorang ${rm(per(x)*est0)}`));
+  L.push(''); L.push('SIMULASI B: DENGAN HIBAH');
+  L.push('Hibah diperlukan: ' + rm(r.H) + ' (hutang ' + rm(r.U) + ' + kos ' + rm(r.cost) + (r.E ? ' + dana waris ' + rm(r.E) : '') + ')');
   L.push('Cadangan perlindungan: ' + rm(r.round,0));
-  L.push(''); L.push('SIMULASI FARAID (anggaran)');
-  const est0 = Math.max(0, r.net);
-  L.push('Harta untuk faraid: tanpa hibah ' + rm(est0) + ' | dengan hibah ' + rm(r.A));
-  faraid(state.faraid).rows.forEach(x => { const each = x.n ? x.share/x.n : x.share;
-    L.push(`- ${x.who}${x.n?' x'+x.n:''} (${x.frac}): seorang ${rm(each*est0)} tanpa hibah, ${rm(each*r.A)} dengan hibah`); });
+  L.push('Aset utuh untuk faraid: ' + rm(r.A));
+  rows.forEach(x => L.push(`- ${x.who}${x.n>1?' x'+x.n:''} (${x.frac}): seorang ${rm(per(x)*r.A)}`));
   return L.join('\n');
 }
 $('copy').addEventListener('click', () => {
