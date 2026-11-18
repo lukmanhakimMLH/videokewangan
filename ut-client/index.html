@@ -100,7 +100,7 @@ dialog .ft{padding:12px 16px;border-top:1px solid var(--line);display:flex;gap:8
 <body>
 <header>
   <h1>📊 Klien Unit Trust</h1>
-  <button class="sm" onclick="openBackup()">Backup</button>
+  <button class="sm" onclick="openBackup()">⚙ Tetapan</button>
 </header>
 <nav class="tabs">
   <button data-tab="dash" class="on">Ringkasan</button>
@@ -192,31 +192,6 @@ function render(){
 }
 
 /* ============ VIEWS ============ */
-function viewDash(){
-  let aum=0, inv=0, ret=0, prc=0;
-  const rows = DB.clients.map(c=>{ const s=clientSummary(c.id); aum+=s.value; inv+=s.invested; ret+=s.totalRet; prc+=s.proceeds; return {c,s}; })
-    .sort((a,b)=>b.s.value-a.s.value);
-  const byFund={}; DB.clients.forEach(c=>clientSummary(c.id).hs.forEach(h=>{ byFund[h.fundId]=(byFund[h.fundId]||0)+h.value; }));
-  const fundRows=Object.entries(byFund).filter(([,v])=>v>0).sort((a,b)=>b[1]-a[1]);
-  const stale = DB.funds.filter(f=>!f.navDate || (Date.now()-new Date(f.navDate))/864e5>7);
-  return `
-  <div class="kpis">
-    <div class="kpi"><div class="l">Jumlah AUM (nilai semasa)</div><div class="v">${rm(aum)}</div></div>
-    <div class="kpi"><div class="l">Jumlah dilabur</div><div class="v">${rm(inv)}</div></div>
-    <div class="kpi"><div class="l">Jumlah pulangan</div><div class="v ${cls(ret)}">${rm(ret)}<div style="font-size:13px">${pct(inv>0?ret/inv:NaN)}</div></div></div>
-    <div class="kpi"><div class="l">Klien</div><div class="v">${DB.clients.length}</div></div>
-  </div>
-  ${stale.length?`<div class="card" style="border-color:var(--warn)"><b class="" style="color:var(--warn)">⚠ ${stale.length} dana</b> harga belum dikemaskini lebih 7 hari: ${stale.map(f=>esc(f.name)).join(', ')}</div>`:''}
-  <div class="card"><h2>Klien ikut nilai</h2>
-  ${rows.length? `<div class="scroll"><table class="tbl"><tr><th>Klien</th><th class="num">Nilai</th><th class="num hide-sm">Dilabur</th><th class="num">Pulangan</th></tr>
-    ${rows.map(({c,s})=>`<tr style="cursor:pointer" onclick="openClient('${c.id}')"><td><b>${esc(c.name)}</b></td><td class="num">${rm(s.value)}</td><td class="num hide-sm">${rm(s.invested)}</td><td class="num ${cls(s.totalRet)}">${pct(s.totalRetPct)}</td></tr>`).join('')}
-  </table></div>` : `<div class="empty">Belum ada klien. Pergi tab <b>Klien</b> untuk tambah.</div>`}
-  </div>
-  ${fundRows.length?`<div class="card"><h2>Agihan AUM ikut dana</h2>
-    ${fundRows.map(([fid,v])=>`<div style="margin:8px 0"><div class="row"><span>${esc(fund(fid)?.name||'?')}</span><span class="spacer"></span><span class="num">${rm(v)} · ${pctPlain(v/aum)}</span></div><div class="bar"><i style="width:${(v/aum*100).toFixed(1)}%"></i></div></div>`).join('')}
-  </div>`:''}`;
-}
-
 function viewClients(){
   const q=(view.q||'').toLowerCase();
   const list=DB.clients.filter(c=>!q||c.name.toLowerCase().includes(q)||(c.ic||'').includes(q)||(c.phone||'').includes(q))
@@ -236,6 +211,7 @@ function clientListHTML(list){
       <div class="avatar">${esc(c.name.trim().split(/\s+/).slice(0,2).map(w=>w[0]).join('').toUpperCase())}</div>
       <div style="flex:1;min-width:0"><div class="nm">${esc(c.name)}</div><div class="sub">${n} dana · ${esc(c.phone||'')}</div></div>
       <div class="num"><div><b>${rm(s.value)}</b></div><div class="${cls(s.totalRet)}" style="font-size:12.5px">${pct(s.totalRetPct)}</div></div>
+      ${c.phone?`<button class="sm" title="WhatsApp" style="background:#25D366;border-color:#25D366;color:#fff;padding:6px 9px" onclick="event.stopPropagation();openWA('${c.id}',false)">💬</button>`:''}
     </div>`; }).join('');
 }
 
@@ -260,6 +236,11 @@ function viewClient(id){
     <div class="row"><div class="avatar">${esc(c.name.trim().split(/\s+/).slice(0,2).map(w=>w[0]).join('').toUpperCase())}</div>
       <div style="flex:1"><h2 style="margin:0">${esc(c.name)}</h2><div class="muted" style="font-size:13px">${[c.ic&&('IC: '+esc(c.ic)), c.phone&&('☎ '+esc(c.phone)), c.email&&esc(c.email)].filter(Boolean).join(' · ')}</div></div>
       <button class="sm" onclick="editClient('${id}')">Edit</button></div>
+    <div class="row" style="margin-top:10px">
+      <button class="sm" style="background:#25D366;border-color:#25D366;color:#fff" onclick="openWA('${id}',false)">💬 WhatsApp</button>
+      <button class="sm" onclick="waMenu('${id}')">📈 Hantar portfolio</button>
+      <button class="sm" onclick="makePDF('${id}')">📄 PDF portfolio</button>
+    </div>
     ${c.risk||c.dob?`<div style="margin-top:8px;font-size:13px">${c.risk?`<span class="chip">Risiko: ${esc(c.risk)}</span> `:''}${c.dob?`<span class="chip">Lahir: ${fdate(c.dob)}</span> `:''}</div>`:''}
     <details style="margin-top:10px"><summary style="cursor:pointer;font-weight:700;color:var(--brand)">Detail Kenanga</summary>
       <div style="margin-top:6px">${CFIELDS.map(([k,l],i)=>{ const v=k==='salary'?salaryText(c[k]):c[k];
@@ -746,10 +727,217 @@ function showFundChart(fid){
   document.getElementById('fchart').innerHTML=priceChart({fundId:fid,width:w});
 }
 
+/* ============ DASHBOARD: AUM & JUALAN ============ */
+const BULAN=['Jan','Feb','Mac','Apr','Mei','Jun','Jul','Ogo','Sep','Okt','Nov','Dis'];
+const BULAN_PENUH=['Januari','Februari','Mac','April','Mei','Jun','Julai','Ogos','September','Oktober','November','Disember'];
+const ymd=(y,m,d)=>`${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+function monthEnd(y,m){ const d=ymd(y,m,new Date(y,m+1,0).getDate()); return d>today()?today():d; }
+// Harga NAV dana pada tarikh tertentu (harga terakhir yang diketahui)
+function navAt(f,d){
+  const h=(f.history||[]); let v=null;
+  for(const p of h){ if(p.date<=d) v=p.nav; else break; }
+  if(v==null){ const t=DB.tx.filter(x=>x.fundId===f.id&&x.date<=d).sort((a,b)=>b.date.localeCompare(a.date))[0]; if(t) v=t.price; }
+  return v||0;
+}
+function aumAt(d){
+  const units={};
+  DB.tx.forEach(t=>{ if(t.date<=d) units[t.fundId]=(units[t.fundId]||0)+(t.type==='redeem'?-t.units:t.units); });
+  let s=0; for(const fid in units){ const f=fund(fid); if(f&&units[fid]>1e-6) s+=units[fid]*navAt(f,d); } return s;
+}
+// Tarikh mula klien = belian pertama (atau tarikh daftar)
+function clientStart(c){ const t=DB.tx.filter(x=>x.clientId===c.id&&x.type==='buy').map(x=>x.date).sort()[0]; return t || (c.created?new Date(c.created).toISOString().slice(0,10):today()); }
+const rmK=n=>n>=1e6?(n/1e6).toFixed(2)+'j':n>=1e3?(n/1e3).toFixed(n>=1e5?0:1)+'k':String(Math.round(n));
+
+function barChart({labels, values, tips, hi, height}){
+  values=values.map(v=>isFinite(v)?v:0);
+  const W=Math.max(280,Math.min(document.querySelector('main').clientWidth-30,920)), H=height||200;
+  const L=50,R=8,T=14,B=24, pw=W-L-R, ph=H-T-B;
+  const max=Math.max(...values,0)||1, n=values.length, slot=pw/n, bw=Math.max(4,Math.min(36,slot*0.62));
+  const ticks=[0,1,2,3].map(i=>max*i/3);
+  const id='bc'+(++_cid); CH[id]={tips};
+  let g=ticks.map(v=>`<line x1="${L}" x2="${W-R}" y1="${T+ph-v/max*ph}" y2="${T+ph-v/max*ph}" stroke="var(--line)"/><text x="${L-6}" y="${T+ph-v/max*ph+4}" text-anchor="end" font-size="11" fill="var(--muted)">${rmK(v)}</text>`).join('');
+  const every=Math.max(1,Math.ceil(26/slot));
+  g+=values.map((v,i)=>{ const x=L+slot*i+(slot-bw)/2, h=Math.max(v>0?2:0,v/max*ph), y=T+ph-h;
+    const r=Math.min(4,bw/2,h);
+    const path=h>0?`M${x},${T+ph}V${y+r}Q${x},${y} ${x+r},${y}H${x+bw-r}Q${x+bw},${y} ${x+bw},${y+r}V${T+ph}Z`:'';
+    return `${path?`<path d="${path}" fill="var(--s-nav)" opacity="${hi==null||hi===i?1:0.55}"/>`:''}
+      ${i%every===0||i===n-1?`<text x="${x+bw/2}" y="${H-6}" text-anchor="middle" font-size="11" fill="var(--muted)">${labels[i]}</text>`:''}
+      <rect x="${L+slot*i}" y="${T}" width="${slot}" height="${ph}" fill="transparent" onpointerenter="barTip(event,'${id}',${i})" onpointerdown="barTip(event,'${id}',${i})" onpointerleave="chartLeave('')"/>`; }).join('');
+  return `<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" style="display:block">${g}</svg>`;
+}
+function barTip(e,id,i){
+  const tip=document.getElementById('ctip'); const host=dlg.open?dlg:document.body; if(tip.parentNode!==host) host.appendChild(tip);
+  tip.innerHTML=CH[id].tips[i]; tip.style.display='block';
+  const tw=tip.offsetWidth; let left=e.clientX+12; if(left+tw>window.innerWidth-8) left=e.clientX-tw-12;
+  tip.style.left=Math.max(8,left)+'px'; tip.style.top=Math.max(8,e.clientY-90)+'px';
+}
+
+function viewDash(){
+  const now=new Date(), cy=now.getFullYear(), cm=now.getMonth();
+  const years=[...new Set([cy,...DB.tx.map(t=>+t.date.slice(0,4)),...DB.clients.map(c=>+clientStart(c).slice(0,4))])].sort();
+  const yr=view.year||cy;
+  const aumNow=aumAt(today());
+  // AUM bulanan: 12 bulan terakhir
+  const mAum=[]; for(let i=11;i>=0;i--){ const d=new Date(cy,cm-i,1); const e=monthEnd(d.getFullYear(),d.getMonth()); mAum.push({lbl:BULAN[d.getMonth()], full:BULAN_PENUH[d.getMonth()]+' '+d.getFullYear(), v:aumAt(e)}); }
+  // AUM tahunan
+  const yAum=years.filter(y=>y<=cy).map(y=>({y, v:aumAt(y===cy?today():ymd(y,11,31))}));
+  // Jualan ikut bulan (tahun dipilih)
+  const S=BULAN.map(()=>({sales:0,red:0,nbuy:0,newC:[],buyers:new Set()}));
+  DB.tx.forEach(t=>{ if(+t.date.slice(0,4)!==yr) return; const m=+t.date.slice(5,7)-1;
+    if(t.type==='buy'){ S[m].sales+=t.amount; S[m].nbuy++; S[m].buyers.add(t.clientId); } else if(t.type==='redeem') S[m].red+=t.amount; });
+  DB.clients.forEach(c=>{ const d=clientStart(c); if(+d.slice(0,4)===yr) S[+d.slice(5,7)-1].newC.push(c); });
+  const totS=S.reduce((a,b)=>a+b.sales,0), totR=S.reduce((a,b)=>a+b.red,0), totN=S.reduce((a,b)=>a+b.newC.length,0);
+  const best=S.reduce((bi,s,i)=>s.sales>S[bi].sales?i:bi,0);
+  const salesThisMonth=yr===cy?S[cm].sales:null;
+  const lastM=mAum[10]?.v, chM=lastM>0?aumNow/lastM-1:NaN;
+  const prevYearSales=DB.tx.filter(t=>t.type==='buy'&&+t.date.slice(0,4)===yr-1).reduce((a,t)=>a+t.amount,0);
+  const stale = DB.funds.filter(f=>!f.navDate || (Date.now()-new Date(f.navDate))/864e5>7);
+  const ychips=`<div class="chips">${years.map(y=>`<button class="${y===yr?'on':''}" onclick="view.year=${y};render()">${y}</button>`).join('')}</div>`;
+  return `
+  <div class="kpis">
+    <div class="kpi"><div class="l">AUM semasa</div><div class="v">${rm(aumNow)}</div>${isFinite(chM)?`<div style="font-size:12.5px" class="${cls(chM)}">${pct(chM)} vs bulan lepas</div>`:''}</div>
+    <div class="kpi"><div class="l">Jumlah klien</div><div class="v">${DB.clients.length}</div></div>
+    <div class="kpi"><div class="l">Jualan ${BULAN_PENUH[cm]}</div><div class="v">${rm(DB.tx.filter(t=>t.type==='buy'&&t.date.slice(0,7)===today().slice(0,7)).reduce((a,t)=>a+t.amount,0))}</div></div>
+    <div class="kpi"><div class="l">Jualan ${cy}</div><div class="v">${rm(DB.tx.filter(t=>t.type==='buy'&&+t.date.slice(0,4)===cy).reduce((a,t)=>a+t.amount,0))}</div></div>
+  </div>
+  ${stale.length?`<div class="card" style="border-color:var(--warn)"><b style="color:var(--warn)">⚠ ${stale.length} dana</b> harga belum dikemaskini lebih 7 hari: ${stale.map(f=>esc(f.name)).join(', ')}</div>`:''}
+
+  <div class="card"><h2>AUM bulanan</h2><div class="hint" style="margin:-4px 0 8px">RM · nilai semua pegangan klien pada akhir setiap bulan (12 bulan terakhir)</div>
+    ${DB.tx.length?barChart({labels:mAum.map(x=>x.lbl), values:mAum.map(x=>x.v), hi:11, tips:mAum.map((x,i)=>`<b>${x.full}</b><div class="r"><span class="muted">AUM</span><b>${rm(x.v)}</b></div>${i&&mAum[i-1].v>0?`<div class="r"><span class="muted">Perubahan</span><span class="${cls(x.v/mAum[i-1].v-1)}">${pct(x.v/mAum[i-1].v-1)}</span></div>`:''}`)}):'<div class="empty">Belum ada data</div>'}
+  </div>
+
+  <div class="card"><h2>AUM tahunan</h2><div class="hint" style="margin:-4px 0 8px">RM · nilai pada akhir setiap tahun (tahun ini = nilai semasa)</div>
+    ${DB.tx.length?`${barChart({labels:yAum.map(x=>String(x.y)), values:yAum.map(x=>x.v), hi:yAum.length-1, height:170, tips:yAum.map((x,i)=>`<b>${x.y}</b><div class="r"><span class="muted">AUM</span><b>${rm(x.v)}</b></div>${i&&yAum[i-1].v>0?`<div class="r"><span class="muted">Pertumbuhan</span><span class="${cls(x.v/yAum[i-1].v-1)}">${pct(x.v/yAum[i-1].v-1)}</span></div>`:''}`)})}
+    <table class="tbl" style="margin-top:8px"><tr><th>Tahun</th><th class="num">AUM akhir tahun</th><th class="num">Pertumbuhan</th></tr>
+    ${[...yAum].reverse().map((x,i,a)=>{ const p=a[i+1]; const g=p&&p.v>0?x.v/p.v-1:NaN; return `<tr><td>${x.y}</td><td class="num">${rm(x.v)}</td><td class="num ${cls(g)}">${isFinite(g)?pct(g):'–'}</td></tr>`; }).join('')}</table>`:'<div class="empty">Belum ada data</div>'}
+  </div>
+
+  <h3>Kajian jualan</h3>
+  ${ychips}
+  <div class="kpis">
+    <div class="kpi"><div class="l">Jumlah jualan ${yr}</div><div class="v">${rm(totS)}</div>${prevYearSales>0?`<div style="font-size:12.5px" class="${cls(totS/prevYearSales-1)}">${pct(totS/prevYearSales-1)} vs ${yr-1}</div>`:''}</div>
+    <div class="kpi"><div class="l">Purata sebulan</div><div class="v">${rm(totS/(yr===cy?cm+1:12))}</div></div>
+    <div class="kpi"><div class="l">Bulan terbaik</div><div class="v">${totS?BULAN_PENUH[best]:'–'}</div>${totS?`<div style="font-size:12.5px" class="muted">${rm(S[best].sales)}</div>`:''}</div>
+    <div class="kpi"><div class="l">Klien baru ${yr}</div><div class="v">${totN}</div></div>
+  </div>
+  <div class="card"><h2>Jualan ikut bulan · ${yr}</h2><div class="hint" style="margin:-4px 0 8px">RM · jumlah belian (pelaburan baru + tambahan)</div>
+    ${barChart({labels:BULAN, values:S.map(s=>s.sales), hi:yr===cy?cm:null, tips:S.map((s,i)=>`<b>${BULAN_PENUH[i]} ${yr}</b><div class="r"><span class="muted">Jualan</span><b>${rm(s.sales)}</b></div><div class="r"><span class="muted">Transaksi</span><span>${s.nbuy}</span></div><div class="r"><span class="muted">Klien baru</span><span>${s.newC.length}</span></div><div class="r"><span class="muted">Redeem</span><span>${rm(s.red)}</span></div>`)})}
+    <div class="scroll"><table class="tbl" style="margin-top:8px">
+      <tr><th>Bulan</th><th class="num">Jualan</th><th class="num hide-sm">Bil.</th><th class="num">Klien baru</th><th class="num">Redeem</th><th class="num hide-sm">Bersih</th></tr>
+      ${S.map((s,i)=>(yr===cy&&i>cm)?'':`<tr><td>${BULAN[i]}</td><td class="num">${s.sales?rm(s.sales):'–'}</td><td class="num hide-sm">${s.nbuy||'–'}</td><td class="num">${s.newC.length||'–'}</td><td class="num">${s.red?rm(s.red):'–'}</td><td class="num hide-sm ${cls(s.sales-s.red)}">${s.sales||s.red?rm(s.sales-s.red):'–'}</td></tr>`).join('')}
+      <tr><td><b>Jumlah</b></td><td class="num"><b>${rm(totS)}</b></td><td class="num hide-sm"><b>${S.reduce((a,b)=>a+b.nbuy,0)}</b></td><td class="num"><b>${totN}</b></td><td class="num"><b>${rm(totR)}</b></td><td class="num hide-sm"><b>${rm(totS-totR)}</b></td></tr>
+    </table></div>
+  </div>
+
+  <div class="card"><h2>Klien ikut bulan · ${yr}</h2><div class="hint" style="margin:-4px 0 8px">Ikut tarikh pelaburan pertama</div>
+    ${totN?S.map((s,i)=>s.newC.length?`<div style="margin:10px 0 4px;font-weight:700">${BULAN_PENUH[i]} <span class="chip">${s.newC.length}</span></div>
+      ${s.newC.sort((a,b)=>clientStart(a).localeCompare(clientStart(b))).map(c=>{ const v=clientSummary(c.id); return `<div class="row" style="padding:6px 0;border-bottom:1px solid var(--line);cursor:pointer" onclick="openClient('${c.id}')"><span style="flex:1">${esc(c.name)}<div class="muted" style="font-size:12px">${fdate(clientStart(c))}</div></span><span class="num">${rm(v.value)}</span></div>`; }).join('')}`:'').reverse().join(''):'<div class="empty">Tiada klien baru tahun ini</div>'}
+  </div>`;
+}
+
+/* ============ WHATSAPP ============ */
+function waNumber(p){ let d=String(p||'').replace(/\D/g,''); if(!d) return ''; if(d.startsWith('0')) d='6'+d; else if(d.startsWith('1')) d='60'+d; return d; }
+function portfolioText(id){
+  const c=client(id), s=clientSummary(id);
+  const lines=s.hs.filter(h=>h.units>0).map(h=>`• ${fund(h.fundId).name}\n   ${u4(h.units)} unit · NAV ${nav4(h.nav)}\n   Nilai ${rm(h.value)} (${pct(h.unrealPct)})`);
+  return `Assalamualaikum ${c.name.split(' ')[0]},\n\nRingkasan portfolio pelaburan anda setakat ${fdate(today())}:\n\n${lines.join('\n\n')}\n\n*Jumlah nilai semasa: ${rm(s.value)}*\nJumlah dilabur: ${rm(s.invested)}\nJumlah pulangan: ${rm(s.totalRet)} (${pct(s.totalRetPct)})${DB.settings?.agentName?`\n\n${DB.settings.agentName}${DB.settings.agentPhone?'\n'+DB.settings.agentPhone:''}`:''}`;
+}
+function openWA(id, withText){
+  const c=client(id), n=waNumber(c.phone);
+  if(!n){ toast('No. telefon klien kosong'); editClient(id); return; }
+  window.open('https://wa.me/'+n+(withText?'?text='+encodeURIComponent(portfolioText(id)):''),'_blank');
+}
+function waMenu(id){
+  modal('WhatsApp '+client(id).name, `<p class="muted" style="font-size:13px;margin-top:8px">No: ${esc(client(id).phone||'(kosong)')}</p>
+    <div style="display:grid;gap:8px">
+      <button type="button" class="pri" onclick="dlg.close();openWA('${id}',false)">💬 Buka chat</button>
+      <button type="button" onclick="dlg.close();openWA('${id}',true)">📈 Hantar ringkasan portfolio (teks)</button>
+      <button type="button" onclick="dlg.close();makePDF('${id}')">📄 Buat PDF portfolio</button>
+    </div>`, [{label:'Tutup'}]);
+}
+
+/* ============ PDF PORTFOLIO ============ */
+const LIGHT={'--s-nav':'#0f6b44','--s-buy':'#2563c9','--s-red':'#b5490f','--muted':'#5d6b64','--line':'#dfe5e2','--ink':'#15211b','--card':'#ffffff'};
+const solid=svg=>svg.replace(/var\((--[\w-]+)\)/g,(m,k)=>LIGHT[k]||'#000');
+function loadScript(src){ return new Promise((ok,no)=>{ if(document.querySelector(`script[src="${src}"]`)) return ok(); const s=document.createElement('script'); s.src=src; s.onload=ok; s.onerror=()=>no(new Error('Tak dapat muat '+src)); document.head.appendChild(s); }); }
+async function makePDF(id){
+  const c=client(id), s=clientSummary(id), st=DB.settings||{};
+  toast('Sedang buat PDF…');
+  try{
+    await loadScript('https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js');
+    await loadScript('https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js');
+  }catch(e){ alert('Perlu internet untuk buat PDF kali pertama.\n'+e.message); return; }
+  const W=760;
+  const box=document.createElement('div');
+  box.style.cssText=`position:fixed;left:-10000px;top:0;width:${W}px;background:#fff;color:#15211b;font:13px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif`;
+  const cell='padding:6px 8px;border-bottom:1px solid #dfe5e2', th=cell+';font-size:11px;color:#5d6b64;text-transform:uppercase;text-align:left';
+  const kv=(k,v)=>`<tr><td style="${cell};color:#5d6b64;width:38%">${k}</td><td style="${cell};font-weight:600">${v?esc(v):'–'}</td></tr>`;
+  const kpi=(l,v,c2)=>`<div style="flex:1;border:1px solid #dfe5e2;border-radius:10px;padding:10px"><div style="font-size:11px;color:#5d6b64">${l}</div><div style="font-size:17px;font-weight:700;color:${c2||'#15211b'}">${v}</div></div>`;
+  const col=n=>n>0.00001?'#0f7a3f':n<-0.00001?'#c0392b':'#15211b';
+  const blocks=[];
+  blocks.push(`<div style="display:flex;align-items:flex-end;border-bottom:3px solid #0f6b44;padding-bottom:10px">
+      <div style="flex:1"><div style="font-size:22px;font-weight:800;color:#0f6b44">Penyata Portfolio Pelaburan</div><div style="color:#5d6b64">Unit Amanah · setakat ${fdate(today())}</div></div>
+      ${st.agentName?`<div style="text-align:right;font-size:12px"><b>${esc(st.agentName)}</b>${st.agentPhone?'<br>'+esc(st.agentPhone):''}${st.agentCode?'<br>'+esc(st.agentCode):''}</div>`:''}</div>`);
+  blocks.push(`<div style="font-weight:700;font-size:14px;margin-bottom:4px">Maklumat klien</div><table style="width:100%;border-collapse:collapse">${kv('Nama',c.name)}${kv('No. IC',c.ic)}${kv('No. KWSP',c.epf)}${kv('No. Telefon',c.phone)}</table>`);
+  blocks.push(`<div style="font-weight:700;font-size:14px;margin-bottom:6px">Ringkasan</div>
+    <div style="display:flex;gap:8px">${kpi('Nilai semasa',rm(s.value))}${kpi('Jumlah dilabur',rm(s.invested))}${kpi('Jumlah pulangan',rm(s.totalRet)+' <span style="font-size:13px">('+pct(s.totalRetPct)+')</span>',col(s.totalRet))}${kpi('Telah redeem',rm(s.proceeds))}</div>`);
+  blocks.push(`<div style="font-weight:700;font-size:14px;margin-bottom:4px">Pegangan</div><table style="width:100%;border-collapse:collapse">
+    <tr><th style="${th}">Dana</th><th style="${th};text-align:right">Unit</th><th style="${th};text-align:right">Harga purata</th><th style="${th};text-align:right">NAV</th><th style="${th};text-align:right">Nilai (RM)</th><th style="${th};text-align:right">U/R</th></tr>
+    ${s.hs.filter(h=>h.units>0).sort((a,b)=>b.value-a.value).map(h=>`<tr><td style="${cell}">${esc(fund(h.fundId).name)}</td><td style="${cell};text-align:right">${u4(h.units)}</td><td style="${cell};text-align:right">${nav4(h.avgCost)}</td><td style="${cell};text-align:right">${nav4(h.nav)}</td><td style="${cell};text-align:right">${rm(h.value).slice(3)}</td><td style="${cell};text-align:right;color:${col(h.unreal)}">${pct(h.unrealPct)}</td></tr>`).join('')}
+    <tr><td style="${cell};font-weight:700">Jumlah</td><td style="${cell}"></td><td style="${cell}"></td><td style="${cell}"></td><td style="${cell};text-align:right;font-weight:700">${rm(s.value).slice(3)}</td><td style="${cell};text-align:right;font-weight:700;color:${col(s.unreal)}">${pct(s.cost>0?s.unreal/s.cost:NaN)}</td></tr></table>`);
+  s.hs.forEach(h=>{
+    const f=fund(h.fundId);
+    const lots=DB.tx.filter(t=>t.clientId===id&&t.fundId===h.fundId).sort((a,b)=>a.date.localeCompare(b.date));
+    blocks.push(`<div style="border:1px solid #dfe5e2;border-radius:10px;padding:12px">
+      <div style="display:flex"><div style="flex:1"><div style="font-weight:700;font-size:14px">${esc(f.name)}</div><div style="color:#5d6b64;font-size:12px">${esc(f.house||'')} · NAV ${nav4(f.nav)} @ ${fdate(f.navDate)}</div></div>
+        <div style="text-align:right"><b style="font-size:15px">${rm(h.value)}</b><div style="color:${col(h.totalRet)};font-size:12px">Pulangan ${rm(h.totalRet)} (${pct(h.totalRetPct)})</div></div></div>
+      <div style="margin-top:8px">${solid(priceChart({clientId:id,fundId:h.fundId,width:W-26})).replace(/<div class="hint">[\s\S]*?<\/div>$/,'')}</div>
+      <table style="width:100%;border-collapse:collapse;margin-top:6px"><tr><th style="${th}">Tarikh</th><th style="${th}">Jenis</th><th style="${th};text-align:right">Jumlah RM</th><th style="${th};text-align:right">Unit</th><th style="${th};text-align:right">Harga</th></tr>
+      ${lots.map(t=>`<tr><td style="${cell}">${fdate(t.date)}</td><td style="${cell}">${{buy:'Belian',redeem:'Redeem',dist:'Agihan'}[t.type]}</td><td style="${cell};text-align:right">${t.type==='dist'?'–':rm(t.amount).slice(3)}</td><td style="${cell};text-align:right">${t.type==='redeem'?'−':''}${u4(t.units)}</td><td style="${cell};text-align:right">${nav4(t.price)}</td></tr>`).join('')}</table>
+      <div style="display:flex;gap:18px;margin-top:8px;font-size:12px;color:#5d6b64"><span>Unit dipegang: <b style="color:#15211b">${u4(h.units)}</b></span><span>Harga purata: <b style="color:#15211b">${nav4(h.avgCost)}</b></span><span>Unit diredeem: <b style="color:#15211b">${pctPlain(h.redeemPct)}</b></span></div>
+    </div>`);
+  });
+  blocks.push(`<div style="font-size:10.5px;color:#5d6b64;border-top:1px solid #dfe5e2;padding-top:8px">Penyata ini disediakan oleh ejen untuk rujukan sahaja dan bukan penyata rasmi syarikat pengurusan dana. Nilai berdasarkan harga NAV terakhir yang direkodkan. Prestasi lalu bukan petunjuk prestasi masa hadapan.</div>`);
+  box.innerHTML=blocks.map(b=>`<div class="pdfblk" style="padding:8px 0">${b}</div>`).join('');
+  document.body.appendChild(box);
+  try{
+    const {jsPDF}=window.jspdf; const pdf=new jsPDF({unit:'mm',format:'a4'});
+    const M=12, PW=210-2*M, PH=297-2*M; let y=M;
+    for(const el of box.querySelectorAll('.pdfblk')){
+      const cv=await html2canvas(el,{scale:2,backgroundColor:'#ffffff',logging:false});
+      const h=cv.height*PW/cv.width;
+      if(y+h>M+PH && y>M){ pdf.addPage(); y=M; }
+      pdf.addImage(cv.toDataURL('image/jpeg',0.92),'JPEG',M,y,PW,Math.min(h,PH)); y+=h;
+    }
+    const n=pdf.getNumberOfPages(); for(let i=1;i<=n;i++){ pdf.setPage(i); pdf.setFontSize(8); pdf.setTextColor(120); pdf.text(`${c.name} · ${i}/${n}`,105,292,{align:'center'}); }
+    const name=`Portfolio-${c.name.replace(/[^\w]+/g,'_')}-${today()}.pdf`;
+    const blob=pdf.output('blob'); const file=new File([blob],name,{type:'application/pdf'});
+    window._pdf={file,blob,name};
+    modal('PDF siap ✅', `<p style="font-size:14px">${esc(name)}<br><span class="muted">${n} muka surat</span></p>
+      <div style="display:grid;gap:8px">
+        ${navigator.canShare&&navigator.canShare({files:[file]})?`<button type="button" class="pri" onclick="sharePDF()">📤 Kongsi (WhatsApp / Email / Simpan)</button>`:''}
+        <button type="button" onclick="openPDF()">👁 Buka / muat turun PDF</button>
+      </div>`, [{label:'Tutup'}]);
+  }catch(e){ alert('Gagal buat PDF: '+e.message); }
+  finally{ box.remove(); }
+}
+function sharePDF(){ const p=window._pdf; navigator.share({files:[p.file],title:p.name}).catch(()=>{}); }
+function openPDF(){ const p=window._pdf; const url=URL.createObjectURL(p.blob); const a=document.createElement('a'); a.href=url; a.download=p.name; a.target='_blank'; document.body.appendChild(a); a.click(); setTimeout(()=>a.remove(),1000); }
+
+/* ============ TETAPAN AGENT ============ */
+function settingsHTML(){ const st=DB.settings||{}; return `
+  <h3 style="margin-top:6px">Maklumat agent (untuk PDF &amp; WhatsApp)</h3>
+  <div class="grid2"><div><label>Nama agent</label><input id="s_name" value="${esc(st.agentName||'')}"></div>
+  <div><label>No. telefon</label><input id="s_phone" value="${esc(st.agentPhone||'')}"></div>
+  <div><label>Kod / no. agent</label><input id="s_code" value="${esc(st.agentCode||'')}"></div>
+  <div style="align-self:end"><button type="button" onclick="saveSettings()">Simpan maklumat</button></div></div>
+  <h3>Backup</h3>`; }
+function saveSettings(){ DB.settings={agentName:val('s_name'),agentPhone:val('s_phone'),agentCode:val('s_code')}; save(); toast('Maklumat agent disimpan'); }
+
 /* ============ BACKUP / EXPORT ============ */
 function download(name, text, type){ const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([text],{type})); a.download=name; document.body.appendChild(a); a.click(); setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove();},500); }
 function openBackup(){
-  modal('Backup & pulih data', `
+  modal('Tetapan & backup', settingsHTML()+`
     <p style="font-size:14px">Data disimpan dalam browser peranti ini sahaja. <b>Buat backup selalu</b> — kalau clear browser / tukar phone, data hilang tanpa backup.</p>
     <p class="muted" style="font-size:13px">${DB.clients.length} klien · ${DB.funds.length} dana · ${DB.tx.length} transaksi</p>
     <div class="row"><button type="button" class="pri" onclick="download('backup-klien-ut-${today()}.json',JSON.stringify(DB,null,1),'application/json');toast('Backup dimuat turun')">Muat turun backup (.json)</button>
