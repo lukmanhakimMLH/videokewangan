@@ -144,15 +144,20 @@ function holding(clientId, fundId, excludeId){
   const list = DB.tx.filter(t=>t.clientId===clientId && t.fundId===fundId && t.id!==excludeId)
     .sort((a,b)=> a.date.localeCompare(b.date) || (a.created||0)-(b.created||0));
   let units=0, cost=0, invested=0, unitsIn=0, unitsOut=0, proceeds=0, realised=0, distUnits=0, distValue=0, firstDate=null, lastDate=null;
+  // "Kitaran" semasa: bermula semula selepas klien redeem habis
+  let curStart=null, curInvested=0, curIn=0, curOut=0, curIds=[], exits=[];
   for(const t of list){
     if(!firstDate) firstDate=t.date; lastDate=t.date;
-    if(t.type==='buy'){ units+=t.units; cost+=t.amount; invested+=t.amount; unitsIn+=t.units; }
-    else if(t.type==='dist'){ units+=t.units; unitsIn+=t.units; distUnits+=t.units; distValue+=t.units*t.price; }
+    if(t.type!=='redeem' && curStart==null) curStart=t.date;
+    curIds.push(t.id);
+    if(t.type==='buy'){ units+=t.units; cost+=t.amount; invested+=t.amount; unitsIn+=t.units; curInvested+=t.amount; curIn+=t.units; }
+    else if(t.type==='dist'){ units+=t.units; unitsIn+=t.units; distUnits+=t.units; distValue+=t.units*t.price; curIn+=t.units; }
     else if(t.type==='redeem'){
       const avg = units>0 ? cost/units : 0;
       const costOut = avg*t.units;
-      cost-=costOut; units-=t.units; unitsOut+=t.units;
+      cost-=costOut; units-=t.units; unitsOut+=t.units; curOut+=t.units;
       proceeds+=t.amount; realised+=t.amount-costOut;
+      if(units<1e-6){ units=0; cost=0; exits.push(t.date); curStart=null; curInvested=0; curIn=0; curOut=0; curIds=[]; }
     }
   }
   if(Math.abs(units)<1e-6){ units=0; cost=0; }
@@ -162,7 +167,8 @@ function holding(clientId, fundId, excludeId){
   const totalRet = realised+unreal;
   return { clientId, fundId, units, cost, avgCost: units>0?cost/units:0, invested, unitsIn, unitsOut, proceeds, realised,
     distUnits, distValue, value, unreal, unrealPct: cost>0?unreal/cost:NaN, totalRet, totalRetPct: invested>0?totalRet/invested:NaN,
-    redeemPct: unitsIn>0?unitsOut/unitsIn:0, nav, firstDate, lastDate, count:list.length };
+    redeemPct: curIn>0?curOut/curIn:(unitsIn>0?unitsOut/unitsIn:0), unitsInCur:curIn, unitsOutCur:curOut,
+    curStart, curInvested, curIds, exits, nav, firstDate, lastDate, count:list.length };
 }
 function clientSummary(clientId){
   const fids=[...new Set(DB.tx.filter(t=>t.clientId===clientId).map(t=>t.fundId))];
@@ -305,8 +311,9 @@ function holdingCard(h,total){
         <div class="metric"><span>Unit dipegang</span><span class="num">${u4(h.units)}</span></div>
         <div class="metric"><span>Kos purata / unit</span><span class="num">${nav4(h.avgCost)}</span></div>
         <div class="metric"><span>Kos baki</span><span class="num">${rm(h.cost)}</span></div>
-        <div class="metric"><span>Jumlah dilabur</span><span class="num">${rm(h.invested)}</span></div>
-        <div class="metric"><span>Pelaburan pertama</span><span class="num">${fdate(h.firstDate)}</span></div>
+        <div class="metric"><span>Jumlah dilabur${h.exits.length?' (semasa)':''}</span><span class="num">${rm(h.units>0?h.curInvested:h.invested)}</span></div>
+        <div class="metric"><span>Mula melabur</span><span class="num">${fdate(h.units>0?h.curStart:h.firstDate)}</span></div>
+        ${h.exits.length&&h.units>0?`<div class="metric"><span>Pernah redeem habis</span><span class="num">${h.exits.map(fdate).join(', ')}</span></div>`:''}
       </div>
       <div>
         <div class="metric"><span>U/R belum realis</span><span class="num ${cls(h.unreal)}">${rm(h.unreal)}</span></div>
@@ -317,7 +324,7 @@ function holdingCard(h,total){
       </div>
     </div>
     ${lotTable(h)}
-    <div style="margin-top:8px"><div class="row" style="font-size:12.5px"><span class="muted">Unit telah diredeem</span><span class="spacer"></span><b>${pctPlain(h.redeemPct)}</b> <span class="muted">(${u4(h.unitsOut)} / ${u4(h.unitsIn)} unit)</span></div>
+    <div style="margin-top:8px"><div class="row" style="font-size:12.5px"><span class="muted">Unit telah diredeem</span><span class="spacer"></span><b>${pctPlain(h.redeemPct)}</b> <span class="muted">(${u4(h.units>0?h.unitsOutCur:h.unitsOut)} / ${u4(h.units>0?h.unitsInCur:h.unitsIn)} unit)</span></div>
       <div class="bar red"><i style="width:${Math.min(100,h.redeemPct*100).toFixed(1)}%"></i></div></div>
     ${total>0&&h.value>0?`<div style="margin-top:6px;font-size:12.5px" class="muted">${pctPlain(h.value/total)} daripada portfolio klien</div>`:''}
   </div>`;
@@ -514,9 +521,9 @@ function editTx(txId, clientId, type){
       <div><label>Syarikat pengurusan</label><input id="t_fhouse" placeholder="cth: Kenanga Investors"></div></div></div>
     <div class="grid2">
       <div><label>Tarikh beli *</label><input id="t_date" type="date" value="${esc(t.date)}"></div>
-      <div><label>Sumber dana</label><select id="t_source" onchange="txSource()">${['KWSP','Tunai'].map(o=>`<option ${o===(t.source||'KWSP')?'selected':''}>${o}</option>`).join('')}</select></div>
+      <div><label>KWSP / Tunai *</label><select id="t_source" onchange="txSource()"><option value="">— Pilih —</option>${['KWSP','Tunai'].map(o=>`<option ${o===t.source?'selected':''}>${o}</option>`).join('')}</select></div>
       <div><label>Jumlah RM *</label><input id="t_amount" inputmode="decimal" value="${t.amount??''}" oninput="txCalc('amount')"></div>
-      <div><label>Caj jualan (%)</label><input id="t_charge" inputmode="decimal" value="${t.charge??3}" oninput="txCalc('charge')"></div>
+      <div><label>Caj jualan (%)</label><input id="t_charge" inputmode="decimal" value="${t.charge??''}" oninput="txCalc('charge')"></div>
       <div><label>Harga NAV seunit *</label><input id="t_price" inputmode="decimal" value="${t.price??''}" oninput="txCalc('price')"></div>
       <div><label>Unit diperoleh *</label><input id="t_units" inputmode="decimal" value="${t.units??''}" oninput="txCalc('units')"></div>
     </div>
@@ -554,7 +561,7 @@ function editTx(txId, clientId, type){
       const data={fundId,date,price,units,note:val('t_note')};
       const f=fund(fundId);
       if(type==='buy'){
-        data.amount=num('t_amount'); data.charge=isFinite(num('t_charge'))?num('t_charge'):0; data.source=val('t_source');
+        data.amount=num('t_amount'); data.charge=isFinite(num('t_charge'))?num('t_charge'):0; data.source=val('t_source'); if(!data.source){ toast('Pilih KWSP atau Tunai'); return false; }
         if(!(data.amount>0)){ toast('Masukkan jumlah RM'); return false; }
         setNav(f,price,date);
       } else {
@@ -621,13 +628,16 @@ function redeemAll(){ const av=unitsAvailable(window._txClient,val('t_fund'),win
 
 /* --- Rekod belian & kiraan purata dalam kad pegangan --- */
 function lotTable(h){
-  const lots=DB.tx.filter(t=>t.clientId===h.clientId&&t.fundId===h.fundId&&t.type!=='redeem').sort((a,b)=>a.date.localeCompare(b.date));
+  const all=DB.tx.filter(t=>t.clientId===h.clientId&&t.fundId===h.fundId&&t.type!=='redeem');
+  const lots=(h.units>0?all.filter(t=>h.curIds.includes(t.id)):all).sort((a,b)=>a.date.localeCompare(b.date));
+  const old=all.length-lots.length;
   if(!lots.length) return '';
   let A=0,U=0; lots.forEach(t=>{ A+=t.type==='buy'?t.amount:0; U+=t.units; });
   return `<details style="margin-top:8px"${lots.length>1?' open':''}><summary style="cursor:pointer;font-size:13px;font-weight:700">Rekod belian (${lots.length}) &amp; harga purata</summary>
     <div class="scroll"><table class="tbl" style="margin-top:4px"><tr><th>Tarikh</th><th class="num">Jumlah RM</th><th class="num">Caj</th><th class="num">NAV</th><th class="num">Unit</th><th class="num">Kos/unit</th></tr>
     ${lots.map(t=>`<tr><td>${fdate(t.date)}${t.type==='dist'?' <span class="chip dist">Agihan</span>':t.source?` <span class="chip">${esc(t.source)}</span>`:''}</td><td class="num">${t.type==='buy'?rm(t.amount).slice(3):'—'}</td><td class="num">${t.type==='buy'&&t.charge?t.charge+'%':'—'}</td><td class="num">${nav4(t.price)}</td><td class="num">${u4(t.units)}</td><td class="num">${t.type==='buy'?nav4(t.amount/t.units):'0'}</td></tr>`).join('')}
     <tr><td><b>Jumlah</b></td><td class="num"><b>${rm(A).slice(3)}</b></td><td></td><td></td><td class="num"><b>${u4(U)}</b></td><td class="num"><b>${nav4(U>0?A/U:0)}</b></td></tr></table></div>
+    ${old?`<div class="hint" style="color:var(--warn)">${old} belian lama sebelum redeem habis (${h.exits.map(fdate).join(', ')}) tidak dikira — harga purata mula baru.</div>`:''}
     <div class="hint">Kos/unit termasuk caj jualan. Harga purata = Jumlah RM ÷ Jumlah unit${h.unitsOut?'. Redeem tak ubah harga purata (kaedah kos purata).':''}</div></details>`;
 }
 
