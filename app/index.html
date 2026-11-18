@@ -14,7 +14,11 @@
   --brand:#0f7a55; --brand2:#2fb47f; --brand-soft:#e6f4ee; --danger:#c8423b; --warn:#c98a12;
   --field:#eef3f0; --shadow:0 6px 24px rgba(16,40,30,.07);
 }
-:root[data-theme="dark"]{
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0d1512; --card:#15211c; --ink:#e7f0eb; --muted:#93a59b; --line:#24342d;
+  --brand:#2fb47f; --brand2:#5fd6a3; --brand-soft:#1a3a2d; --field:#1c2b24; --shadow:none; color-scheme:dark;
+}}
+:root[data-theme="dark"]{color-scheme:dark;
   --bg:#0d1512; --card:#15211c; --ink:#e7f0eb; --muted:#93a59b; --line:#24342d;
   --brand:#2fb47f; --brand2:#5fd6a3; --brand-soft:#1a3a2d; --field:#1c2b24; --shadow:none;
 }
@@ -22,7 +26,7 @@
 html,body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;-webkit-text-size-adjust:100%}
 button,input,select,textarea{font:inherit;color:inherit}
 .wrap{max-width:720px;margin:0 auto;padding:0 16px 96px}
-header.top{position:sticky;top:0;z-index:10;background:var(--bg);padding:14px 16px 0;max-width:720px;margin:0 auto}
+header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:10;background:var(--bg);padding:14px 16px 0;max-width:720px;margin:0 auto}
 .brandrow{display:flex;align-items:center;gap:12px}
 .logo{width:48px;height:48px;border-radius:14px;background:linear-gradient(135deg,var(--brand),var(--brand2));color:#fff;display:grid;place-items:center;font-weight:800;font-size:18px;flex:none}
 .brandtxt{flex:1;min-width:0}
@@ -104,6 +108,15 @@ label.f input,label.f select,label.f textarea{display:block;width:100%;margin-to
 label.f input:focus,label.f select:focus{outline:none;border-color:var(--brand)}
 .row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .calc{background:var(--brand-soft);border-radius:14px;padding:12px 14px;margin-top:14px;font-size:14px;line-height:1.6}
+.dlg-bg{position:fixed;inset:0;background:rgba(10,20,15,.5);z-index:70;display:none;align-items:center;justify-content:center;padding:16px}
+.dlg-bg.on{display:flex}
+.dlg{background:var(--card);border-radius:22px;padding:20px;width:100%;max-width:400px;box-shadow:0 20px 50px rgba(0,0,0,.25)}
+.dlg p{margin:0 0 6px;font-size:16px;line-height:1.45}
+.dlg .btns{display:flex;flex-direction:column;gap:8px;margin-top:14px}
+.dlg textarea{width:100%;min-height:160px;margin-top:10px;background:var(--field);border:0;border-radius:12px;padding:10px;font:12px/1.4 ui-monospace,monospace}
+.btn.danger{background:var(--danger)}
+.demo-banner{background:#fff4dc;color:#7a5400;border-radius:14px;padding:10px 14px;font-size:14px;margin-top:4px;display:flex;gap:10px;align-items:center}
+.demo-banner button{border:0;background:none;color:inherit;font-weight:700;text-decoration:underline;cursor:pointer;margin-left:auto;white-space:nowrap}
 .toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 18px;border-radius:99px;z-index:99;opacity:0;transition:.25s;pointer-events:none}
 .toast.on{opacity:1}
 .fab{position:fixed;right:20px;bottom:calc(20px + env(safe-area-inset-bottom));width:58px;height:58px;border-radius:20px;border:0;background:var(--brand);color:#fff;font-size:28px;box-shadow:0 10px 24px rgba(15,122,85,.35);cursor:pointer;z-index:20}
@@ -157,6 +170,7 @@ label.f input:focus,label.f select:focus{outline:none;border-color:var(--brand)}
     <div class="ft"><button class="btn ghost" id="sheetCancel">Batal</button><button class="btn" id="sheetSave">Simpan</button></div>
   </div>
 </div>
+<div class="dlg-bg" id="dlgBg"><div class="dlg" role="alertdialog" aria-modal="true"><div id="dlgBody"></div><div class="btns" id="dlgBtns"></div></div></div>
 <div class="toast" id="toast"></div>
 
 <script>
@@ -195,6 +209,7 @@ const PAYLATER = {
 };
 const PAYMETHOD = ['Tunai','Debit / FPX','eWallet','Kad kredit','PayLater'];
 
+var firstRun=false;
 let S = load();
 let cur = ym(new Date());
 let tab = 'home';
@@ -202,7 +217,8 @@ let tab = 'home';
 function blankProfile(){return {incomes:[],expenses:[],debts:[],budgets:{},paid:{}}}
 function load(){
   try{const s=JSON.parse(localStorage.getItem(KEY)); if(s&&s.profiles) return s;}catch(e){}
-  return {active:'Suami',theme:'auto',profiles:{'Suami':blankProfile(),'Isteri':blankProfile()}};
+  firstRun=true;
+  return {active:'Suami',theme:'auto',demo:true,profiles:{'Suami':blankProfile(),'Isteri':blankProfile()}};
 }
 function save(){try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){toast('Gagal simpan (storan penuh?)');}}
 const P = () => S.profiles[S.active];
@@ -220,6 +236,20 @@ function rmShort(n){n=Number(n)||0;const a=Math.abs(n);return a>=1000?(n/1000).t
 function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 const num = v => { const n=parseFloat(String(v).replace(/,/g,'')); return isFinite(n)?n:0; };
 function toast(t){const el=document.getElementById('toast');el.textContent=t;el.classList.add('on');clearTimeout(toast.t);toast.t=setTimeout(()=>el.classList.remove('on'),1800)}
+
+// In-page dialog (browser confirm/prompt don't work everywhere). Resolves with the chosen key or null.
+function ask(html,buttons,input){
+  return new Promise(res=>{
+    const bg=document.getElementById('dlgBg');
+    document.getElementById('dlgBody').innerHTML=html+(input?`<label class="f"><input id="dlgIn" placeholder="${esc(input)}"></label>`:'');
+    const bx=document.getElementById('dlgBtns'); bx.innerHTML='';
+    const done=v=>{bg.classList.remove('on');res(v)};
+    [...buttons,['__cancel','Batal','ghost']].forEach(([k,l,c])=>{const b=document.createElement('button');b.className='btn '+(c||'');b.textContent=l;
+      b.onclick=()=>done(k==='__cancel'?null:(input?(document.getElementById('dlgIn').value.trim()||null):k));bx.appendChild(b)});
+    bg.classList.add('on'); if(input) setTimeout(()=>document.getElementById('dlgIn').focus(),50);
+  });
+}
+const sure=(msg,label='Ya',cls='danger')=>ask(`<p>${msg}</p>`,[['ok',label,cls]]).then(v=>v==='ok');
 
 /* ================= CALC ================= */
 // Income/expense entries are tied to a month; recurring ones repeat every month from their start month.
@@ -277,6 +307,7 @@ function viewHome(){
   const dsr = t.income? (t.debtM/t.income*100):0;
 
   return `
+  ${S.demo?`<div class="demo-banner">🧪 Ini data contoh. <button id="clearDemo">Kosongkan & mula</button></div>`:''}
   <div class="eyebrow">Pusat kawalan kewangan</div>
   <h1>${greet()}, ${esc(S.active)}</h1>
   <p class="sub">Kedudukan kewangan anda untuk ${mLabel(cur)}.</p>
@@ -390,8 +421,9 @@ function viewSettings(){
   </div>
   <div class="card" style="margin-top:12px">
     <div class="lbl">Sandaran data</div>
-    <button class="btn block" id="exportBtn">⬇ Muat turun backup (JSON)</button>
-    <label class="btn ghost block" style="display:block;text-align:center">⬆ Pulihkan dari backup<input type="file" id="importFile" accept="application/json" hidden></label>
+    <button class="btn block" id="exportBtn">⬇ Backup data</button>
+    <button class="btn ghost block" id="pasteBtn">⬆ Pulihkan (tampal teks backup)</button>
+    <label class="btn ghost block" style="display:block;text-align:center">📄 Pulihkan dari fail<input type="file" id="importFile" accept="application/json,.json" hidden></label>
     <button class="btn ghost block" id="demoBtn">Isi contoh data</button>
     <button class="btn ghost block" id="resetBtn" style="color:var(--danger)">Padam semua data profil ini</button>
   </div>`;
@@ -404,13 +436,18 @@ function openSheet(title,html,saveFn,delFn){
   document.getElementById('sheetBody').innerHTML=html+(delFn?`<button class="btn ghost block" id="sheetDel" style="color:var(--danger);margin-bottom:8px">Padam</button>`:'');
   onSave=saveFn;
   document.getElementById('sheetBg').classList.add('on');
-  if(delFn) document.getElementById('sheetDel').onclick=()=>{if(confirm('Padam rekod ini?')){delFn();closeSheet();save();render();toast('Dipadam')}};
+  if(delFn) document.getElementById('sheetDel').onclick=async()=>{if(await delFn()!==false){closeSheet();save();render();toast('Dipadam')}};
 }
 function closeSheet(){document.getElementById('sheetBg').classList.remove('on');onSave=null}
 const val=id=>document.getElementById(id)?.value??'';
 const opts=(arr,sel)=>arr.map(o=>Array.isArray(o)?`<option value="${esc(o[0])}" ${o[0]===sel?'selected':''}>${esc(o[1])}</option>`:`<option ${o===sel?'selected':''}>${esc(o)}</option>`).join('');
 function today(){const d=new Date();return cur===ym(d)?d.toISOString().slice(0,10):cur+'-01'}
 
+async function delRec(e,list){
+  const btns=e.recurring&&e.month<cur?[['stop','Hentikan mulai '+mLabel(cur)+' (simpan rekod lama)'],['all','Padam semua bulan','danger']]:[['all','Padam','danger']];
+  const v=await ask('<p>Padam rekod ini?</p>',btns);
+  if(v==='stop') e.until=addM(cur,-1); else if(v==='all') P()[list]=P()[list].filter(x=>x.id!==e.id); else return false;
+}
 function incomeForm(e){
   e=e||{type:'gaji',bank:'Maybank',recurring:true,month:cur};
   openSheet(e.id?'Ubah pendapatan':'Tambah pendapatan',`
@@ -425,7 +462,7 @@ function incomeForm(e){
     Object.assign(e,{type:val('f_type'),name:val('f_name').trim(),bank:val('f_bank'),amount,recurring:rec});
     if(!e.id){e.id=uid();P().incomes.push(e)}
     return true;
-  }, e.id?()=>{ if(e.recurring && e.month<cur && confirm('Hentikan mulai bulan ini sahaja (simpan rekod bulan lepas)?')){e.until=addM(cur,-1)} else P().incomes=P().incomes.filter(x=>x.id!==e.id)}:null);
+  }, e.id?()=>delRec(e,'incomes'):null);
 }
 
 function expenseForm(e){
@@ -446,7 +483,7 @@ function expenseForm(e){
     if(!e.recurring && date) e.month=date.slice(0,7);
     if(!e.id){e.id=uid();P().expenses.push(e)}
     return true;
-  }, e.id?()=>{ if(e.recurring && e.month<cur && confirm('Hentikan mulai bulan ini sahaja (simpan rekod bulan lepas)?')){e.until=addM(cur,-1)} else P().expenses=P().expenses.filter(x=>x.id!==e.id)}:null);
+  }, e.id?()=>delRec(e,'expenses'):null);
 }
 
 function debtForm(d){
@@ -464,7 +501,7 @@ function debtForm(d){
       tenure:r.tenure,monthly:r.monthly,balance:r.balance,price:num(val('f_price')),down:num(val('f_down')),interest:num(val('f_int')),fees:num(val('f_fee'))});
     if(!d.id){d.id=uid();P().debts.push(d)}
     return true;
-  }, d.id?()=>{P().debts=P().debts.filter(x=>x.id!==d.id)}:null);
+  }, d.id?async()=>{if(!await sure('Padam hutang ini?','Padam'))return false;P().debts=P().debts.filter(x=>x.id!==d.id)}:null);
 
   const dyn=()=>{
     const kind=val('f_kind'), g=DEBT_KINDS[kind].g;
@@ -531,13 +568,22 @@ function bindView(){
   v.querySelectorAll('[data-paid]').forEach(c=>c.onchange=()=>{const p=P().paid[cur]=P().paid[cur]||{}; if(c.checked)p[c.dataset.paid]=true; else delete p[c.dataset.paid]; save(); render()});
   const on=(id,fn)=>{const el=document.getElementById(id); if(el) el.onclick=fn};
   on('budgetBtn',budgetForm);
-  on('addProf',()=>{const n=(prompt('Nama profil baru (cth. Keluarga, Ahmad):')||'').trim(); if(!n)return; if(S.profiles[n])return toast('Nama sudah wujud'); S.profiles[n]=blankProfile(); S.active=n; save(); render()});
-  v.querySelectorAll('[data-del-prof]').forEach(b=>b.onclick=()=>{const n=b.dataset.delProf; if(!confirm('Padam profil "'+n+'" dan semua datanya?'))return; delete S.profiles[n]; if(S.active===n)S.active=Object.keys(S.profiles)[0]; save(); render()});
-  on('exportBtn',()=>{const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(S,null,2)],{type:'application/json'}));a.download='kewangan-backup-'+new Date().toISOString().slice(0,10)+'.json';a.click()});
+  on('clearDemo',async()=>{if(!await sure('Padam data contoh dan mula dengan data sendiri?','Kosongkan'))return; for(const n in S.profiles)S.profiles[n]=blankProfile(); S.demo=false; save(); render(); toast('Sedia untuk data anda')});
+  on('addProf',async()=>{const n=await ask('<p>Nama profil baru</p>',[['ok','Tambah']],'cth. Keluarga, Ahmad'); if(!n)return; if(S.profiles[n])return toast('Nama sudah wujud'); S.profiles[n]=blankProfile(); S.active=n; save(); render()});
+  v.querySelectorAll('[data-del-prof]').forEach(b=>b.onclick=async()=>{const n=b.dataset.delProf; if(!await sure('Padam profil "'+esc(n)+'" dan semua datanya?','Padam profil'))return; delete S.profiles[n]; if(S.active===n)S.active=Object.keys(S.profiles)[0]; save(); render()});
+  on('exportBtn',()=>{
+    const json=JSON.stringify(S);
+    ask(`<p><b>Backup data</b></p><p style="font-size:14px;color:var(--muted)">Salin teks ini dan simpan (cth. dalam Notes atau WhatsApp ke diri sendiri).</p><textarea id="bkTxt" readonly>${esc(json)}</textarea>`,[['copy','Salin'],['file','Muat turun fail','ghost']]).then(v=>{
+      if(v==='copy') navigator.clipboard.writeText(json).then(()=>toast('Disalin'),()=>{const t=document.getElementById('bkTxt');toast('Pilih semua teks & salin manual')});
+      if(v==='file'){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([json],{type:'application/json'}));a.download='kewangan-backup-'+new Date().toISOString().slice(0,10)+'.json';document.body.appendChild(a);a.click();a.remove()}
+    });
+  });
+  const restore=t=>{try{const d=JSON.parse(t); if(!d.profiles)throw 0; sure('Gantikan semua data sekarang dengan backup ini?','Pulihkan').then(ok=>{if(!ok)return;S=d;save();render();toast('Data dipulihkan')})}catch(e){toast('Backup tidak sah')}};
+  on('pasteBtn',()=>ask('<p><b>Pulihkan backup</b></p><p style="font-size:14px;color:var(--muted)">Tampal teks backup di bawah.</p><textarea id="rsTxt"></textarea>',[['ok','Pulihkan']]).then(v=>{if(v)restore(document.getElementById('rsTxt').value)}));
   const imp=document.getElementById('importFile');
-  if(imp) imp.onchange=()=>{const f=imp.files[0]; if(!f)return; f.text().then(t=>{try{const d=JSON.parse(t); if(!d.profiles)throw 0; if(!confirm('Gantikan semua data sekarang dengan backup ini?'))return; S=d; save(); render(); toast('Data dipulihkan')}catch(e){toast('Fail backup tidak sah')}})};
-  on('demoBtn',()=>{if(!confirm('Tambah contoh data ke profil '+S.active+'?'))return; demo(); save(); tab='home'; render(); toast('Contoh data ditambah')});
-  on('resetBtn',()=>{if(!confirm('Padam SEMUA data profil '+S.active+'? Tindakan ini tidak boleh diundur.'))return; S.profiles[S.active]=blankProfile(); save(); render(); toast('Data dipadam')});
+  if(imp) imp.onchange=()=>{const f=imp.files[0]; if(f) f.text().then(restore)};
+  on('demoBtn',async()=>{if(!await sure('Tambah contoh data ke profil '+esc(S.active)+'?','Tambah','')) return; demo(); save(); tab='home'; render(); toast('Contoh data ditambah')});
+  on('resetBtn',async()=>{if(!await sure('Padam SEMUA data profil '+esc(S.active)+'? Tindakan ini tidak boleh diundur.','Padam semua'))return; S.demo=false; S.profiles[S.active]=blankProfile(); save(); render(); toast('Data dipadam')});
 }
 function addFor(t){({income:()=>incomeForm(),expense:()=>expenseForm(),debt:()=>debtForm()})[t]?.()}
 
@@ -553,11 +599,9 @@ document.getElementById('sheetSave').onclick=()=>{
   if(!onSave) return;
   if(onSave()===true){ save(); closeSheet(); render(); toast('Disimpan'); }
 };
-function applyTheme(){
-  const t=S.theme==='auto'?(matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'):S.theme;
-  document.documentElement.dataset.theme=t;
-}
-document.getElementById('themeBtn').onclick=()=>{S.theme=document.documentElement.dataset.theme==='dark'?'light':'dark';save();applyTheme()};
+function isDark(){const a=document.documentElement.dataset.theme;return a?a==='dark':matchMedia('(prefers-color-scheme: dark)').matches}
+function applyTheme(){ if(S.theme==='light'||S.theme==='dark') document.documentElement.dataset.theme=S.theme; }
+document.getElementById('themeBtn').onclick=()=>{S.theme=isDark()?'light':'dark';save();applyTheme()};
 
 function demo(){
   const p=P(), m=cur, m3=addM(cur,-3);
@@ -578,7 +622,7 @@ function demo(){
   p.budgets={makan:1000,utiliti:300,transport:500,telefon:250,belanja:300,hiburan:150};
 }
 
-applyTheme(); render();
+if(firstRun){demo();} applyTheme(); render();
 if('serviceWorker' in navigator && location.protocol.startsWith('http')) navigator.serviceWorker.register('sw.js').catch(()=>{});
 </script>
 </body>
