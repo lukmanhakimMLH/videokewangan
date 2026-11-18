@@ -16,6 +16,7 @@
     --bg:#0f1115; --card:#1a1d24; --ink:#e8eaed; --muted:#9aa0a6; --line:#2a2f38; --accent:#e8eaed;
   }
 }
+:root[data-theme="dark"]{--bg:#0f1115; --card:#1a1d24; --ink:#e8eaed; --muted:#9aa0a6; --line:#2a2f38; --accent:#e8eaed}
 *{box-sizing:border-box}
 html,body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
 header{position:sticky;top:0;z-index:5;background:var(--card);border-bottom:1px solid var(--line);padding:10px 16px}
@@ -79,6 +80,9 @@ li{margin:3px 0}
 .empty{text-align:center;padding:30px 10px}
 .hist{font-size:13px;border-left:2px solid var(--line);padding-left:10px}
 .hidden{display:none}
+.modal-bg{position:fixed;inset:0;background:#0007;z-index:20;display:flex;align-items:center;justify-content:center;padding:16px}
+.modal{background:var(--card);border-radius:var(--radius);padding:18px;max-width:360px;width:100%}
+.sync{font-size:11px;color:var(--muted)}
 .toast{position:fixed;left:50%;bottom:80px;transform:translateX(-50%);background:var(--accent);color:var(--bg);padding:10px 16px;border-radius:10px;z-index:9;font-weight:600}
 @media (max-width:420px){.kv{grid-template-columns:90px 1fr}.bars .bar .lbl{width:90px}}
 </style>
@@ -87,7 +91,7 @@ li{margin:3px 0}
 <header>
   <div class="top">
     <div class="grow">
-      <h1>Rekrut Takaful · DISC</h1>
+      <h1>Rekrut Takaful · DISC</h1><div class="sync" id="sync"></div>
       <div class="disc-bar"><span style="background:var(--D)"></span><span style="background:var(--I)"></span><span style="background:var(--S)"></span><span style="background:var(--C)"></span></div>
     </div>
     <button class="btn-sm" onclick="go('#/')">Senarai</button>
@@ -168,8 +172,10 @@ const PROFILE = {
    cakap:'Bawa fakta, angka & dokumen. Jawab soalan dengan tepat.'},
 };
 
-/* ===================== STORAGE (IndexedDB) ===================== */
-const DB = (()=>{
+/* ===================== STORAGE =====================
+   Dalam claude.ai: simpan dalam db artifact di data/users/<id>/ (peribadi untuk pemilik, sync antara peranti).
+   Di luar claude.ai: fallback IndexedDB dalam browser. */
+const IDB = (()=>{
   let dbp;
   const open = () => dbp ||= new Promise((res,rej)=>{
     const r = indexedDB.open('rekrut-disc',1);
@@ -177,14 +183,49 @@ const DB = (()=>{
     r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error);
   });
   const tx = async (mode, fn) => { const db = await open(); return new Promise((res,rej)=>{
-    const t = db.transaction('agents',mode); const s = t.objectStore('agents'); const out = fn(s);
+    const t = db.transaction('agents',mode); const out = fn(t.objectStore('agents'));
     t.oncomplete = () => res(out && out.result !== undefined ? out.result : out); t.onerror = () => rej(t.error);
   });};
+  return { all: () => tx('readonly', s => s.getAll()), put: a => tx('readwrite', s => s.put(a)), del: id => tx('readwrite', s => s.delete(id)) };
+})();
+
+const DB = (()=>{
+  let cache = new Map(), col = null, mode = 'local';
+  const clone = o => JSON.parse(JSON.stringify(o));
+  const setSync = t => { const el=document.getElementById('sync'); if(el) el.textContent=t; };
+  async function init(onChange){
+    let db=null, user=null, uid=null;
+    if(window.claude?.use){
+      try{ [db,user] = await Promise.all([claude.use('db'), claude.use('user')]); uid = user ? await user.id() : null; }catch{}
+    }
+    if(db && uid){
+      mode='cloud'; col = db.collection('data/users/'+uid);
+      setSync('Memuatkan data…');
+      await new Promise(res=>{
+        let first=true;
+        const t=setTimeout(()=>{ setSync('⚠ Tak dapat sambung — data mungkin tak terkini'); res(); },10000);
+        col.onSnapshot(snap=>{
+          cache = new Map(snap.docs.map(d=>[d.id, d.data()]));
+          if(!snap.metadata.fromCache){ clearTimeout(t); setSync('☁ Disimpan dalam akaun Claude anda'); }
+          if(first){ first=false; res(); } else onChange();
+        }, e=>{ clearTimeout(t); setSync('⚠ Ralat sambungan data ('+e.code+')'); res(); });
+      });
+    } else {
+      try{ (await IDB.all()).forEach(a=>cache.set(a.id,a)); setSync('📱 Disimpan dalam peranti ini sahaja'); }
+      catch{ setSync('⚠ Storan tidak tersedia — data tak akan disimpan'); }
+    }
+  }
   return {
-    all: () => tx('readonly', s => s.getAll()),
-    get: id => tx('readonly', s => s.get(id)),
-    put: a => tx('readwrite', s => s.put(a)),
-    del: id => tx('readwrite', s => s.delete(id)),
+    init,
+    get mode(){ return mode; },
+    all: async () => [...cache.values()].map(clone),
+    get: async id => cache.has(id) ? clone(cache.get(id)) : undefined,
+    put: async a => {
+      cache.set(a.id, clone(a));
+      try{ if(col) await col.doc(a.id).set(clone(a)); else await IDB.put(a); }
+      catch(e){ toast(e?.code==='quota_exceeded' ? 'Storan penuh — padam calon lama' : 'Gagal simpan, cuba lagi'); throw e; }
+    },
+    del: async id => { cache.delete(id); if(col) await col.doc(id).delete(); else await IDB.del(id); },
   };
 })();
 
@@ -196,6 +237,14 @@ const fmtDate = d => new Date(d).toLocaleDateString('ms-MY',{day:'numeric',month
 const go = h => { location.hash = h; };
 const initials = n => (n||'?').trim().split(/\s+/).slice(0,2).map(w=>w[0]).join('').toUpperCase();
 const avatar = (a, cls='') => a.foto ? `<img class="avatar ${cls}" src="${a.foto}" alt="">` : `<div class="avatar ${cls}">${esc(initials(a.nama))}</div>`;
+function ask(msg, okText='Ya'){
+  return new Promise(res=>{
+    const bg=document.createElement('div'); bg.className='modal-bg';
+    bg.innerHTML=`<div class="modal"><p style="margin-top:0">${esc(msg)}</p><div class="row" style="justify-content:flex-end"><button data-v="0">Batal</button><button class="btn-primary" data-v="1">${esc(okText)}</button></div></div>`;
+    bg.onclick=e=>{ const v=e.target.dataset?.v; if(v!==undefined||e.target===bg){ bg.remove(); res(v==='1'); } };
+    document.body.appendChild(bg);
+  });
+}
 function toast(msg){ const t=document.createElement('div'); t.className='toast'; t.textContent=msg; document.body.appendChild(t); setTimeout(()=>t.remove(),1800); }
 function fmtIC(v){ const d=v.replace(/\D/g,'').slice(0,12); return d.length>8?`${d.slice(0,6)}-${d.slice(6,8)}-${d.slice(8)}`:d.length>6?`${d.slice(0,6)}-${d.slice(6)}`:d; }
 function icInfo(ic){
@@ -340,7 +389,7 @@ async function viewProfile(id){
       <div class="pipeline">${STAGES.map((s,i)=>`<div class="${i<=idx?'done':''}" title="${s.t}"></div>`).join('')}</div>
       <div class="small muted" style="display:flex;gap:4px;font-size:11px;line-height:1.2">${STAGES.map(s=>`<span style="flex:1">${s.t}</span>`).join('')}</div>
       <div class="row" style="justify-content:center;margin-top:12px">
-        <a class="btn btn-sm" href="tel:${esc(a.tel.replace(/[^\d+]/g,''))}">📞 Call</a>
+        <a class="btn btn-sm" target="_top" href="tel:${esc(a.tel.replace(/[^\d+]/g,''))}">📞 Call</a>
         <a class="btn btn-sm" target="_blank" href="https://wa.me/${esc(waNum(a.tel))}">💬 WhatsApp</a>
         ${next?`<button class="btn-sm btn-primary" id="adv">→ ${next.t}</button>`:''}
       </div>
@@ -367,7 +416,7 @@ async function viewProfile(id){
       <button class="btn-danger" id="del">Padam</button>
     </div>`;
   $('#adv') && ($('#adv').onclick=async()=>{ const now=Date.now(); a.status=next.k; a.updatedAt=now; a.history=[...(a.history||[]),{status:next.k,date:now}]; await DB.put(a); toast(next.k==='coded'?'🎉 Tahniah, sudah Coded!':'Status: '+next.t); viewProfile(id); });
-  $('#del').onclick=async()=>{ if(confirm(`Padam ${a.nama}? Tindakan ini tak boleh diundur.`)){ await DB.del(id); toast('Dipadam'); go('#/'); } };
+  $('#del').onclick=async()=>{ if(await ask(`Padam ${a.nama}? Tindakan ini tak boleh diundur.`,'Padam')){ await DB.del(id); toast('Dipadam'); go('#/'); } };
 }
 function waNum(t){ let d=(t||'').replace(/\D/g,''); if(d.startsWith('0')) d='6'+d; return d; }
 
@@ -444,7 +493,7 @@ async function viewSettings(){
     <h2>Tetapan & Backup</h2>
     <div class="card">
       <p>Jumlah calon: <b>${all.length}</b></p>
-      <p class="small muted">Data disimpan dalam pelayar (browser) peranti ini sahaja. Buat backup selalu — kalau clear browser / tukar telefon, data hilang.</p>
+      <p class="small muted">${DB.mode==='cloud' ? 'Data disimpan dalam akaun Claude anda — peribadi untuk anda sahaja dan sama di semua peranti bila log masuk. Backup tetap digalakkan.' : 'Data disimpan dalam browser peranti ini sahaja. Buat backup selalu — kalau clear browser / tukar telefon, data hilang.'}</p>
       <div class="row">
         <button class="btn-primary" id="exp">⬇️ Backup (JSON)</button>
         <label class="btn" style="margin:0">⬆️ Restore<input type="file" accept="application/json" id="imp" class="hidden"></label>
@@ -454,7 +503,10 @@ async function viewSettings(){
     <div class="card small muted">
       <b>Privasi (PDPA):</b> Maklumat No. IC & alamat adalah data peribadi. Dapatkan persetujuan calon, jangan kongsi fail backup sembarangan, dan simpan di tempat selamat.
     </div>`;
-  const dl = (name, data, type) => { const b=new Blob([data],{type}); const u=URL.createObjectURL(b); const l=document.createElement('a'); l.href=u; l.download=name; l.click(); setTimeout(()=>URL.revokeObjectURL(u),1000); };
+  const dl = async (name, data, type) => {
+    const dc = window.claude?.use ? await claude.use('downloads').catch(()=>null) : null;
+    if(dc){ try{ await dc.save({filename:name, data:new Blob([data],{type})}); }catch(e){ if(e?.code && e.code!=='declined' && e.code!=='dismissed') toast('Gagal muat turun'); } return; }
+    const b=new Blob([data],{type}); const u=URL.createObjectURL(b); const l=document.createElement('a'); l.href=u; l.download=name; l.click(); setTimeout(()=>URL.revokeObjectURL(u),1000); };
   const stamp = new Date().toISOString().slice(0,10);
   $('#exp').onclick=()=>dl(`rekrut-backup-${stamp}.json`, JSON.stringify({v:1,agents:all}), 'application/json');
   $('#csv').onclick=()=>{
@@ -466,7 +518,7 @@ async function viewSettings(){
   $('#imp').onchange=async e=>{
     const f=e.target.files[0]; if(!f) return;
     try{ const j=JSON.parse(await f.text()); const list=j.agents||j; if(!Array.isArray(list)) throw 0;
-      if(!confirm(`Restore ${list.length} calon? Rekod dengan ID sama akan ditimpa.`)) return;
+      if(!await ask(`Restore ${list.length} calon? Rekod dengan ID sama akan ditimpa.`,'Restore')) return;
       for(const a of list) if(a.id && a.nama) await DB.put(a);
       toast('Restore berjaya'); viewSettings();
     }catch{ toast('Fail tidak sah'); }
@@ -487,7 +539,8 @@ async function route(){
   return viewList();
 }
 window.addEventListener('hashchange', route);
-route();
+$('#app').innerHTML='<div class="card empty muted">Memuatkan…</div>';
+DB.init(()=>{ const v=(location.hash||'#/').split('/')[1]; if(!v||v==='calon'||v==='tetapan') route(); }).then(route);
 </script>
 </body>
 </html>

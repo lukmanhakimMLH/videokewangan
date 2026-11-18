@@ -6,4 +6,4 @@ App rekrut ejen takaful (satu fail `index.html`, tiada server). Buka terus dalam
 - Pipeline: Prospek → Temuduga → Daftar Exam → Lulus Exam → Coded (dengan sejarah tarikh)
 - Ujian DISC 20 soalan (Paling Saya / Paling Bukan Saya) + panduan coach & pitch ikut jenis
 - Backup/Restore JSON, export CSV untuk Excel
-- Data disimpan dalam IndexedDB browser peranti itu sahaja — buat backup selalu
+- Bila dibuka melalui link claude.ai: data disimpan dalam akaun Claude (peribadi, sync antara peranti). Di luar claude.ai: IndexedDB browser — buat backup selalu
