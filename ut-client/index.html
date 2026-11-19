@@ -973,6 +973,8 @@ function openBackup(){
     <p class="muted" style="font-size:13px">${DB.clients.length} klien · ${DB.funds.length} dana · ${DB.tx.length} transaksi</p>
     <div class="row"><button type="button" class="pri" onclick="download('backup-klien-ut-${today()}.json',JSON.stringify(DB,null,1),'application/json');toast('Backup dimuat turun')">Muat turun backup (.json)</button>
     <button type="button" onclick="exportAllCSV()">Export semua transaksi (.csv)</button></div>
+    <label style="margin-top:14px">➕ Tambah klien dari fail (data sedia ada kekal)</label><input type="file" accept=".json,application/json" onchange="mergeFile(this)">
+    <div class="hint">Untuk fail klien yang dihantar kepada anda. Klien, dana &amp; transaksi akan ditambah — tiada apa dipadam.</div>
     <label style="margin-top:14px">Pulih dari fail backup</label><input type="file" accept=".json,application/json" onchange="importFile(this)">
     <div class="hint">Pulih akan menggantikan semua data sedia ada.</div>`,
   [{label:'Tutup'}]);
@@ -983,6 +985,36 @@ function importFile(inp){
     if(!confirm(`Gantikan data semasa dengan backup (${d.clients.length} klien, ${d.tx.length} transaksi)?`)) return;
     DB=d; save(); dlg.close(); go({tab:'dash'}); toast('Data dipulihkan'); }catch(e){ alert('Gagal baca fail: '+e.message); } };
   r.readAsText(file);
+}
+// Gabung data dari fail: klien dipadan ikut No. IC, dana ikut nama. Tiada data dipadam.
+function mergeFile(inp){
+  const file=inp.files[0]; if(!file) return;
+  const r=new FileReader(); r.onload=()=>{ try{
+    const d=JSON.parse(r.result); if(!Array.isArray(d.clients)||!Array.isArray(d.funds)||!Array.isArray(d.tx)) throw new Error('Format tidak sah');
+    const norm=x=>String(x||'').replace(/\W/g,'').toLowerCase();
+    const fmap={}, cmap={}; let nc=0, uc=0, nf=0, nt=0, skip=0;
+    for(const f of d.funds){
+      let ex=DB.funds.find(x=>x.id===f.id)||DB.funds.find(x=>norm(x.name)===norm(f.name));
+      if(!ex){ ex={...f,history:[],nav:0,navDate:null}; DB.funds.push(ex); nf++; }
+      else ['house','code','category'].forEach(k=>{ if(!ex[k]&&f[k]) ex[k]=f[k]; });
+      (f.history||[]).forEach(h=>{ if(!(ex.history||[]).some(x=>x.date===h.date)) setNav(ex,h.nav,h.date); });
+      fmap[f.id]=ex.id;
+    }
+    for(const c of d.clients){
+      const ex=DB.clients.find(x=>x.id===c.id)||(c.ic&&DB.clients.find(x=>norm(x.ic)===norm(c.ic)));
+      if(ex){ if(confirm(`Klien "${ex.name}" (IC ${ex.ic||'-'}) sudah ada.\nKemas kini maklumat peribadi dari fail?`)){ const {id,created,...rest}=c; Object.keys(rest).forEach(k=>{ if(rest[k]!==''&&rest[k]!=null) ex[k]=rest[k]; }); uc++; } cmap[c.id]=ex.id; }
+      else { DB.clients.push({...c}); cmap[c.id]=c.id; nc++; }
+    }
+    for(const t of d.tx){
+      const nt2={...t, clientId:cmap[t.clientId]||t.clientId, fundId:fmap[t.fundId]||t.fundId};
+      const dup=DB.tx.some(x=>x.id===t.id || (x.clientId===nt2.clientId&&x.fundId===nt2.fundId&&x.type===nt2.type&&x.date===nt2.date&&Math.abs(x.units-nt2.units)<1e-4));
+      if(dup){ skip++; continue; } DB.tx.push(nt2); nt++;
+    }
+    save(); dlg.close(); render();
+    alert(`Selesai ✅\n${nc} klien baru${uc?`, ${uc} dikemas kini`:''}\n${nf} dana baru\n${nt} transaksi ditambah${skip?`\n${skip} transaksi sama dilangkau`:''}`);
+    const first=d.clients[0]; if(first) openClient(cmap[first.id]);
+  }catch(e){ alert('Gagal baca fail: '+e.message); } };
+  r.readAsText(file); inp.value='';
 }
 function csvRows(txs){
   const q=s=>'"'+String(s??'').replace(/"/g,'""')+'"';
