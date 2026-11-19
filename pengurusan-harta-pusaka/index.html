@@ -306,7 +306,12 @@ footer .wrap{padding-block:0 32px}
         <div class="sig">
           <div class="sig-head"><span class="f-lbl">TANDATANGAN PERUNDING</span><button type="button" class="x" id="sigClear">Padam</button></div>
           <div class="sig-pad"><canvas id="sigCanvas" aria-label="Ruang tandatangan perunding"></canvas><span class="sig-ph" id="sigPh">Tandatangan di sini dengan jari atau tetikus</span><i class="sig-line"></i></div>
-          <p class="hint" id="sigNote">Tandatangan akan dimasukkan dalam PDF dan diingat dalam pelayar ini.</p>
+          <p class="hint" id="sigNote">Tandatangan perunding dimasukkan dalam PDF dan diingat dalam pelayar ini.</p>
+        </div>
+        <div class="sig">
+          <div class="sig-head"><span class="f-lbl" id="csigLbl">TANDATANGAN PELANGGAN</span><button type="button" class="x" id="csigClear">Padam</button></div>
+          <div class="sig-pad"><canvas id="csigCanvas" aria-label="Ruang tandatangan pelanggan"></canvas><span class="sig-ph" id="csigPh">Pelanggan tandatangan di sini</span><i class="sig-line"></i></div>
+          <p class="hint">Pelanggan sign sebagai pengesahan laporan telah diterangkan. Tandatangan pelanggan tidak disimpan dan dipadam apabila laporan baharu dimuat naik.</p>
         </div>
         <button type="button" class="primary big-btn" id="pdfBtn">Muat turun laporan PDF</button>
         <div class="status" id="pdfStatus" hidden></div>
@@ -349,7 +354,7 @@ const ASSET_TYPES = ['Hartanah','Kenderaan','Simpanan Bank','KWSP','ASB / Unit A
 
 /* ---------- State ---------- */
 let uid = 1;
-const state = { client:{name:'',ic:'',source:'',date:''}, debts:[], assets:[], rate:5, monthly:0, months:12, prep:{name:'', contact:'', sig:''}, reportTotal:null,
+const state = { client:{name:'',ic:'',source:'',date:''}, debts:[], assets:[], rate:5, monthly:0, months:12, prep:{name:'', contact:'', sig:''}, clientSig:'', reportTotal:null,
   faraid:{gender:'L', spouse:1, sons:2, daughters:1, father:false, mother:true} };
 
 function sample(){
@@ -840,6 +845,7 @@ async function processPdf(password){
     state.debts = r.debts;
     state.reportTotal = r.total;
     state.assets = suggestAssets(r.debts);
+    if(typeof clientSig !== 'undefined') clientSig.clear();
     const icLast = (r.client.ic.match(/(\d)$/) || [])[1];
     if(icLast) state.faraid.gender = (+icLast % 2) ? 'L' : 'P';
     $('sampleChip').hidden = true;
@@ -1106,8 +1112,17 @@ function buildPdf(){
   doc.text('Disediakan oleh: ' + (prep.name || ''), M, y + 27);
   if(prep.contact) doc.text(prep.contact, M, y + 31.5);
   doc.text('Tarikh: ' + today, M, y + (prep.contact ? 36 : 31.5));
+  if(state.clientSig){
+    try {
+      const im = doc.getImageProperties(state.clientSig);
+      let ih = 18, iw = ih * im.width / im.height;
+      if(iw > 68){ iw = 68; ih = iw * im.height / im.width; }
+      doc.addImage(state.clientSig, 'PNG', W - M - 69, y + 21 - ih, iw, ih);
+    } catch(e){}
+  }
   doc.text('Pengesahan pelanggan: ' + (c.name || ''), W - M - 70, y + 27);
-  doc.text('Tarikh:', W - M - 70, y + 31.5);
+  if(c.ic) doc.text('No. KP: ' + c.ic, W - M - 70, y + 31.5);
+  doc.text('Tarikh: ' + (state.clientSig ? today : ''), W - M - 70, y + (c.ic ? 36 : 31.5));
 
   // Kaki setiap halaman
   const n = doc.getNumberOfPages();
@@ -1121,26 +1136,30 @@ function buildPdf(){
   return doc;
 }
 
-/* ---------- Tandatangan perunding ---------- */
-(function(){
-  const cv = $('sigCanvas'), ph = $('sigPh');
+/* ---------- Tandatangan (perunding & pelanggan) ---------- */
+function makeSigPad(prefix, get, set, storeKey){
+  const cv = $(prefix + 'Canvas'), ph = $(prefix + 'Ph');
   const ctx = cv.getContext('2d');
   let drawing = false, last = null, dirty = false;
+  const INK = '#1b2a6b';
   function size(){
     const r = cv.getBoundingClientRect(), dpr = window.devicePixelRatio || 1;
     if(!r.width) return;
     cv.width = Math.round(r.width * dpr); cv.height = Math.round(r.height * dpr);
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    ctx.lineCap = 'round'; ctx.lineJoin = 'round'; ctx.strokeStyle = '#1b2a6b'; ctx.lineWidth = 2.4;
-    if(state.prep.sig){ const img = new Image(); img.onload = () => {
+    ctx.lineCap = 'round'; ctx.lineJoin = 'round'; ctx.strokeStyle = INK; ctx.lineWidth = 2.4;
+    dirty = false;
+    const sig = get();
+    if(sig){ const img = new Image(); img.onload = () => {
       const s = Math.min(r.width * 0.9 / img.width, r.height * 0.8 / img.height, 1 / dpr);
-      const w = img.width * s, h = img.height * s; ctx.drawImage(img, (r.width - w) / 2, (r.height - h) / 2, w, h); }; img.src = state.prep.sig; }
-    ph.hidden = !!state.prep.sig;
+      const w = img.width * s, h = img.height * s; ctx.drawImage(img, (r.width - w) / 2, (r.height - h) / 2, w, h); }; img.src = sig; }
+    ph.hidden = !!sig;
   }
   function pos(e){ const r = cv.getBoundingClientRect(); return {x: e.clientX - r.left, y: e.clientY - r.top}; }
   cv.addEventListener('pointerdown', e => { e.preventDefault(); cv.setPointerCapture(e.pointerId); drawing = true; last = pos(e);
-    if(!dirty && state.prep.sig){ ctx.clearRect(0, 0, cv.width, cv.height); } dirty = true; ph.hidden = true;
-    ctx.beginPath(); ctx.arc(last.x, last.y, 1.1, 0, Math.PI*2); ctx.fillStyle = '#1b2a6b'; ctx.fill(); });
+    if(!dirty && get()){ ctx.save(); ctx.setTransform(1,0,0,1,0,0); ctx.clearRect(0, 0, cv.width, cv.height); ctx.restore(); }
+    dirty = true; ph.hidden = true;
+    ctx.beginPath(); ctx.arc(last.x, last.y, 1.1, 0, Math.PI*2); ctx.fillStyle = INK; ctx.fill(); });
   cv.addEventListener('pointermove', e => { if(!drawing) return; e.preventDefault(); const p = pos(e);
     ctx.beginPath(); ctx.moveTo(last.x, last.y); ctx.lineTo(p.x, p.y); ctx.stroke(); last = p; });
   const end = () => { if(!drawing) return; drawing = false; save(); };
@@ -1149,20 +1168,28 @@ function buildPdf(){
     const w = cv.width, h = cv.height, d = ctx.getImageData(0, 0, w, h).data;
     let x0 = w, y0 = h, x1 = -1, y1 = -1;
     for(let yy = 0; yy < h; yy++) for(let xx = 0; xx < w; xx++) if(d[(yy*w + xx)*4 + 3] > 10){ if(xx < x0) x0 = xx; if(xx > x1) x1 = xx; if(yy < y0) y0 = yy; if(yy > y1) y1 = yy; }
-    if(x1 < 0){ state.prep.sig = ''; } else {
-      const pad = 6, cw = x1 - x0 + 1 + pad*2, ch = y1 - y0 + 1 + pad*2;
+    let out = '';
+    if(x1 >= 0){
+      const pad = 6, sx = Math.max(0, x0 - pad), sy = Math.max(0, y0 - pad);
+      const cw = Math.min(w, x1 + pad + 1) - sx, ch = Math.min(h, y1 + pad + 1) - sy;
       const t = document.createElement('canvas'); t.width = cw; t.height = ch;
-      t.getContext('2d').putImageData(ctx.getImageData(x0 - pad < 0 ? 0 : x0 - pad, y0 - pad < 0 ? 0 : y0 - pad, cw, ch), 0, 0);
-      state.prep.sig = t.toDataURL('image/png');
+      t.getContext('2d').putImageData(ctx.getImageData(sx, sy, cw, ch), 0, 0);
+      out = t.toDataURL('image/png');
     }
-    try { localStorage.setItem('php-prep-sig', state.prep.sig); } catch(e){}
+    set(out);
+    if(storeKey) try { out ? localStorage.setItem(storeKey, out) : localStorage.removeItem(storeKey); } catch(e){}
   }
-  $('sigClear').addEventListener('click', () => { ctx.clearRect(0, 0, cv.width, cv.height); state.prep.sig = ''; dirty = true; ph.hidden = false;
-    try { localStorage.removeItem('php-prep-sig'); } catch(e){} });
-  try { state.prep.sig = localStorage.getItem('php-prep-sig') || ''; } catch(e){}
+  function clear(){ ctx.save(); ctx.setTransform(1,0,0,1,0,0); ctx.clearRect(0, 0, cv.width, cv.height); ctx.restore();
+    set(''); dirty = false; ph.hidden = false;
+    if(storeKey) try { localStorage.removeItem(storeKey); } catch(e){} }
+  $(prefix + 'Clear').addEventListener('click', clear);
+  if(storeKey) try { set(localStorage.getItem(storeKey) || ''); } catch(e){}
   size();
-  let rt; window.addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(() => { dirty = false; size(); }, 150); });
-})();
+  let rt; window.addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(size, 150); });
+  return {clear};
+}
+const prepSig = makeSigPad('sig', () => state.prep.sig, v => { state.prep.sig = v; }, 'php-prep-sig');
+const clientSig = makeSigPad('csig', () => state.clientSig, v => { state.clientSig = v; }, null);
 
 const dlReady = (window.claude && typeof window.claude.use === 'function') ? window.claude.use('downloads').catch(() => null) : Promise.resolve(undefined);
 ['name','contact'].forEach(k => {
