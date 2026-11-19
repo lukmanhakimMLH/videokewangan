@@ -105,6 +105,13 @@ section.step.sim-a{border-top:4px solid var(--bad)}
 .ledger.dark .sum{background:#ffffff26}
 .ledger.dark .sum dt{color:#fff}
 .ledger.dark .sum dd{color:#ffffff}
+.sig{display:grid;gap:6px}
+.sig-head{display:flex;justify-content:space-between;align-items:center}
+.f-lbl{font-size:12px;font-weight:700;color:var(--muted);letter-spacing:.03em}
+.sig-pad{position:relative;height:150px;border:1.5px dashed var(--line);border-radius:12px;background:#ffffff;overflow:hidden}
+.sig-pad canvas{position:absolute;inset:0;width:100%;height:100%;touch-action:none;cursor:crosshair}
+.sig-ph{position:absolute;inset:0;display:grid;place-items:center;color:var(--muted);font-size:14px;pointer-events:none;padding:0 16px;text-align:center}
+.sig-line{position:absolute;left:18px;right:18px;bottom:30px;border-bottom:1px solid var(--line);pointer-events:none}
 .big-btn{width:100%;padding:13px 16px;font-size:16px}
 .inl{display:inline-flex;align-items:center;gap:4px;margin-left:4px;font-weight:600}
 .ledger div.stack{align-items:flex-start}
@@ -296,6 +303,11 @@ footer .wrap{padding-block:0 32px}
           <label class="f">DISEDIAKAN OLEH<input id="prep-name" type="text" placeholder="Nama perunding" autocomplete="name"></label>
           <label class="f">NO. TELEFON / AGENSI<input id="prep-contact" type="text" placeholder="cth. 012-345 6789, Agensi ABC"></label>
         </div>
+        <div class="sig">
+          <div class="sig-head"><span class="f-lbl">TANDATANGAN PERUNDING</span><button type="button" class="x" id="sigClear">Padam</button></div>
+          <div class="sig-pad"><canvas id="sigCanvas" aria-label="Ruang tandatangan perunding"></canvas><span class="sig-ph" id="sigPh">Tandatangan di sini dengan jari atau tetikus</span><i class="sig-line"></i></div>
+          <p class="hint" id="sigNote">Tandatangan akan dimasukkan dalam PDF dan diingat dalam pelayar ini.</p>
+        </div>
         <button type="button" class="primary big-btn" id="pdfBtn">Muat turun laporan PDF</button>
         <div class="status" id="pdfStatus" hidden></div>
       </section>
@@ -337,7 +349,7 @@ const ASSET_TYPES = ['Hartanah','Kenderaan','Simpanan Bank','KWSP','ASB / Unit A
 
 /* ---------- State ---------- */
 let uid = 1;
-const state = { client:{name:'',ic:'',source:'',date:''}, debts:[], assets:[], rate:5, monthly:0, months:12, prep:{name:'', contact:''}, reportTotal:null,
+const state = { client:{name:'',ic:'',source:'',date:''}, debts:[], assets:[], rate:5, monthly:0, months:12, prep:{name:'', contact:'', sig:''}, reportTotal:null,
   faraid:{gender:'L', spouse:1, sons:2, daughters:1, father:false, mother:true} };
 
 function sample(){
@@ -1075,17 +1087,27 @@ function buildPdf(){
   after();
 
   // Penafian + tandatangan
-  need(46);
+  need(62);
   doc.setFont('helvetica','bold'); doc.setFontSize(9); doc.setTextColor(...PDF_INK); doc.text('Penafian', M, y);
   doc.setFont('helvetica','normal'); doc.setFontSize(7.8); doc.setTextColor(...PDF_MU);
   const disc = doc.splitTextToSize('Laporan ini adalah anggaran untuk tujuan perancangan sahaja dan bukan nasihat undang-undang atau fatwa. Maklumat hutang dibaca daripada laporan kredit dan mungkin tidak lengkap. Pengiraan faraid adalah simulasi ringkas mengikut mazhab Syafie untuk pasangan, anak, ibu dan bapa sahaja; sila sahkan dengan Mahkamah Syariah, Amanah Raya Berhad atau peguam syarie. Nilai aset perlu disahkan melalui penilaian semasa.', CW);
   doc.text(disc, M, y + 5); y += 5 + disc.length * 3.6 + 8;
   doc.setDrawColor(...PDF_MU); doc.setLineWidth(0.3);
-  doc.line(M, y + 12, M + 70, y + 12); doc.line(W - M - 70, y + 12, W - M, y + 12);
+  if(prep.sig){
+    try {
+      const im = doc.getImageProperties(prep.sig);
+      let ih = 18, iw = ih * im.width / im.height;
+      if(iw > 68){ iw = 68; ih = iw * im.height / im.width; }
+      doc.addImage(prep.sig, 'PNG', M + 1, y + 21 - ih, iw, ih);
+    } catch(e){}
+  }
+  doc.line(M, y + 22, M + 70, y + 22); doc.line(W - M - 70, y + 22, W - M, y + 22);
   doc.setFontSize(8); doc.setTextColor(...PDF_INK);
-  doc.text('Disediakan oleh: ' + (prep.name || ''), M, y + 17);
-  if(prep.contact) doc.text(prep.contact, M, y + 21.5);
-  doc.text('Pengesahan pelanggan: ' + (c.name || ''), W - M - 70, y + 17);
+  doc.text('Disediakan oleh: ' + (prep.name || ''), M, y + 27);
+  if(prep.contact) doc.text(prep.contact, M, y + 31.5);
+  doc.text('Tarikh: ' + today, M, y + (prep.contact ? 36 : 31.5));
+  doc.text('Pengesahan pelanggan: ' + (c.name || ''), W - M - 70, y + 27);
+  doc.text('Tarikh:', W - M - 70, y + 31.5);
 
   // Kaki setiap halaman
   const n = doc.getNumberOfPages();
@@ -1098,6 +1120,49 @@ function buildPdf(){
   }
   return doc;
 }
+
+/* ---------- Tandatangan perunding ---------- */
+(function(){
+  const cv = $('sigCanvas'), ph = $('sigPh');
+  const ctx = cv.getContext('2d');
+  let drawing = false, last = null, dirty = false;
+  function size(){
+    const r = cv.getBoundingClientRect(), dpr = window.devicePixelRatio || 1;
+    if(!r.width) return;
+    cv.width = Math.round(r.width * dpr); cv.height = Math.round(r.height * dpr);
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    ctx.lineCap = 'round'; ctx.lineJoin = 'round'; ctx.strokeStyle = '#1b2a6b'; ctx.lineWidth = 2.4;
+    if(state.prep.sig){ const img = new Image(); img.onload = () => {
+      const s = Math.min(r.width * 0.9 / img.width, r.height * 0.8 / img.height, 1 / dpr);
+      const w = img.width * s, h = img.height * s; ctx.drawImage(img, (r.width - w) / 2, (r.height - h) / 2, w, h); }; img.src = state.prep.sig; }
+    ph.hidden = !!state.prep.sig;
+  }
+  function pos(e){ const r = cv.getBoundingClientRect(); return {x: e.clientX - r.left, y: e.clientY - r.top}; }
+  cv.addEventListener('pointerdown', e => { e.preventDefault(); cv.setPointerCapture(e.pointerId); drawing = true; last = pos(e);
+    if(!dirty && state.prep.sig){ ctx.clearRect(0, 0, cv.width, cv.height); } dirty = true; ph.hidden = true;
+    ctx.beginPath(); ctx.arc(last.x, last.y, 1.1, 0, Math.PI*2); ctx.fillStyle = '#1b2a6b'; ctx.fill(); });
+  cv.addEventListener('pointermove', e => { if(!drawing) return; e.preventDefault(); const p = pos(e);
+    ctx.beginPath(); ctx.moveTo(last.x, last.y); ctx.lineTo(p.x, p.y); ctx.stroke(); last = p; });
+  const end = () => { if(!drawing) return; drawing = false; save(); };
+  cv.addEventListener('pointerup', end); cv.addEventListener('pointercancel', end); cv.addEventListener('pointerleave', end);
+  function save(){
+    const w = cv.width, h = cv.height, d = ctx.getImageData(0, 0, w, h).data;
+    let x0 = w, y0 = h, x1 = -1, y1 = -1;
+    for(let yy = 0; yy < h; yy++) for(let xx = 0; xx < w; xx++) if(d[(yy*w + xx)*4 + 3] > 10){ if(xx < x0) x0 = xx; if(xx > x1) x1 = xx; if(yy < y0) y0 = yy; if(yy > y1) y1 = yy; }
+    if(x1 < 0){ state.prep.sig = ''; } else {
+      const pad = 6, cw = x1 - x0 + 1 + pad*2, ch = y1 - y0 + 1 + pad*2;
+      const t = document.createElement('canvas'); t.width = cw; t.height = ch;
+      t.getContext('2d').putImageData(ctx.getImageData(x0 - pad < 0 ? 0 : x0 - pad, y0 - pad < 0 ? 0 : y0 - pad, cw, ch), 0, 0);
+      state.prep.sig = t.toDataURL('image/png');
+    }
+    try { localStorage.setItem('php-prep-sig', state.prep.sig); } catch(e){}
+  }
+  $('sigClear').addEventListener('click', () => { ctx.clearRect(0, 0, cv.width, cv.height); state.prep.sig = ''; dirty = true; ph.hidden = false;
+    try { localStorage.removeItem('php-prep-sig'); } catch(e){} });
+  try { state.prep.sig = localStorage.getItem('php-prep-sig') || ''; } catch(e){}
+  size();
+  let rt; window.addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(() => { dirty = false; size(); }, 150); });
+})();
 
 const dlReady = (window.claude && typeof window.claude.use === 'function') ? window.claude.use('downloads').catch(() => null) : Promise.resolve(undefined);
 ['name','contact'].forEach(k => {
