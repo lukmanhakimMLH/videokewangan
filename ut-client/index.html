@@ -2,7 +2,7 @@
 <html lang="ms">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#0f6b44">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon-192.png">
@@ -30,7 +30,7 @@
   }
 }
 *{box-sizing:border-box}
-html,body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+html,body{overflow-x:hidden;margin:0;background:var(--bg);color:var(--ink);font:15px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
 header{position:sticky;top:0;z-index:5;background:var(--brand);color:var(--brand-ink);padding:12px 16px;padding-top:max(12px,env(safe-area-inset-top));display:flex;align-items:center;gap:10px}
 header h1{font-size:17px;margin:0;flex:1}
 header button{background:transparent;color:inherit;border:1px solid currentColor;opacity:.9}
@@ -45,7 +45,7 @@ button,.btn{font:inherit;font-weight:600;padding:9px 14px;border-radius:10px;bor
 button.pri{background:var(--brand);border-color:var(--brand);color:var(--brand-ink)}
 button.danger{color:var(--neg);border-color:var(--neg);background:transparent}
 button.sm{padding:5px 10px;font-size:13px}
-input,select,textarea{font:inherit;width:100%;padding:9px 10px;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink)}
+input,select,textarea{font:inherit;font-size:16px;width:100%;padding:9px 10px;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink)}
 label{display:block;font-size:12px;color:var(--muted);margin:8px 0 3px;font-weight:600}
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:0 10px}
 .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-bottom:12px}
@@ -209,7 +209,9 @@ function viewClients(){
   return `
   <div class="row" style="margin-bottom:12px">
     <input placeholder="Cari nama / IC / telefon…" value="${esc(view.q||'')}" oninput="view.q=this.value;document.getElementById('clist').innerHTML=clientListHTML()" style="flex:1;min-width:180px">
+    <button onclick="document.getElementById('impFile').click()">⬆ Import</button>
     <button class="pri" onclick="editClient()">+ Klien</button>
+    <input type="file" id="impFile" style="display:none" onchange="mergeFile(this)">
   </div>
   <div id="clist">${clientListHTML(list)}</div>`;
 }
@@ -973,9 +975,9 @@ function openBackup(){
     <p class="muted" style="font-size:13px">${DB.clients.length} klien · ${DB.funds.length} dana · ${DB.tx.length} transaksi</p>
     <div class="row"><button type="button" class="pri" onclick="download('backup-klien-ut-${today()}.json',JSON.stringify(DB,null,1),'application/json');toast('Backup dimuat turun')">Muat turun backup (.json)</button>
     <button type="button" onclick="exportAllCSV()">Export semua transaksi (.csv)</button></div>
-    <label style="margin-top:14px">➕ Tambah klien dari fail (data sedia ada kekal)</label><input type="file" accept=".json,application/json" onchange="mergeFile(this)">
+    <label style="margin-top:14px">➕ Tambah klien dari fail (data sedia ada kekal)</label><input type="file" onchange="mergeFile(this)">
     <div class="hint">Untuk fail klien yang dihantar kepada anda. Klien, dana &amp; transaksi akan ditambah — tiada apa dipadam.</div>
-    <label style="margin-top:14px">Pulih dari fail backup</label><input type="file" accept=".json,application/json" onchange="importFile(this)">
+    <label style="margin-top:14px">Pulih dari fail backup</label><input type="file" onchange="importFile(this)">
     <div class="hint">Pulih akan menggantikan semua data sedia ada.</div>`,
   [{label:'Tutup'}]);
 }
