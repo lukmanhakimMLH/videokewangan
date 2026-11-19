@@ -1,6 +1,6 @@
 // Service worker: simpan fail app supaya boleh dibuka tanpa internet.
 // Tiada data pelanggan disimpan di sini; hanya fail app.
-const CACHE = 'harta-pusaka-a552d8ce2d';
+const CACHE = 'harta-pusaka-0df69b4973';
 const FILES = [
   './',
   'index.html',
