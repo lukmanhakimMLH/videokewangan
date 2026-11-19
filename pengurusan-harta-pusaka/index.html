@@ -106,6 +106,11 @@ section.step.sim-a{border-top:4px solid var(--bad)}
 .ledger.dark .sum dt{color:#fff}
 .ledger.dark .sum dd{color:#ffffff}
 .inl{display:inline-flex;align-items:center;gap:4px;margin-left:4px;font-weight:600}
+.ledger div.stack{align-items:flex-start}
+.calcrow{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin:8px 0 4px;font-weight:700}
+.calcrow .inl{margin-left:0}
+.ledger.dark .inl input#months{width:56px}
+.ledger.dark dt small{color:#ffe0c8}
 .inl input{width:70px;padding:4px 6px;font-size:14px;text-align:right}
 .ledger.dark .inl input{width:110px;background:#ffffff;color:var(--fg);border-color:#ffffff}
 .verdict{border-radius:12px;padding:12px 14px;font-size:14.5px;line-height:1.45}
@@ -266,7 +271,10 @@ footer .wrap{padding-block:0 32px}
         <dl class="ledger dark">
           <div><dt>Hibah bayar hutang</dt><dd id="b-debts">–</dd></div>
           <div><dt>Hibah bayar kos pengurusan pusaka</dt><dd id="b-cost">–</dd></div>
-          <div><dt>Dana tambahan waris <label class="inl"><span>RM</span><input id="extra" class="money" type="text" inputmode="decimal" value="0" aria-label="Dana tambahan waris"></label></dt><dd id="b-extra">–</dd></div>
+          <div class="stack"><dt>Sara keluarga semasa urusan faraid
+            <small>Komitmen bulanan si mati × bilangan bulan (minimum 12)</small>
+            <span class="calcrow"><label class="inl"><span>RM</span><input id="monthly" class="money" type="text" inputmode="decimal" value="0" aria-label="Komitmen bulanan si mati"></label><span>×</span><label class="inl"><input id="months" type="number" min="1" max="60" value="12" inputmode="numeric" aria-label="Bilangan bulan"><span>bulan</span></label></span>
+            <small id="instHint"></small></dt><dd id="b-extra">–</dd></div>
           <div class="sum"><dt>Jumlah hibah diperlukan</dt><dd id="b-total">–</dd></div>
         </dl>
         <div class="verdict good" id="b-verdict"></div>
@@ -314,7 +322,7 @@ const ASSET_TYPES = ['Hartanah','Kenderaan','Simpanan Bank','KWSP','ASB / Unit A
 
 /* ---------- State ---------- */
 let uid = 1;
-const state = { client:{name:'',ic:'',source:'',date:''}, debts:[], assets:[], rate:5, extra:0, reportTotal:null,
+const state = { client:{name:'',ic:'',source:'',date:''}, debts:[], assets:[], rate:5, monthly:0, months:12, reportTotal:null,
   faraid:{gender:'L', spouse:1, sons:2, daughters:1, father:false, mother:true} };
 
 function sample(){
@@ -325,6 +333,7 @@ function sample(){
     mkDebt({code:'PCPASCAR', lender:'CB', capacity:'Own', limit:57900, balance:57363, installment:686, col:'MVehs', arrears:0})
   ];
   state.reportTotal = 236474;
+  state.monthly = 3000;
   state.assets = suggestAssets(state.debts);
   state.assets.push(mkAsset({type:'KWSP', desc:'Akaun 1 & 2 (contoh)', value:85000}));
   state.assets.push(mkAsset({type:'Simpanan Bank', desc:'Akaun simpanan (contoh)', value:12000}));
@@ -561,6 +570,7 @@ function parseWordRecords(lines){
 const $ = id => document.getElementById(id);
 
 function renderClient(){
+  $('monthly').value = fmt(state.monthly); $('months').value = state.months;
   $('c-name').value = state.client.name; $('c-ic').value = state.client.ic;
   $('c-source').value = state.client.source; $('c-date').value = state.client.date;
 }
@@ -613,7 +623,7 @@ function compute(){
   const C = state.debts.filter(d=>d.covered).reduce((s,d)=>s+(+d.balance||0),0);
   const U = D - C;
   const cost = A * (state.rate/100);
-  const E = +state.extra || 0;
+  const E = (+state.monthly || 0) * (+state.months || 0);
   const H = U + cost + E;
   return {A,D,C,U,cost,E,H,net:A-U-cost, round:Math.ceil(H/10000)*10000};
 }
@@ -642,8 +652,10 @@ function renderSummary(){
   $('b-debts').textContent = rm(r.U);
   $('b-cost').textContent = rm(r.cost);
   $('b-extra').textContent = rm(r.E);
+  const inst = state.debts.reduce((s,d)=>s+(+d.installment||0),0);
+  $('instHint').textContent = inst ? 'Rujukan: jumlah ansuran hutang dalam laporan ' + rm(inst) + '/bulan, tambah belanja rumah, bil, persekolahan.' : 'Masukkan belanja bulanan rumah, bil, persekolahan dan lain-lain.';
   $('b-total').textContent = rm(r.H);
-  $('b-verdict').innerHTML = `<strong>Aset ${rm(r.A)} kekal utuh</strong>Hutang dan kos dibayar dengan wang hibah, jadi semua aset dibahagi penuh ikut faraid${r.E ? ', dan penerima hibah dapat tambahan ' + rm(r.E) + ' tunai' : ''}.`;
+  $('b-verdict').innerHTML = `<strong>Aset ${rm(r.A)} kekal utuh</strong>Hutang dan kos dibayar dengan wang hibah, jadi semua aset dibahagi penuh ikut faraid${r.E ? ', dan keluarga ada ' + rm(r.E) + ' tunai untuk sara hidup ' + state.months + ' bulan sementara faraid selesai' : ''}.`;
 
   renderFaraid(r);
 
@@ -772,8 +784,9 @@ $('f-spouse').addEventListener('change', e => { state.faraid.spouse = +e.target.
 ['sons','daughters'].forEach(k => $('f-'+k).addEventListener('input', e => { state.faraid[k] = Math.max(0, Math.min(30, parseInt(e.target.value,10) || 0)); renderSummary(); }));
 ['father','mother'].forEach(k => $('f-'+k).addEventListener('change', e => { state.faraid[k] = e.target.checked; renderSummary(); }));
 $('rate').addEventListener('input', e => { state.rate = Math.max(0, parseFloat(e.target.value) || 0); renderSummary(); });
-$('extra').addEventListener('input', e => { state.extra = parseMoney(e.target.value); renderSummary(); });
-$('extra').addEventListener('focusout', e => { e.target.value = fmt(parseMoney(e.target.value)); });
+$('monthly').addEventListener('input', e => { state.monthly = parseMoney(e.target.value); renderSummary(); });
+$('monthly').addEventListener('focusout', e => { e.target.value = fmt(parseMoney(e.target.value)); });
+$('months').addEventListener('input', e => { state.months = Math.max(0, Math.min(60, parseInt(e.target.value,10) || 0)); renderSummary(); });
 
 /* ---------- Upload ---------- */
 let pendingBuf = null;
@@ -846,7 +859,7 @@ function summaryText(){
   L.push(r.net < 0 ? 'KEKURANGAN: ' + rm(-r.net) + ' (waris perlu cari untuk langsaikan hutang)' : 'Baki untuk faraid: ' + rm(r.net));
   rows.forEach(x => L.push(`- ${x.who}${x.n>1?' x'+x.n:''} (${x.frac}): seorang ${rm(per(x)*est0)}`));
   L.push(''); L.push('SIMULASI B: DENGAN HIBAH');
-  L.push('Hibah diperlukan: ' + rm(r.H) + ' (hutang ' + rm(r.U) + ' + kos ' + rm(r.cost) + (r.E ? ' + dana waris ' + rm(r.E) : '') + ')');
+  L.push('Hibah diperlukan: ' + rm(r.H) + ' (hutang ' + rm(r.U) + ' + kos ' + rm(r.cost) + (r.E ? ' + sara keluarga ' + rm(state.monthly) + ' x ' + state.months + ' bulan = ' + rm(r.E) : '') + ')');
   L.push('Cadangan perlindungan: ' + rm(r.round,0));
   L.push('Aset utuh untuk faraid: ' + rm(r.A));
   rows.forEach(x => L.push(`- ${x.who}${x.n>1?' x'+x.n:''} (${x.frac}): seorang ${rm(per(x)*r.A)}`));
