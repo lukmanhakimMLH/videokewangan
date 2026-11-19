@@ -105,6 +105,7 @@ section.step.sim-a{border-top:4px solid var(--bad)}
 .ledger.dark .sum{background:#ffffff26}
 .ledger.dark .sum dt{color:#fff}
 .ledger.dark .sum dd{color:#ffffff}
+.big-btn{width:100%;padding:13px 16px;font-size:16px}
 .inl{display:inline-flex;align-items:center;gap:4px;margin-left:4px;font-weight:600}
 .ledger div.stack{align-items:flex-start}
 .calcrow{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin:8px 0 4px;font-weight:700}
@@ -286,6 +287,18 @@ footer .wrap{padding-block:0 32px}
         <button type="button" id="copy">Salin ringkasan</button>
         <textarea id="copyFallback" hidden readonly aria-label="Ringkasan untuk disalin"></textarea>
       </section>
+
+      <!-- 7. Laporan PDF -->
+      <section class="step" id="s-pdf">
+        <div class="step-head"><h2><span class="step-no">LAPORAN</span> PDF untuk Pelanggan</h2></div>
+        <p class="hint">Laporan A4 lengkap: maklumat pelanggan, senarai hutang dan aset, bahagian faraid, Simulasi A dan B, penafian dan ruang tandatangan. Di telefon, PDF boleh terus dikongsi ke WhatsApp atau e-mel.</p>
+        <div class="client">
+          <label class="f">DISEDIAKAN OLEH<input id="prep-name" type="text" placeholder="Nama perunding" autocomplete="name"></label>
+          <label class="f">NO. TELEFON / AGENSI<input id="prep-contact" type="text" placeholder="cth. 012-345 6789, Agensi ABC"></label>
+        </div>
+        <button type="button" class="primary big-btn" id="pdfBtn">Muat turun laporan PDF</button>
+        <div class="status" id="pdfStatus" hidden></div>
+      </section>
     </div>
   </div>
 </main>
@@ -293,6 +306,8 @@ footer .wrap{padding-block:0 32px}
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
 <script>
 (function(){
 'use strict';
@@ -322,7 +337,7 @@ const ASSET_TYPES = ['Hartanah','Kenderaan','Simpanan Bank','KWSP','ASB / Unit A
 
 /* ---------- State ---------- */
 let uid = 1;
-const state = { client:{name:'',ic:'',source:'',date:''}, debts:[], assets:[], rate:5, monthly:0, months:12, reportTotal:null,
+const state = { client:{name:'',ic:'',source:'',date:''}, debts:[], assets:[], rate:5, monthly:0, months:12, prep:{name:'', contact:''}, reportTotal:null,
   faraid:{gender:'L', spouse:1, sons:2, daughters:1, father:false, mother:true} };
 
 function sample(){
@@ -873,6 +888,240 @@ $('copy').addEventListener('click', () => {
 });
 
 /* ---------- Mula dengan contoh ---------- */
+/* ---------- Laporan PDF ---------- */
+const PDF_O=[234,88,12], PDF_OD=[194,65,12], PDF_INK=[42,26,16], PDF_MU=[122,91,72], PDF_LT=[255,243,234], PDF_LINE=[246,217,195], PDF_RED=[179,38,30], PDF_REDBG=[251,229,227];
+function pdfMoney(n){ return 'RM ' + fmt(n); }
+function buildPdf(){
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF({unit:'mm', format:'a4'});
+  const W = 210, H = 297, M = 14, CW = W - 2*M;
+  const r = compute(), c = state.client, fr = faraid(state.faraid);
+  const per = x => x.n ? x.share / x.n : x.share;
+  const est0 = Math.max(0, r.net);
+  const today = new Date().toLocaleDateString('ms-MY', {day:'numeric', month:'long', year:'numeric'});
+  const prep = state.prep;
+  const tableBase = {
+    margin:{left:M, right:M, bottom:22}, theme:'grid',
+    styles:{font:'helvetica', fontSize:8.6, textColor:PDF_INK, lineColor:PDF_LINE, lineWidth:0.2, cellPadding:2.2, overflow:'linebreak'},
+    headStyles:{fillColor:PDF_O, textColor:255, fontStyle:'bold', fontSize:8.2},
+    alternateRowStyles:{fillColor:[255,250,246]},
+    footStyles:{fillColor:PDF_LT, textColor:PDF_INK, fontStyle:'bold'},
+    showFoot:'lastPage', rowPageBreak:'avoid'
+  };
+  let y = 0;
+  const need = h => { if(y + h > H - 24){ doc.addPage(); y = 18; } };
+  const section = (no, title, sub) => {
+    need(42);
+    doc.setFont('helvetica','bold'); doc.setFontSize(8); doc.setTextColor(...PDF_OD);
+    doc.text(no, M, y);
+    doc.setFontSize(13); doc.setTextColor(...PDF_INK); doc.text(title, M, y + 6);
+    doc.setDrawColor(...PDF_O); doc.setLineWidth(0.8); doc.line(M, y + 8.5, M + 18, y + 8.5);
+    y += 13;
+    if(sub){ doc.setFont('helvetica','normal'); doc.setFontSize(8.6); doc.setTextColor(...PDF_MU);
+      const t = doc.splitTextToSize(sub, CW); doc.text(t, M, y); y += t.length * 4 + 2; }
+  };
+  const after = () => { y = doc.lastAutoTable.finalY + 8; };
+  const box = (title, body, bg, fg) => {
+    doc.setFont('helvetica','normal'); doc.setFontSize(9);
+    const lines = doc.splitTextToSize(body, CW - 10);
+    const h = 11 + lines.length * 4.2 + 3;
+    need(h);
+    doc.setFillColor(...bg); doc.roundedRect(M, y, CW, h, 2, 2, 'F');
+    doc.setTextColor(...fg); doc.setFont('helvetica','bold'); doc.setFontSize(12); doc.text(title, M + 5, y + 7.5);
+    doc.setFont('helvetica','normal'); doc.setFontSize(9); doc.text(lines, M + 5, y + 13);
+    y += h + 6;
+  };
+
+  // Kepala
+  doc.setFillColor(...PDF_O); doc.rect(0, 0, W, 38, 'F');
+  doc.setTextColor(255); doc.setFont('helvetica','bold'); doc.setFontSize(8);
+  doc.text('PERANCANGAN HARTA', M, 11); doc.text('SULIT & PERSENDIRIAN', W - M, 11, {align:'right'});
+  doc.setFontSize(20); doc.text('Laporan Pengurusan Harta Pusaka', M, 22);
+  doc.setFillColor(255,255,255); doc.rect(M, 25.5, 22, 1.1, 'F');
+  doc.setFont('helvetica','normal'); doc.setFontSize(9);
+  doc.text('Analisis hutang, aset, keperluan hibah dan simulasi faraid', M, 32);
+  doc.text('Tarikh: ' + today, W - M, 32, {align:'right'});
+  y = 46;
+
+  // Maklumat pelanggan
+  doc.autoTable(Object.assign({}, tableBase, {
+    startY:y, theme:'plain',
+    styles:Object.assign({}, tableBase.styles, {cellPadding:{top:1.6,bottom:1.6,left:3,right:3}}),
+    body:[
+      [{content:'NAMA PELANGGAN', styles:{textColor:PDF_MU, fontSize:7.5, fontStyle:'bold'}}, {content:'NO. KAD PENGENALAN', styles:{textColor:PDF_MU, fontSize:7.5, fontStyle:'bold'}}],
+      [{content:c.name || '-', styles:{fontStyle:'bold', fontSize:11}}, {content:c.ic || '-', styles:{fontStyle:'bold', fontSize:11}}],
+      [{content:'SUMBER LAPORAN KREDIT', styles:{textColor:PDF_MU, fontSize:7.5, fontStyle:'bold'}}, {content:'TARIKH LAPORAN KREDIT', styles:{textColor:PDF_MU, fontSize:7.5, fontStyle:'bold'}}],
+      [c.source || '-', c.date || '-']
+    ],
+    tableLineColor:PDF_LINE, tableLineWidth:0.3,
+    willDrawPage:()=>{}, didDrawPage:()=>{}
+  }));
+  after();
+
+  // Ringkasan 4 kotak
+  const tiles = [['JUMLAH ASET', pdfMoney(r.A)], ['JUMLAH HUTANG', pdfMoney(r.D)], ['KEPERLUAN HIBAH', pdfMoney(r.H)], ['CADANGAN PERLINDUNGAN', 'RM ' + fmt(r.round, 0)]];
+  const tw = (CW - 3*4) / 4;
+  tiles.forEach((t, i) => {
+    const x = M + i*(tw + 4), hi = i >= 2;
+    doc.setFillColor(...(hi ? PDF_O : PDF_LT)); doc.roundedRect(x, y, tw, 20, 2, 2, 'F');
+    doc.setTextColor(...(hi ? [255,255,255] : PDF_MU)); doc.setFont('helvetica','bold'); doc.setFontSize(6.8); doc.text(t[0], x + 3.5, y + 6.5);
+    doc.setTextColor(...(hi ? [255,255,255] : PDF_INK)); doc.setFontSize(11); doc.text(t[1], x + 3.5, y + 14.5);
+  });
+  y += 28;
+
+  // 1. Hutang
+  section('BAHAGIAN 1', 'Senarai Hutang', 'Hutang daripada laporan kredit dan hutang lain yang dimaklumkan pelanggan.');
+  const status = d => {
+    const s = [];
+    if(d.covered) s.push('Dilindungi MRTA/takaful');
+    if(d.saa) s.push('Perhatian khas');
+    if(d.rescheduled) s.push('Dijadual semula');
+    if(d.arrears > 0) s.push('Pernah tertunggak ' + d.arrears + ' bln');
+    return s.length ? s.join(', ') : (d.code || d.lender ? 'Teratur' : '-');
+  };
+  doc.autoTable(Object.assign({}, tableBase, {
+    startY:y,
+    head:[['#', 'Kemudahan', 'Pemberi pinjaman', 'Ansuran / bln', 'Baki (RM)', 'Status']],
+    body: state.debts.length ? state.debts.map((d, i) => [i+1, d.label, d.lender || '-', d.installment ? fmt(d.installment) : '-', fmt(d.balance), status(d)])
+      : [[{content:'Tiada hutang', colSpan:6}]],
+    foot:[[ '', 'Jumlah hutang', '', fmt(state.debts.reduce((s,d)=>s+(+d.installment||0),0)), fmt(r.D), r.C ? 'Dilindungi: ' + fmt(r.C) : '' ]],
+    columnStyles:{0:{cellWidth:8.5, halign:'center'}, 3:{halign:'right'}, 4:{halign:'right', fontStyle:'bold'}, 5:{cellWidth:36, fontSize:7.6}},
+    didParseCell:h => { if(h.section === 'body' && h.column.index === 5 && /tunggak|khas|semula/i.test(String(h.cell.raw))) h.cell.styles.textColor = PDF_RED;
+                        if(h.section === 'foot' && (h.column.index === 3 || h.column.index === 4)) h.cell.styles.halign = 'right'; }
+  }));
+  after();
+
+  // 2. Aset
+  section('BAHAGIAN 2', 'Senarai Aset', 'Nilai anggaran semasa. Aset bertanda (anggaran) diambil daripada had pinjaman dan perlu disahkan.');
+  doc.autoTable(Object.assign({}, tableBase, {
+    startY:y,
+    head:[['#', 'Kategori', 'Keterangan', 'Nilai (RM)']],
+    body: state.assets.length ? state.assets.map((a, i) => [i+1, a.type, (a.desc || '-') + (a.est ? ' (anggaran)' : ''), fmt(a.value)]) : [[{content:'Tiada aset', colSpan:4}]],
+    foot:[['', 'Jumlah aset', '', fmt(r.A)]],
+    columnStyles:{0:{cellWidth:8.5, halign:'center'}, 1:{cellWidth:38}, 3:{halign:'right', fontStyle:'bold', cellWidth:34}},
+    didParseCell:h => { if(h.section === 'foot' && h.column.index === 3) h.cell.styles.halign = 'right'; }
+  }));
+  after();
+
+  // 3. Waris
+  const h = state.faraid;
+  const spouseTxt = h.gender === 'L' ? (h.spouse ? h.spouse + ' isteri' : 'tiada isteri') : (h.spouse ? 'suami' : 'tiada suami');
+  section('BAHAGIAN 3', 'Waris & Bahagian Faraid',
+    'Si mati ' + (h.gender === 'L' ? 'lelaki' : 'perempuan') + ', ' + spouseTxt + ', ' + h.sons + ' anak lelaki, ' + h.daughters + ' anak perempuan, bapa ' + (h.father ? 'masih hidup' : 'telah meninggal') + ', ibu ' + (h.mother ? 'masih hidup' : 'telah meninggal') + '.');
+  doc.autoTable(Object.assign({}, tableBase, {
+    startY:y,
+    head:[['Waris', 'Bil.', 'Bahagian', 'Peratus', 'Sebab']],
+    body: fr.rows.length ? fr.rows.map(x => [x.who, x.n || '-', x.frac, fmt(x.share*100) + '%', x.why]) : [[{content:'Tiada waris diisi', colSpan:5}]],
+    columnStyles:{1:{halign:'center', cellWidth:12}, 3:{halign:'right', cellWidth:20}}
+  }));
+  after();
+  if(fr.notes.length){ doc.setFont('helvetica','normal'); doc.setFontSize(8.2); doc.setTextColor(...PDF_MU);
+    const t = doc.splitTextToSize(fr.notes.join(' '), CW); need(t.length*3.8); doc.text(t, M, y - 3); y += t.length * 3.8 + 3; }
+
+  // 4. Simulasi A
+  section('BAHAGIAN 4', 'Simulasi A: Tanpa Hibah', 'Hutang dan kos pengurusan dijelaskan dari harta pusaka dahulu. Hanya baki dibahagi ikut faraid.');
+  doc.autoTable(Object.assign({}, tableBase, {
+    startY:y, theme:'plain', tableLineColor:PDF_LINE, tableLineWidth:0.3,
+    body:[
+      ['Nilai aset', pdfMoney(r.A)],
+      ['Tolak hutang' + (r.C ? ' (selepas tolak ' + pdfMoney(r.C) + ' dilindungi)' : ''), '- ' + pdfMoney(r.U)],
+      ['Tolak kos pengurusan pusaka (' + state.rate + '% x aset)', '- ' + pdfMoney(r.cost)],
+      [r.net < 0 ? 'KEKURANGAN' : 'BAKI UNTUK FARAID', (r.net < 0 ? '- ' : '') + pdfMoney(Math.abs(r.net))]
+    ],
+    columnStyles:{1:{halign:'right', fontStyle:'bold', cellWidth:50}},
+    didParseCell:d => { if(d.row.index === 3){ d.cell.styles.fillColor = PDF_LT; d.cell.styles.fontStyle = 'bold'; d.cell.styles.fontSize = 10; if(r.net < 0) d.cell.styles.textColor = PDF_RED; }
+                        if(d.column.index === 1 && (d.row.index === 1 || d.row.index === 2)) d.cell.styles.textColor = PDF_RED; }
+  }));
+  after();
+  if(r.net < 0) box('Waris perlu cari ' + pdfMoney(-r.net), 'Semua aset (' + pdfMoney(r.A) + ') habis dijual atau dicairkan untuk membayar hutang dan kos, dan masih ada baki hutang ' + pdfMoney(-r.net) + '. Waris tidak menerima apa-apa daripada harta pusaka.', PDF_REDBG, PDF_RED);
+  else box('Waris hilang ' + pdfMoney(r.U + r.cost), 'Daripada aset ' + pdfMoney(r.A) + ', hanya ' + pdfMoney(r.net) + ' tinggal untuk dibahagi ikut faraid. Aset mungkin perlu dijual untuk mendapatkan tunai bagi membayar hutang.', PDF_REDBG, PDF_RED);
+  const short = Math.max(0, -r.net);
+  doc.autoTable(Object.assign({}, tableBase, {
+    startY:y,
+    head:[['Waris', 'Bahagian', 'Seorang dapat'].concat(short ? ['Seorang tanggung kekurangan*'] : [])],
+    body: fr.rows.map(x => [x.who + (x.n > 1 ? ' x ' + x.n : ''), x.frac, pdfMoney(per(x)*est0)].concat(short ? [pdfMoney(per(x)*short)] : [])),
+    foot:[['Jumlah', '', pdfMoney(est0)].concat(short ? [pdfMoney(short)] : [])],
+    columnStyles:{2:{halign:'right'}, 3:{halign:'right', textColor:PDF_RED}},
+    didParseCell:d => { if(d.section === 'foot' && d.column.index >= 2) d.cell.styles.halign = 'right'; }
+  }));
+  after();
+  if(short){ doc.setFontSize(7.6); doc.setTextColor(...PDF_MU); doc.text('* Anggaran jika waris berkongsi melangsaikan baki hutang ikut nisbah faraid. Waris tidak diwajibkan oleh syarak membayar dengan harta sendiri.', M, y - 4); y += 2; }
+
+  // 5. Simulasi B
+  section('BAHAGIAN 5', 'Simulasi B: Dengan Hibah', 'Wang hibah takaful dibayar terus kepada penerima yang dinamakan, di luar harta pusaka. Ia digunakan untuk menjelaskan hutang dan kos, jadi aset kekal utuh untuk waris.');
+  doc.autoTable(Object.assign({}, tableBase, {
+    startY:y, theme:'plain', tableLineColor:PDF_LINE, tableLineWidth:0.3,
+    body:[
+      ['Hibah bayar hutang', pdfMoney(r.U)],
+      ['Hibah bayar kos pengurusan pusaka (' + state.rate + '%)', pdfMoney(r.cost)],
+      ['Sara keluarga semasa urusan faraid (' + pdfMoney(state.monthly) + ' x ' + state.months + ' bulan)', pdfMoney(r.E)],
+      ['JUMLAH HIBAH DIPERLUKAN', pdfMoney(r.H)],
+      ['Cadangan nilai perlindungan (dibundarkan)', 'RM ' + fmt(r.round, 0)]
+    ],
+    columnStyles:{1:{halign:'right', fontStyle:'bold', cellWidth:50}},
+    didParseCell:d => { if(d.row.index === 3){ d.cell.styles.fillColor = PDF_O; d.cell.styles.textColor = 255; d.cell.styles.fontStyle = 'bold'; d.cell.styles.fontSize = 10.5; }
+                        if(d.row.index === 4){ d.cell.styles.fillColor = PDF_LT; d.cell.styles.fontStyle = 'bold'; } }
+  }));
+  after();
+  box('Aset ' + pdfMoney(r.A) + ' kekal utuh', 'Hutang dan kos dibayar dengan wang hibah, jadi semua aset dibahagi penuh ikut faraid' + (r.E ? ', dan keluarga mempunyai ' + pdfMoney(r.E) + ' tunai untuk sara hidup ' + state.months + ' bulan sementara urusan faraid selesai.' : '.'), PDF_O, [255,255,255]);
+  doc.autoTable(Object.assign({}, tableBase, {
+    startY:y,
+    head:[['Waris', 'Bahagian', 'Seorang dapat', 'Lebih berbanding tanpa hibah']],
+    body: fr.rows.map(x => [x.who + (x.n > 1 ? ' x ' + x.n : ''), x.frac, pdfMoney(per(x)*r.A), '+ ' + pdfMoney(per(x)*(r.A - est0))]),
+    foot:[['Jumlah', '', pdfMoney(r.A), '+ ' + pdfMoney(r.A - est0)]],
+    columnStyles:{2:{halign:'right', fontStyle:'bold'}, 3:{halign:'right', textColor:[31,122,77]}},
+    didParseCell:d => { if(d.section === 'foot' && d.column.index >= 2) d.cell.styles.halign = 'right'; }
+  }));
+  after();
+
+  // Penafian + tandatangan
+  need(46);
+  doc.setFont('helvetica','bold'); doc.setFontSize(9); doc.setTextColor(...PDF_INK); doc.text('Penafian', M, y);
+  doc.setFont('helvetica','normal'); doc.setFontSize(7.8); doc.setTextColor(...PDF_MU);
+  const disc = doc.splitTextToSize('Laporan ini adalah anggaran untuk tujuan perancangan sahaja dan bukan nasihat undang-undang atau fatwa. Maklumat hutang dibaca daripada laporan kredit dan mungkin tidak lengkap. Pengiraan faraid adalah simulasi ringkas mengikut mazhab Syafie untuk pasangan, anak, ibu dan bapa sahaja; sila sahkan dengan Mahkamah Syariah, Amanah Raya Berhad atau peguam syarie. Nilai aset perlu disahkan melalui penilaian semasa.', CW);
+  doc.text(disc, M, y + 5); y += 5 + disc.length * 3.6 + 8;
+  doc.setDrawColor(...PDF_MU); doc.setLineWidth(0.3);
+  doc.line(M, y + 12, M + 70, y + 12); doc.line(W - M - 70, y + 12, W - M, y + 12);
+  doc.setFontSize(8); doc.setTextColor(...PDF_INK);
+  doc.text('Disediakan oleh: ' + (prep.name || ''), M, y + 17);
+  if(prep.contact) doc.text(prep.contact, M, y + 21.5);
+  doc.text('Pengesahan pelanggan: ' + (c.name || ''), W - M - 70, y + 17);
+
+  // Kaki setiap halaman
+  const n = doc.getNumberOfPages();
+  for(let i = 1; i <= n; i++){
+    doc.setPage(i);
+    doc.setDrawColor(...PDF_O); doc.setLineWidth(0.6); doc.line(M, H - 14, W - M, H - 14);
+    doc.setFont('helvetica','normal'); doc.setFontSize(7.5); doc.setTextColor(...PDF_MU);
+    doc.text('Laporan Pengurusan Harta Pusaka' + (c.name ? '  |  ' + c.name : '') + (prep.name ? '  |  Disediakan oleh ' + prep.name : ''), M, H - 9);
+    doc.text('Halaman ' + i + ' / ' + n, W - M, H - 9, {align:'right'});
+  }
+  return doc;
+}
+
+const dlReady = (window.claude && typeof window.claude.use === 'function') ? window.claude.use('downloads').catch(() => null) : Promise.resolve(undefined);
+['name','contact'].forEach(k => {
+  const el = $('prep-' + k);
+  try { el.value = state.prep[k] = localStorage.getItem('php-prep-' + k) || ''; } catch(e){}
+  el.addEventListener('input', () => { state.prep[k] = el.value; try { localStorage.setItem('php-prep-' + k, el.value); } catch(e){} });
+});
+$('pdfBtn').addEventListener('click', async () => {
+  const st = $('pdfStatus'), btn = $('pdfBtn');
+  if(!window.jspdf || !window.jspdf.jsPDF){ st.hidden = false; st.className = 'status err'; st.textContent = 'Penjana PDF gagal dimuatkan. Semak sambungan internet dan muat semula halaman.'; return; }
+  st.hidden = false; btn.disabled = true; st.className = 'status'; st.textContent = 'Menyediakan laporan PDF…';
+  try {
+    const doc = buildPdf();
+    const fn = 'Laporan Harta Pusaka - ' + ((state.client.name || 'Pelanggan').replace(/[^\w @.'-]/g, '').trim() || 'Pelanggan') + '.pdf';
+    const dl = await dlReady;
+    if(dl){ await dl.save({filename: fn, data: doc.output('blob')}); st.className = 'status ok'; st.textContent = 'Laporan PDF sedia: ' + fn; }
+    else if(dl === undefined){ doc.save(fn); st.className = 'status ok'; st.textContent = 'Laporan PDF dimuat turun: ' + fn; }
+    else { st.className = 'status err'; st.textContent = 'Muat turun tidak tersedia dalam paparan ini. Buka app dalam claude.ai atau app Claude.'; }
+  } catch(e){
+    st.className = 'status err';
+    st.textContent = e && e.code === 'declined' ? 'Muat turun dibatalkan.' : e && e.code === 'rate_limited' ? 'Tunggu sebentar dan cuba lagi.' : 'PDF gagal dijana: ' + (e && e.message || 'ralat tidak diketahui');
+  } finally { btn.disabled = false; }
+});
+
 sample();
 renderAll();
 window.__parseReport = parseReport; window.__faraid = faraid;
