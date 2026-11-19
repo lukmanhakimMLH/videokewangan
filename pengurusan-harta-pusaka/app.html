@@ -1199,7 +1199,14 @@ $('pdfBtn').addEventListener('click', async () => {
     const fn = 'Laporan Harta Pusaka - ' + ((state.client.name || 'Pelanggan').replace(/[^\w @.'-]/g, '').trim() || 'Pelanggan') + '.pdf';
     const dl = await dlReady;
     if(dl){ await dl.save({filename: fn, data: doc.output('blob')}); st.className = 'status ok'; st.textContent = 'Laporan PDF sedia: ' + fn; }
-    else if(dl === undefined){ doc.save(fn); st.className = 'status ok'; st.textContent = 'Laporan PDF dimuat turun: ' + fn; }
+    else if(dl === undefined){
+      const file = (typeof File === 'function') ? new File([doc.output('blob')], fn, {type:'application/pdf'}) : null;
+      const touch = window.matchMedia && matchMedia('(pointer: coarse)').matches;
+      if(file && touch && navigator.canShare && navigator.canShare({files:[file]})){
+        try { await navigator.share({files:[file], title:fn}); st.className = 'status ok'; st.textContent = 'Laporan PDF sedia: ' + fn; }
+        catch(err){ if(err && err.name === 'AbortError'){ st.className = 'status'; st.textContent = 'Kongsi dibatalkan.'; } else { doc.save(fn); st.className = 'status ok'; st.textContent = 'Laporan PDF dimuat turun: ' + fn; } }
+      } else { doc.save(fn); st.className = 'status ok'; st.textContent = 'Laporan PDF dimuat turun: ' + fn; }
+    }
     else { st.className = 'status err'; st.textContent = 'Muat turun tidak tersedia dalam paparan ini. Buka app dalam claude.ai atau app Claude.'; }
   } catch(e){
     st.className = 'status err';

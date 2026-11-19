@@ -3,6 +3,14 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#ea580c">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Harta Pusaka">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
 <title>Pengurusan Harta Pusaka</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -321,10 +329,10 @@ footer .wrap{padding-block:0 32px}
 </main>
 <footer><div class="wrap">Anggaran sahaja untuk tujuan perancangan. Bacaan automatik laporan kredit boleh tersilap; sentiasa semak dengan laporan asal. Pastikan data peribadi dan laporan kredit dikendalikan secara sulit.</div></footer>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+<script src="lib/pdf.min.js"></script>
+<script src="lib/pdf.worker.min.js"></script>
+<script src="lib/jspdf.umd.min.js"></script>
+<script src="lib/jspdf.plugin.autotable.min.js"></script>
 <script>
 (function(){
 'use strict';
@@ -1206,7 +1214,14 @@ $('pdfBtn').addEventListener('click', async () => {
     const fn = 'Laporan Harta Pusaka - ' + ((state.client.name || 'Pelanggan').replace(/[^\w @.'-]/g, '').trim() || 'Pelanggan') + '.pdf';
     const dl = await dlReady;
     if(dl){ await dl.save({filename: fn, data: doc.output('blob')}); st.className = 'status ok'; st.textContent = 'Laporan PDF sedia: ' + fn; }
-    else if(dl === undefined){ doc.save(fn); st.className = 'status ok'; st.textContent = 'Laporan PDF dimuat turun: ' + fn; }
+    else if(dl === undefined){
+      const file = (typeof File === 'function') ? new File([doc.output('blob')], fn, {type:'application/pdf'}) : null;
+      const touch = window.matchMedia && matchMedia('(pointer: coarse)').matches;
+      if(file && touch && navigator.canShare && navigator.canShare({files:[file]})){
+        try { await navigator.share({files:[file], title:fn}); st.className = 'status ok'; st.textContent = 'Laporan PDF sedia: ' + fn; }
+        catch(err){ if(err && err.name === 'AbortError'){ st.className = 'status'; st.textContent = 'Kongsi dibatalkan.'; } else { doc.save(fn); st.className = 'status ok'; st.textContent = 'Laporan PDF dimuat turun: ' + fn; } }
+      } else { doc.save(fn); st.className = 'status ok'; st.textContent = 'Laporan PDF dimuat turun: ' + fn; }
+    }
     else { st.className = 'status err'; st.textContent = 'Muat turun tidak tersedia dalam paparan ini. Buka app dalam claude.ai atau app Claude.'; }
   } catch(e){
     st.className = 'status err';
@@ -1218,6 +1233,11 @@ sample();
 renderAll();
 window.__parseReport = parseReport; window.__faraid = faraid;
 })();
+</script>
+<script>
+if('serviceWorker' in navigator && location.protocol !== 'file:'){
+  window.addEventListener('load', function(){ navigator.serviceWorker.register('sw.js').catch(function(){}); });
+}
 </script>
 </body>
 </html>
