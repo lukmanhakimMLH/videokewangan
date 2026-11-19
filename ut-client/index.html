@@ -281,13 +281,7 @@ function viewClient(id){
     <div class="kpi"><div class="l">Telah redeem</div><div class="v">${rm(s.proceeds)}<div style="font-size:13px" class="muted">${pctPlain(s.redeemPct)} modal dikeluarkan</div></div></div>
   </div>
 
-  ${s.hs.length?`<h3>Harga beli vs harga dana</h3>
-  <div class="card">
-    ${s.hs.length>1?`<div class="chips">${s.hs.map(h=>`<button class="${h.key===chartFundFor(id,s)?'on':''}" onclick="view.chartFund='${h.key}';render()">${esc(posLabel(h))}</button>`).join('')}</div>`:''}
-    ${(k=>priceChart({clientId:id, fundId:k.split('|')[0], source:k.split('|')[1]}))(chartFundFor(id,s))}
-  </div>`:''}
-
-  <h3>Pegangan semasa</h3>
+  <h3>Pegangan semasa <span style="text-transform:none;letter-spacing:0;font-weight:400">· setiap fund dengan graf harga beli vs harga dana</span></h3>
   ${active.length? active.map(h=>holdingCard(h,s.value)).join('') : `<div class="card empty">Tiada pegangan aktif. Tekan <b>+ Pelaburan</b>.</div>`}
   ${closed.length?`<h3>Dana yang telah dijual habis</h3>${closed.map(h=>holdingCard(h,s.value)).join('')}`:''}
 
@@ -312,6 +306,7 @@ function holdingCard(h,total){
     <div class="row"><div style="flex:1;min-width:0"><div class="t">${esc(f.name)} ${h.source?`<span class="chip" style="${h.source==='KWSP'?'color:var(--s-buy)':'color:var(--warn)'}">${esc(h.source)}</span>`:''}</div>
       <div class="muted" style="font-size:12px">${esc(f.house||'')}${f.house?' · ':''}NAV ${nav4(f.nav)} @ ${fdate(f.navDate)}</div></div>
       <div class="num"><b>${rm(h.value)}</b><div class="${cls(h.unreal)}" style="font-size:12.5px">${pct(h.unrealPct)}</div></div></div>
+    <div style="margin-top:10px">${priceChart({clientId:h.clientId, fundId:h.fundId, source:h.source||'', width:cardW()})}</div>
     <div class="grid2" style="margin-top:8px">
       <div>
         <div class="metric"><span>Unit dipegang</span><span class="num">${u4(h.units)}</span></div>
@@ -653,6 +648,9 @@ function lotTable(h){
 }
 
 /* --- Graf: harga beli vs harga dana --- */
+// Lebar sebenar ruang dalam kad (main tolak padding, tolak padding kad)
+function contentW(){ const m=document.querySelector('main'), cs=getComputedStyle(m); return m.clientWidth-parseFloat(cs.paddingLeft)-parseFloat(cs.paddingRight); }
+function cardW(){ return Math.max(260,Math.min(contentW()-30,920)); }
 function chartFundFor(cid,s){ const ids=s.hs.map(h=>h.key); if(view.chartFund&&ids.includes(view.chartFund)) return view.chartFund; const a=[...s.hs].sort((x,y)=>y.value-x.value); return a[0]?.key; }
 let CH={}, _cid=0;
 function priceChart({clientId, fundId, width, source}){
@@ -669,7 +667,7 @@ function priceChart({clientId, fundId, width, source}){
   const vals=[...navs.map(p=>p.v),...buys.map(t=>t.price),...reds.map(t=>t.price),...avg.filter(a=>a.v).map(a=>a.v)];
   if(!vals.length) return '';
   let y0=Math.min(...vals), y1=Math.max(...vals); const pad=(y1-y0||y1*0.1)*0.15; y0=Math.max(0,y0-pad); y1+=pad;
-  const W=width||Math.max(280,Math.min(document.querySelector('main').clientWidth-30,920)), H=Math.round(Math.min(300,Math.max(210,W*0.5)));
+  const W=width||cardW(), H=Math.round(Math.min(300,Math.max(210,W*0.5)));
   const L=46,R=92,T=12,B=26, pw=W-L-R, ph=H-T-B;
   const X=t=>L+(t-x0)/(x1-x0)*pw, Y=v=>T+(1-(v-y0)/(y1-y0))*ph;
   const id='ch'+(++_cid);
@@ -763,7 +761,7 @@ const rmK=n=>n>=1e6?(n/1e6).toFixed(2)+'j':n>=1e3?(n/1e3).toFixed(n>=1e5?0:1)+'k
 
 function barChart({labels, values, tips, hi, height}){
   values=values.map(v=>isFinite(v)?v:0);
-  const W=Math.max(280,Math.min(document.querySelector('main').clientWidth-30,920)), H=height||200;
+  const W=cardW(), H=height||200;
   const L=50,R=8,T=14,B=24, pw=W-L-R, ph=H-T-B;
   const max=Math.max(...values,0)||1, n=values.length, slot=pw/n, bw=Math.max(4,Math.min(36,slot*0.62));
   const ticks=[0,1,2,3].map(i=>max*i/3);
