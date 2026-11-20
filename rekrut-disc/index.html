@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Rekrut Takaful DISC</title>
+<title>QAIZER ARG313</title>
 <meta name="theme-color" content="#1f2937">
 <style>
 :root{
@@ -85,6 +85,19 @@ li{margin:3px 0}
 .sync{font-size:11px;color:var(--muted)}
 pre.preview{white-space:pre-wrap;font:13px/1.4 system-ui,sans-serif;background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:10px;max-height:260px;overflow:auto;margin:8px 0}
 .ok{color:var(--S)}.err{color:#d32f2f}
+.tbl{width:100%;border-collapse:collapse;font-size:13px;font-variant-numeric:tabular-nums}
+.tbl th,.tbl td{padding:6px 5px;text-align:right;border-bottom:1px solid var(--line);white-space:nowrap}
+.tbl th:nth-child(-n+2),.tbl td:nth-child(-n+2){text-align:left}
+.tbl th{color:var(--muted);font-weight:600}
+.tbl tbody tr{cursor:pointer}.tbl tr.cur{background:color-mix(in srgb,var(--I) 18%,transparent)}
+.tbl tfoot td{font-weight:700;border-bottom:0}
+.tabs{display:grid;grid-template-columns:repeat(5,1fr);gap:4px;margin-bottom:12px}
+.tabs button{padding:6px 2px;font-size:11px;display:flex;flex-direction:column;align-items:center;gap:2px}
+.tabs button span{font-size:17px}
+.tabs button.on{background:var(--accent);color:var(--bg);border-color:var(--accent)}
+.prop-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:0 8px}
+nav#nav{display:flex;gap:6px}
+nav#nav button.on{background:var(--accent);color:var(--bg);border-color:var(--accent)}
 .toast{position:fixed;left:50%;bottom:80px;transform:translateX(-50%);background:var(--accent);color:var(--bg);padding:10px 16px;border-radius:10px;z-index:9;font-weight:600}
 @media (max-width:420px){.kv{grid-template-columns:90px 1fr}.bars .bar .lbl{width:90px}}
 </style>
@@ -93,17 +106,18 @@ pre.preview{white-space:pre-wrap;font:13px/1.4 system-ui,sans-serif;background:v
 <header>
   <div class="top">
     <div class="grow">
-      <h1>Rekrut Takaful · DISC</h1><div class="sync" id="sync"></div>
+      <h1 id="title">Rekrut Takaful · DISC</h1><div class="sync" id="sync"></div>
       <div class="disc-bar"><span style="background:var(--D)"></span><span style="background:var(--I)"></span><span style="background:var(--S)"></span><span style="background:var(--C)"></span></div>
     </div>
-    <button class="btn-sm" onclick="go('#/')">Senarai</button>
-    <button class="btn-sm" onclick="go('#/tetapan')">⚙︎</button>
+    <nav id="nav"></nav>
   </div>
 </header>
 <main id="app"></main>
 <button id="fab" class="btn-primary fab" onclick="go('#/baru')">+ Calon Baru</button>
 
+<script src="apa.js"></script>
 <script>
+let ROLE = 'local';
 /* ===================== DATA ===================== */
 const STAGES = [
   {k:'prospek',  t:'Prospek'},
@@ -200,6 +214,9 @@ const DB = (()=>{
     if(window.claude?.use){
       try{ [db,user] = await Promise.all([claude.use('db'), claude.use('user')]); uid = user ? await user.id() : null; }catch{}
     }
+    const role = !user ? 'local' : (await user.isOwner().catch(()=>false)) ? 'owner' : 'agent';
+    const ctx = {db, user, uid, role};
+    if(role==='agent'){ setSync(db&&uid ? '☁ Disimpan dalam akaun Claude anda' : '⚠ Tiada akses data'); return ctx; }
     if(db && uid){
       mode='cloud'; col = db.collection('data/users/'+uid);
       setSync('Memuatkan data…');
@@ -216,6 +233,7 @@ const DB = (()=>{
       try{ (await IDB.all()).forEach(a=>cache.set(a.id,a)); setSync('📱 Disimpan dalam peranti ini sahaja'); }
       catch{ setSync('⚠ Storan tidak tersedia — data tak akan disimpan'); }
     }
+    return ctx;
   }
   return {
     init,
@@ -684,8 +702,14 @@ async function viewTampal(){
 async function route(){
   const h = location.hash || '#/';
   const [, view, id] = h.split('/');
-  $('#fab').classList.toggle('hidden', !!view);
+  const sect = (view==='apa') ? 'apa' : (view==='pasukan') ? 'pasukan' : 'rekrut';
+  $('#fab').classList.toggle('hidden', !!view || ROLE==='agent');
+  $('#title').textContent = sect==='rekrut' ? 'Rekrut Takaful · DISC' : sect==='apa' ? 'APA '+new Date().getFullYear() : 'Pasukan';
+  $('#nav').innerHTML = ROLE==='agent' ? '' : [['rekrut','Rekrut','#/'],['apa','APA','#/apa'],['pasukan','Pasukan','#/pasukan']]
+    .map(([k,l,hh])=>`<button class="btn-sm ${sect===k?'on':''}" onclick="go('${hh}')">${l}</button>`).join('') + (sect==='rekrut'?`<button class="btn-sm" onclick="go('#/tetapan')">⚙︎</button>`:'');
   window.scrollTo(0,0);
+  if(sect!=='rekrut') return APA.route(h.slice(2).split('/'));
+  if(ROLE==='agent') return go('#/apa');
   if(view==='baru') return viewForm();
   if(view==='edit') return viewForm(id);
   if(view==='calon') return viewProfile(id);
@@ -697,7 +721,8 @@ async function route(){
 }
 window.addEventListener('hashchange', route);
 $('#app').innerHTML='<div class="card empty muted">Memuatkan…</div>';
-DB.init(()=>{ const v=(location.hash||'#/').split('/')[1]; if(!v||v==='calon'||v==='tetapan') route(); }).then(route);
+DB.init(()=>{ const v=(location.hash||'#/').split('/')[1]; if(!v||v==='calon'||v==='tetapan') route(); })
+  .then(async ctx=>{ ROLE = ctx.role; await APA.init(ctx); route(); });
 </script>
 </body>
 </html>
