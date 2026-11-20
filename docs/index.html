@@ -1,0 +1,736 @@
+<!doctype html>
+<html lang="ms">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>QAIZER ARG313</title>
+<script>window.__HOSTED=true;window.__REKRUT_COL='rekrut';window.__fbReady=new Promise(r=>window.__fbResolve=r);window.claude={use:async n=>(await window.__fbReady).use(n)};</script>
+<script type="module" src="fb.js"></script>
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="QAIZER">
+<meta name="theme-color" content="#1f2937">
+<style>
+:root{
+  --D:#e53935; --I:#f9b800; --S:#2e9d46; --C:#1e4fd8;
+  --bg:#f4f5f7; --card:#fff; --ink:#1f2937; --muted:#6b7280; --line:#e5e7eb;
+  --accent:#1f2937; --radius:14px;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0f1115; --card:#1a1d24; --ink:#e8eaed; --muted:#9aa0a6; --line:#2a2f38; --accent:#e8eaed;
+  }
+}
+:root[data-theme="dark"]{--bg:#0f1115; --card:#1a1d24; --ink:#e8eaed; --muted:#9aa0a6; --line:#2a2f38; --accent:#e8eaed}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+header{position:sticky;top:0;z-index:5;background:var(--card);border-bottom:1px solid var(--line);padding:10px 16px}
+header .top{display:flex;align-items:center;gap:10px;max-width:760px;margin:0 auto}
+header h1{font-size:17px;margin:0;flex:1}
+.disc-bar{display:flex;gap:4px;margin-top:4px}
+.disc-bar span{width:18px;height:5px;border-radius:2px}
+main{max-width:760px;margin:0 auto;padding:16px 16px 90px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:14px;margin-bottom:12px}
+h2{font-size:18px;margin:4px 0 12px}
+h3{font-size:15px;margin:14px 0 6px}
+.muted{color:var(--muted)}
+.small{font-size:13px}
+button,.btn{appearance:none;border:1px solid var(--line);background:var(--card);color:var(--ink);padding:10px 14px;border-radius:10px;font:inherit;font-weight:600;cursor:pointer}
+.btn-primary{background:var(--accent);color:var(--bg);border-color:var(--accent)}
+.btn-danger{color:#d32f2f;border-color:#d32f2f55}
+.btn-sm{padding:6px 10px;font-size:13px}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.grow{flex:1}
+label{display:block;font-size:13px;font-weight:600;margin:10px 0 4px}
+input,select,textarea{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink);font:inherit}
+textarea{min-height:70px;resize:vertical}
+.seg{display:flex;gap:6px;flex-wrap:wrap}
+.seg button{flex:1;min-width:80px}
+.seg button.on{background:var(--accent);color:var(--bg);border-color:var(--accent)}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px;text-align:center;cursor:pointer}
+.stat b{display:block;font-size:22px}
+.stat.on{outline:2px solid var(--accent)}
+.disc-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:8px}
+.disc-stats .stat{color:#fff;border:0}
+.agent{display:flex;gap:12px;align-items:center;cursor:pointer}
+.avatar{width:56px;height:56px;border-radius:50%;object-fit:cover;background:var(--line);flex:none;display:flex;align-items:center;justify-content:center;font-weight:700;color:var(--muted);font-size:20px}
+.avatar.lg{width:120px;height:120px;font-size:40px}
+.badge{display:inline-block;padding:2px 8px;border-radius:999px;font-size:12px;font-weight:700;border:1px solid var(--line)}
+.badge.D{background:var(--D);color:#fff;border:0}.badge.I{background:var(--I);color:#222;border:0}
+.badge.S{background:var(--S);color:#fff;border:0}.badge.C{background:var(--C);color:#fff;border:0}
+.pipeline{display:flex;gap:4px;margin:10px 0}
+.pipeline div{flex:1;height:6px;border-radius:3px;background:var(--line)}
+.pipeline div.done{background:var(--S)}
+.kv{display:grid;grid-template-columns:110px 1fr;gap:6px 10px;font-size:14px}
+.kv dt{color:var(--muted)}.kv dd{margin:0;word-break:break-word}
+.q-opt{display:flex;gap:8px;align-items:center;padding:8px;border:1px solid var(--line);border-radius:10px;margin-bottom:6px}
+.q-opt .txt{flex:1}
+.q-opt button{padding:6px 10px;font-size:12px;min-width:44px}
+.q-opt button.most.on{background:var(--S);color:#fff;border-color:var(--S)}
+.q-opt button.least.on{background:#d32f2f;color:#fff;border-color:#d32f2f}
+.progress{height:6px;background:var(--line);border-radius:3px;overflow:hidden;margin:6px 0 12px}
+.progress div{height:100%;background:var(--accent);transition:width .2s}
+.bars .bar{display:flex;align-items:center;gap:8px;margin:6px 0}
+.bars .bar .lbl{width:110px;font-weight:600;font-size:14px}
+.bars .bar .trk{flex:1;height:14px;background:var(--line);border-radius:7px;overflow:hidden}
+.bars .bar .fill{height:100%}
+.bars .bar .val{width:36px;text-align:right;font-variant-numeric:tabular-nums}
+.type-hero{border-radius:var(--radius);padding:16px;color:#fff;margin-bottom:12px}
+.type-hero.I{color:#222}
+.type-hero h2{margin:0 0 4px;font-size:22px}
+ul{padding-left:20px;margin:6px 0}
+li{margin:3px 0}
+.fab{position:fixed;right:16px;bottom:20px;border-radius:999px;padding:14px 20px;box-shadow:0 6px 20px #0003;z-index:6}
+.empty{text-align:center;padding:30px 10px}
+.hist{font-size:13px;border-left:2px solid var(--line);padding-left:10px}
+.hidden{display:none}
+.modal-bg{position:fixed;inset:0;background:#0007;z-index:20;display:flex;align-items:center;justify-content:center;padding:16px}
+.modal{background:var(--card);border-radius:var(--radius);padding:18px;max-width:360px;width:100%}
+.sync{font-size:11px;color:var(--muted)}
+pre.preview{white-space:pre-wrap;font:13px/1.4 system-ui,sans-serif;background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:10px;max-height:260px;overflow:auto;margin:8px 0}
+.ok{color:var(--S)}.err{color:#d32f2f}
+.tbl{width:100%;border-collapse:collapse;font-size:13px;font-variant-numeric:tabular-nums}
+.tbl th,.tbl td{padding:6px 5px;text-align:right;border-bottom:1px solid var(--line);white-space:nowrap}
+.tbl th:nth-child(-n+2),.tbl td:nth-child(-n+2){text-align:left}
+.tbl th{color:var(--muted);font-weight:600}
+.tbl tbody tr{cursor:pointer}.tbl tr.cur{background:color-mix(in srgb,var(--I) 18%,transparent)}
+.tbl tfoot td{font-weight:700;border-bottom:0}
+.tabs{display:grid;grid-template-columns:repeat(5,1fr);gap:4px;margin-bottom:12px}
+.tabs button{padding:6px 2px;font-size:11px;display:flex;flex-direction:column;align-items:center;gap:2px}
+.tabs button span{font-size:17px}
+.tabs button.on{background:var(--accent);color:var(--bg);border-color:var(--accent)}
+.prop-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:0 8px}
+nav#nav{display:flex;gap:6px}
+nav#nav button.on{background:var(--accent);color:var(--bg);border-color:var(--accent)}
+.toast{position:fixed;left:50%;bottom:80px;transform:translateX(-50%);background:var(--accent);color:var(--bg);padding:10px 16px;border-radius:10px;z-index:9;font-weight:600}
+@media (max-width:420px){.kv{grid-template-columns:90px 1fr}.bars .bar .lbl{width:90px}}
+</style>
+</head>
+<body>
+<header>
+  <div class="top">
+    <div class="grow">
+      <h1 id="title">Rekrut Takaful · DISC</h1><div class="sync" id="sync"></div>
+      <div class="disc-bar"><span style="background:var(--D)"></span><span style="background:var(--I)"></span><span style="background:var(--S)"></span><span style="background:var(--C)"></span></div>
+    </div>
+    <nav id="nav"></nav>
+  </div>
+</header>
+<main id="app"></main>
+<button id="fab" class="btn-primary fab" onclick="go('#/baru')">+ Calon Baru</button>
+
+<script src="apa.js"></script>
+<script>
+let ROLE = 'local';
+/* ===================== DATA ===================== */
+const STAGES = [
+  {k:'prospek',  t:'Prospek'},
+  {k:'temuduga', t:'Temuduga'},
+  {k:'daftar',   t:'Daftar Exam'},
+  {k:'lulus',    t:'Lulus Exam'},
+  {k:'coded',    t:'Coded'},
+];
+const STAGE_NAME = Object.fromEntries(STAGES.map(s=>[s.k,s.t]));
+const EDU = ['SPM','Diploma','Ijazah (Degree)','Lain-lain'];
+const NAMES = {D:'Dominance',I:'Influence',S:'Steadiness',C:'Compliance'};
+
+/* 20 set soalan. Setiap set: pilih SATU "Paling Saya" dan SATU "Paling Bukan Saya". */
+const QUESTIONS = [
+ {q:'Bila dalam kumpulan, saya biasanya...', o:{D:'Ambil alih dan tentukan hala tuju',I:'Hidupkan suasana dan buat orang bersemangat',S:'Sokong dan bantu ahli lain',C:'Pastikan semua butiran betul dan teratur'}},
+ {q:'Bila ada masalah, saya...', o:{D:'Terus bertindak selesaikan secepat mungkin',I:'Bincang dengan ramai orang untuk dapatkan idea',S:'Bertenang dan cari cara yang tak menyusahkan orang',C:'Kaji punca dan fakta dulu sebelum bertindak'}},
+ {q:'Orang selalu kata saya ini...', o:{D:'Tegas dan berani',I:'Ceria dan pandai bercakap',S:'Baik hati dan boleh dipercayai',C:'Teliti dan berdisiplin'}},
+ {q:'Apa yang paling memotivasikan saya?', o:{D:'Menang, capai sasaran dan jadi nombor satu',I:'Pengiktirafan dan pujian depan orang ramai',S:'Kestabilan dan suasana kerja yang harmoni',C:'Buat kerja dengan betul dan berkualiti'}},
+ {q:'Bila buat keputusan, saya...', o:{D:'Cepat, ikut gerak hati dan berani ambil risiko',I:'Ikut perasaan dan apa yang seronok',S:'Ambil masa dan fikir kesan pada orang lain',C:'Berdasarkan data, fakta dan analisa'}},
+ {q:'Dalam perbualan, saya...', o:{D:'Terus kepada poin',I:'Banyak bercerita dan berjenaka',S:'Lebih banyak mendengar',C:'Tanya soalan yang terperinci'}},
+ {q:'Saya paling tak suka bila...', o:{D:'Kerja lambat dan orang teragak-agak',I:'Kena buat kerja seorang diri tanpa kawan',S:'Ada perubahan mendadak dan konflik',C:'Kerja cincai dan banyak kesilapan'}},
+ {q:'Hujung minggu ideal saya...', o:{D:'Buat aktiviti mencabar atau projek baru',I:'Lepak dan berhibur dengan ramai kawan',S:'Rehat bersama keluarga di rumah',C:'Buat hobi sendiri atau rancang minggu depan'}},
+ {q:'Bila diberi tugasan baru, saya...', o:{D:'Terus mula dan cari jalan paling cepat',I:'Ajak orang lain sertai supaya seronok',S:'Ikut langkah demi langkah dengan tenang',C:'Baca arahan dan rancang dengan teliti dulu'}},
+ {q:'Kelemahan saya mungkin...', o:{D:'Kurang sabar dan nampak garang',I:'Kurang fokus dan selalu lupa butiran',S:'Susah nak kata "tidak" dan lambat berubah',C:'Terlalu perfeksionis dan banyak fikir'}},
+ {q:'Bila di bawah tekanan, saya cenderung...', o:{D:'Jadi lebih mendesak dan mengarah',I:'Jadi beremosi dan banyak bercakap',S:'Diam dan mengalah',C:'Menarik diri dan jadi terlalu kritikal'}},
+ {q:'Ketua yang saya suka...', o:{D:'Beri saya kuasa dan kebebasan',I:'Mesra, positif dan selalu memuji',S:'Prihatin dan konsisten',C:'Arahan jelas dan ada sistem tersusun'}},
+ {q:'Bila jumpa orang baru...', o:{D:'Saya yang mulakan dan kawal perbualan',I:'Saya cepat mesra macam dah lama kenal',S:'Saya senyum dan tunggu dia mula dulu',C:'Saya perhati dulu sebelum bercakap'}},
+ {q:'Bila nak beli barang mahal, saya...', o:{D:'Cepat putuskan kalau saya rasa nak',I:'Pilih yang tengah trending atau orang puji',S:'Tanya pendapat keluarga dan kawan rapat',C:'Bandingkan harga, spesifikasi dan review'}},
+ {q:'Perkataan yang paling menggambarkan saya:', o:{D:'Berani',I:'Bersemangat',S:'Penyabar',C:'Tepat'}},
+ {q:'Matlamat saya dalam kerjaya...', o:{D:'Hasil besar dan pendapatan tinggi',I:'Dikenali dan disukai ramai',S:'Kerja yang stabil dan selamat',C:'Jadi pakar dengan kualiti kerja tinggi'}},
+ {q:'Cara saya urus masa...', o:{D:'Fokus pada benda yang beri hasil paling cepat',I:'Spontan, ikut mood',S:'Rutin tetap yang sama setiap hari',C:'Jadual dan senarai semak yang terperinci'}},
+ {q:'Bila orang tolak atau kritik idea saya...', o:{D:'Saya pertahankan dan cabar balik',I:'Saya cuba yakinkan dia dengan cara lain',S:'Saya terima dan tak nak panjangkan',C:'Saya minta bukti atau sebab yang logik'}},
+ {q:'Saya rasa paling puas bila...', o:{D:'Berjaya atasi cabaran besar',I:'Ramai orang seronok bersama saya',S:'Dapat bantu orang lain',C:'Kerja saya sempurna tanpa silap'}},
+ {q:'Dalam pasukan, peranan saya biasanya...', o:{D:'Ketua / pemimpin',I:'Penggerak semangat',S:'Penyokong / pendamai',C:'Perancang / penganalisa'}},
+];
+/* Susunan pilihan ditukar ikut soalan supaya calon tak nampak corak D-I-S-C */
+const ORDERS = [['D','I','S','C'],['S','C','D','I'],['I','D','C','S'],['C','S','I','D']];
+const orderFor = i => ORDERS[(i*3+1)%4];
+
+const PROFILE = {
+ D:{tag:'Si Pemburu Sasaran', color:'var(--D)',
+   ciri:['Tegas, laju, berorientasikan hasil','Suka cabaran, persaingan dan kuasa membuat keputusan','Cakap terus terang, tak suka berbelit'],
+   kuat:['Berani prospek & closing — tak takut ditolak','Potensi tinggi jadi Leader / bina agensi sendiri','Bergerak laju bila ada sasaran jelas'],
+   risiko:['Kurang sabar dengan follow-up & servis selepas jualan','Boleh nampak terlalu "push" pada pelanggan','Bosan dengan latihan panjang & kerja admin'],
+   coach:['Beri sasaran & cabaran yang jelas (kontes, ranking)','Beri autonomi — jangan micro-manage','Laporan ringkas: hasil, bukan proses panjang','Ajar teknik needs analysis supaya tak terlalu agresif'],
+   pitch:['"Pendapatan tiada had — ikut usaha sendiri"','"Peluang bina agensi & jadi bos sendiri"','Tunjuk laluan kenaikan pangkat & insentif top producer'],
+   cakap:'Terus ke poin, guna angka & hasil. Jangan bercerita panjang.'},
+ I:{tag:'Si Peramah Penggerak', color:'var(--I)',
+   ciri:['Ceria, optimis, pandai bercakap','Suka bergaul dan diiktiraf','Spontan dan penuh idea'],
+   kuat:['Networking luas — senarai prospek panjang','Pandai buat presentation & content media sosial','Mudah buat orang selesa dan percaya'],
+   risiko:['Lemah disiplin follow-up dan dokumentasi','Mudah hilang semangat bila tiada pengiktirafan','Janji banyak, lupa butiran'],
+   coach:['Beri pengiktirafan depan orang (shout-out, award)','Aktiviti berkumpulan & buddy system','Sistem mudah: senarai semak follow-up / CRM ringkas','Pantau aktiviti mingguan — bantu fokus'],
+   pitch:['"Kenal ramai orang & bina personal brand"','Trip insentif, majlis anugerah, komuniti','Kerja fleksibel, tak terikat di pejabat'],
+   cakap:'Mesra, bersemangat, banyak cerita kejayaan orang lain.'},
+ S:{tag:'Si Penjaga Amanah', color:'var(--S)',
+   ciri:['Sabar, tenang, setia','Pendengar yang baik dan prihatin','Suka kestabilan dan rutin'],
+   kuat:['Dipercayai pelanggan — retention & persistency tinggi','Servis selepas jualan terbaik → banyak referral','Setia dengan agensi dalam jangka panjang'],
+   risiko:['Takut ditolak, segan nak closing','Lambat mula, perlukan masa untuk yakin','Susah berdepan bantahan pelanggan'],
+   coach:['Beri skrip dan role-play berulang','Mentor tetap & langkah kecil yang jelas','Mula dengan market mesra (keluarga, kawan)','Bina keyakinan — raikan kemenangan kecil'],
+   pitch:['"Bantu lindungi keluarga & orang sekeliling"','Pasukan yang menyokong, ada mentor','Pendapatan tambahan yang konsisten & fleksibel'],
+   cakap:'Perlahan, ikhlas, tunjuk keprihatinan. Jangan desak — beri masa.'},
+ C:{tag:'Si Pakar Teliti', color:'var(--C)',
+   ciri:['Teliti, logik, berdisiplin','Suka fakta, data dan prosedur','Mementingkan kualiti dan ketepatan'],
+   kuat:['Faham produk & konsep syariah secara mendalam','Needs analysis & financial planning yang tepat','Dokumen kemas, compliance tinggi, kurang kesilapan'],
+   risiko:['Terlalu banyak analisa — lambat bertindak','Kurang aktiviti prospek','Mungkin nampak kaku atau terlalu teknikal'],
+   coach:['Beri sistem, data dan KPI aktiviti yang jelas','Latihan produk mendalam & sijil profesional','Tetapkan kuota aktiviti harian (bukan hanya hasil)','Ajar cara permudahkan penerangan untuk pelanggan'],
+   pitch:['"Kerjaya profesional perancang kewangan"','Tunjuk struktur komisen & angka pendapatan sebenar','Sistem latihan & kelayakan yang tersusun'],
+   cakap:'Bawa fakta, angka & dokumen. Jawab soalan dengan tepat.'},
+};
+
+/* ===================== STORAGE =====================
+   Dalam claude.ai: simpan dalam db artifact di data/users/<id>/ (peribadi untuk pemilik, sync antara peranti).
+   Di luar claude.ai: fallback IndexedDB dalam browser. */
+const IDB = (()=>{
+  let dbp;
+  const open = () => dbp ||= new Promise((res,rej)=>{
+    const r = indexedDB.open('rekrut-disc',1);
+    r.onupgradeneeded = () => r.result.createObjectStore('agents',{keyPath:'id'});
+    r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error);
+  });
+  const tx = async (mode, fn) => { const db = await open(); return new Promise((res,rej)=>{
+    const t = db.transaction('agents',mode); const out = fn(t.objectStore('agents'));
+    t.oncomplete = () => res(out && out.result !== undefined ? out.result : out); t.onerror = () => rej(t.error);
+  });};
+  return { all: () => tx('readonly', s => s.getAll()), put: a => tx('readwrite', s => s.put(a)), del: id => tx('readwrite', s => s.delete(id)) };
+})();
+
+const DB = (()=>{
+  let cache = new Map(), col = null, mode = 'local';
+  const clone = o => JSON.parse(JSON.stringify(o));
+  const setSync = t => { const el=document.getElementById('sync'); if(el) el.textContent=t; };
+  async function init(onChange){
+    let db=null, user=null, uid=null;
+    if(window.claude?.use){
+      try{ [db,user] = await Promise.all([claude.use('db'), claude.use('user')]); uid = user ? await user.id() : null; }catch{}
+    }
+    const role = !user ? 'local' : (await user.isOwner().catch(()=>false)) ? 'owner' : 'agent';
+    const ctx = {db, user, uid, role};
+    if(role==='agent'){ setSync(db&&uid ? (window.__HOSTED?'☁ Disimpan dalam talian':'☁ Disimpan dalam akaun Claude anda') : '⚠ Tiada akses data'); return ctx; }
+    if(db && uid){
+      mode='cloud'; col = db.collection(window.__REKRUT_COL || 'data/users/'+uid);
+      setSync('Memuatkan data…');
+      await new Promise(res=>{
+        let first=true;
+        const t=setTimeout(()=>{ setSync('⚠ Tak dapat sambung — data mungkin tak terkini'); res(); },10000);
+        col.onSnapshot(snap=>{
+          cache = new Map(snap.docs.map(d=>[d.id, d.data()]));
+          if(!snap.metadata.fromCache){ clearTimeout(t); setSync((window.__HOSTED?'☁ Disimpan dalam talian':'☁ Disimpan dalam akaun Claude anda')); }
+          if(first){ first=false; res(); } else onChange();
+        }, e=>{ clearTimeout(t); setSync('⚠ Ralat sambungan data ('+e.code+')'); res(); });
+      });
+    } else {
+      try{ (await IDB.all()).forEach(a=>cache.set(a.id,a)); setSync('📱 Disimpan dalam peranti ini sahaja'); }
+      catch{ setSync('⚠ Storan tidak tersedia — data tak akan disimpan'); }
+    }
+    return ctx;
+  }
+  return {
+    init,
+    get mode(){ return mode; },
+    all: async () => [...cache.values()].map(clone),
+    get: async id => cache.has(id) ? clone(cache.get(id)) : undefined,
+    put: async a => {
+      cache.set(a.id, clone(a));
+      try{ if(col) await col.doc(a.id).set(clone(a)); else await IDB.put(a); }
+      catch(e){ toast(e?.code==='quota_exceeded' ? 'Storan penuh — padam calon lama' : 'Gagal simpan, cuba lagi'); throw e; }
+    },
+    del: async id => { cache.delete(id); if(col) await col.doc(id).delete(); else await IDB.del(id); },
+  };
+})();
+
+/* ===================== HELPERS ===================== */
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2,7);
+const fmtDate = d => new Date(d).toLocaleDateString('ms-MY',{day:'numeric',month:'short',year:'numeric'});
+const go = h => { location.hash = h; };
+const initials = n => (n||'?').trim().split(/\s+/).slice(0,2).map(w=>w[0]).join('').toUpperCase();
+const avatar = (a, cls='') => a.foto ? `<img class="avatar ${cls}" src="${a.foto}" alt="">` : `<div class="avatar ${cls}">${esc(initials(a.nama))}</div>`;
+function ask(msg, okText='Ya'){
+  return new Promise(res=>{
+    const bg=document.createElement('div'); bg.className='modal-bg';
+    bg.innerHTML=`<div class="modal"><p style="margin-top:0">${esc(msg)}</p><div class="row" style="justify-content:flex-end"><button data-v="0">Batal</button><button class="btn-primary" data-v="1">${esc(okText)}</button></div></div>`;
+    bg.onclick=e=>{ const v=e.target.dataset?.v; if(v!==undefined||e.target===bg){ bg.remove(); res(v==='1'); } };
+    document.body.appendChild(bg);
+  });
+}
+function toast(msg){ const t=document.createElement('div'); t.className='toast'; t.textContent=msg; document.body.appendChild(t); setTimeout(()=>t.remove(),1800); }
+function fmtIC(v){ const d=v.replace(/\D/g,'').slice(0,12); return d.length>8?`${d.slice(0,6)}-${d.slice(6,8)}-${d.slice(8)}`:d.length>6?`${d.slice(0,6)}-${d.slice(6)}`:d; }
+function icInfo(ic){
+  const d=(ic||'').replace(/\D/g,''); if(d.length!==12) return '';
+  let yy=+d.slice(0,2), mm=+d.slice(2,4), dd=+d.slice(4,6);
+  const now=new Date(); const yr = yy + (yy > now.getFullYear()%100 ? 1900 : 2000);
+  if(mm<1||mm>12||dd<1||dd>31) return '';
+  let age = now.getFullYear()-yr; if(now.getMonth()+1<mm || (now.getMonth()+1===mm && now.getDate()<dd)) age--;
+  const g = (+d[11])%2 ? 'Lelaki' : 'Perempuan';
+  return `${age} tahun · ${g}`;
+}
+function resizeImage(file, max=320){
+  return new Promise((res,rej)=>{
+    const img=new Image(); const url=URL.createObjectURL(file);
+    img.onload=()=>{ const s=Math.min(1,max/Math.max(img.width,img.height));
+      const c=document.createElement('canvas'); c.width=Math.round(img.width*s); c.height=Math.round(img.height*s);
+      c.getContext('2d').drawImage(img,0,0,c.width,c.height); URL.revokeObjectURL(url); res(c.toDataURL('image/jpeg',0.75)); };
+    img.onerror=rej; img.src=url;
+  });
+}
+function scoreDisc(ans){
+  const sc={D:0,I:0,S:0,C:0}, most={D:0,I:0,S:0,C:0};
+  ans.forEach(a=>{ if(a.m){sc[a.m]++;most[a.m]++;} if(a.l) sc[a.l]--; });
+  const ranked = Object.keys(sc).sort((x,y)=> sc[y]-sc[x] || most[y]-most[x]);
+  const pct = Object.fromEntries(Object.entries(sc).map(([k,v])=>[k, Math.round((v+20)/40*100)]));
+  const primary = ranked[0];
+  const secondary = sc[ranked[1]] > 0 && sc[ranked[0]]-sc[ranked[1]] <= 4 ? ranked[1] : null;
+  return {score:sc, pct, primary, secondary, style: primary+(secondary||''), date:Date.now()};
+}
+
+/* ===================== VIEWS ===================== */
+let listFilter = {stage:'', disc:'', q:''};
+
+async function viewList(){
+  const all = (await DB.all()).sort((a,b)=>b.updatedAt-a.updatedAt);
+  const cnt = k => all.filter(a=>a.status===k).length;
+  const dcnt = k => all.filter(a=>a.disc?.primary===k).length;
+  const f = listFilter;
+  const items = all.filter(a =>
+    (!f.stage || a.status===f.stage) &&
+    (!f.disc || (f.disc==='-' ? !a.disc : a.disc?.primary===f.disc)) &&
+    (!f.q || [a.nama,a.tel,a.ic].join(' ').toLowerCase().includes(f.q.toLowerCase())));
+  $('#app').innerHTML = `
+    <div class="stats">
+      <div class="stat ${!f.stage?'on':''}" data-stage=""><b>${all.length}</b><span class="small muted">Semua</span></div>
+      ${STAGES.map(s=>`<div class="stat ${f.stage===s.k?'on':''}" data-stage="${s.k}"><b>${cnt(s.k)}</b><span class="small muted">${s.t}</span></div>`).join('')}
+    </div>
+    <div class="disc-stats">
+      ${'DISC'.split('').map(k=>`<div class="stat ${f.disc===k?'on':''}" data-disc="${k}" style="background:var(--${k});${k==='I'?'color:#222':''}"><b>${dcnt(k)}</b><span class="small">${NAMES[k]}</span></div>`).join('')}
+    </div>
+    <div class="row" style="margin:12px 0 0">
+      <button class="grow" onclick="go('#/hantar')">📤 Hantar Borang WhatsApp</button>
+      <button class="grow" onclick="go('#/tampal')">📥 Tampal Jawapan</button>
+    </div>
+    <div class="row" style="margin:8px 0 12px">
+      <input class="grow" id="q" placeholder="Cari nama / telefon / IC" value="${esc(f.q)}">
+      ${f.disc ? `<button class="btn-sm" id="clrDisc">✕ ${f.disc==='-'?'Belum DISC':NAMES[f.disc]}</button>` : `<button class="btn-sm" id="noDisc">Belum DISC</button>`}
+    </div>
+    ${items.length ? items.map(a=>`
+      <div class="card agent" data-id="${a.id}">
+        ${avatar(a)}
+        <div class="grow">
+          <div style="font-weight:700">${esc(a.nama)}</div>
+          <div class="small muted">${esc(a.tel)} · ${esc(a.pendidikan||'-')}</div>
+          <div class="row" style="margin-top:4px;gap:6px">
+            <span class="badge">${STAGE_NAME[a.status]}</span>
+            ${a.disc ? `<span class="badge ${a.disc.primary}">${a.disc.style}</span>` : `<span class="badge small muted">Belum DISC</span>`}
+          </div>
+        </div>
+      </div>`).join('') : `<div class="card empty muted">${all.length?'Tiada padanan.':'Belum ada calon. Tekan <b>+ Calon Baru</b> untuk mula.'}</div>`}`;
+  document.querySelectorAll('[data-stage]').forEach(el=>el.onclick=()=>{listFilter.stage=el.dataset.stage;viewList();});
+  document.querySelectorAll('[data-disc]').forEach(el=>el.onclick=()=>{listFilter.disc= f.disc===el.dataset.disc?'':el.dataset.disc;viewList();});
+  document.querySelectorAll('.agent').forEach(el=>el.onclick=()=>go('#/calon/'+el.dataset.id));
+  $('#clrDisc') && ($('#clrDisc').onclick=()=>{listFilter.disc='';viewList();});
+  $('#noDisc') && ($('#noDisc').onclick=()=>{listFilter.disc='-';viewList();});
+  const q=$('#q'); q.oninput=()=>{listFilter.q=q.value; clearTimeout(q._t); q._t=setTimeout(async()=>{await viewList(); const n=$('#q'); n.focus(); n.setSelectionRange(n.value.length,n.value.length);},250);};
+}
+
+async function viewForm(id){
+  const a = id ? await DB.get(id) : {status:'prospek', pendidikan:'SPM'};
+  if(id && !a) return go('#/');
+  let foto = a.foto || '';
+  $('#app').innerHTML = `
+    <h2>${id?'Kemaskini Calon':'Calon Baru'}</h2>
+    <div class="card">
+      <div class="row" style="justify-content:center;flex-direction:column">
+        <div id="fotoPrev">${avatar({...a,foto},'lg')}</div>
+        <div class="row">
+          <label class="btn btn-sm" style="margin:0">📷 Ambil Gambar<input type="file" accept="image/*" capture="user" id="fotoCam" class="hidden"></label>
+          <label class="btn btn-sm" style="margin:0">🖼 Pilih Gambar<input type="file" accept="image/*" id="fotoFile" class="hidden"></label>
+          <button class="btn-sm ${foto?'':'hidden'}" id="fotoDel" type="button">Buang</button>
+        </div>
+        <div class="small muted">Gambar untuk senang ingat calon</div>
+      </div>
+      <label>Nama Penuh *</label><input id="nama" value="${esc(a.nama)}" autocomplete="off">
+      <label>No. Telefon *</label><input id="tel" type="tel" inputmode="tel" value="${esc(a.tel)}" placeholder="012-3456789">
+      <label>No. Kad Pengenalan</label><input id="ic" inputmode="numeric" value="${esc(a.ic)}" placeholder="900101-01-1234"><div class="small muted" id="icInfo">${icInfo(a.ic)}</div>
+      <label>Alamat</label><textarea id="alamat">${esc(a.alamat)}</textarea>
+      <label>Pendidikan Tertinggi</label>
+      <div class="seg" id="edu">${EDU.map(e=>`<button type="button" class="${a.pendidikan===e?'on':''}" data-v="${esc(e)}">${esc(e)}</button>`).join('')}</div>
+      <label>Status</label>
+      <select id="status">${STAGES.map(s=>`<option value="${s.k}" ${a.status===s.k?'selected':''}>${s.t}</option>`).join('')}</select>
+      <label>Sumber / Siapa rujuk</label><input id="sumber" value="${esc(a.sumber)}" placeholder="cth: Kawan Ali, FB Ads, Event">
+      <label>Nota</label><textarea id="nota" placeholder="Pekerjaan sekarang, minat, bila boleh follow-up...">${esc(a.nota)}</textarea>
+    </div>
+    <div class="row">
+      <button class="btn-primary grow" id="save">${id?'Simpan':'Simpan & Jawab DISC'}</button>
+      ${id?'':'<button id="saveOnly">Simpan Sahaja</button>'}
+      <button onclick="history.back()">Batal</button>
+    </div>`;
+  let edu = a.pendidikan;
+  document.querySelectorAll('#edu button').forEach(b=>b.onclick=()=>{edu=b.dataset.v;document.querySelectorAll('#edu button').forEach(x=>x.classList.toggle('on',x===b));});
+  const ic=$('#ic'); ic.oninput=()=>{ic.value=fmtIC(ic.value); $('#icInfo').textContent=icInfo(ic.value);};
+  const onFoto = async e => { const f=e.target.files[0]; if(!f) return; foto = await resizeImage(f); $('#fotoPrev').innerHTML=avatar({foto},'lg'); $('#fotoDel').classList.remove('hidden'); };
+  $('#fotoCam').onchange=onFoto; $('#fotoFile').onchange=onFoto;
+  $('#fotoDel').onclick=()=>{foto='';$('#fotoPrev').innerHTML=avatar({nama:$('#nama').value},'lg');$('#fotoDel').classList.add('hidden');};
+  const save = async (thenQuiz) => {
+    const nama=$('#nama').value.trim(), tel=$('#tel').value.trim();
+    if(!nama||!tel) return toast('Nama dan telefon wajib diisi');
+    const now=Date.now(); const status=$('#status').value;
+    const rec = {...a, id:a.id||uid(), nama, tel, ic:$('#ic').value.trim(), alamat:$('#alamat').value.trim(),
+      pendidikan:edu, status, sumber:$('#sumber').value.trim(), nota:$('#nota').value.trim(), foto,
+      createdAt:a.createdAt||now, updatedAt:now, history:a.history||[]};
+    if(!a.id || a.status!==status) rec.history=[...rec.history,{status,date:now}];
+    await DB.put(rec); toast('Disimpan');
+    go(thenQuiz ? '#/disc/'+rec.id : '#/calon/'+rec.id);
+  };
+  $('#save').onclick=()=>save(!id);
+  $('#saveOnly') && ($('#saveOnly').onclick=()=>save(false));
+}
+
+async function viewProfile(id){
+  const a = await DB.get(id); if(!a) return go('#/');
+  const idx = STAGES.findIndex(s=>s.k===a.status);
+  const next = STAGES[idx+1];
+  const d = a.disc, P = d && PROFILE[d.primary];
+  $('#app').innerHTML = `
+    <div class="card" style="text-align:center">
+      <div style="display:flex;justify-content:center">${avatar(a,'lg')}</div>${a.foto?'':`<button class="btn-sm" style="margin-top:6px" onclick="go('#/edit/${a.id}')">📷 Tambah gambar</button>`}
+      <h2 style="margin:10px 0 2px">${esc(a.nama)}</h2>
+      <div class="muted small">${icInfo(a.ic)}</div>
+      <div class="row" style="justify-content:center;margin-top:6px">
+        <span class="badge">${STAGE_NAME[a.status]}</span>
+        ${d?`<span class="badge ${d.primary}">${d.style} · ${NAMES[d.primary]}</span>`:''}
+      </div>
+      <div class="pipeline">${STAGES.map((s,i)=>`<div class="${i<=idx?'done':''}" title="${s.t}"></div>`).join('')}</div>
+      <div class="small muted" style="display:flex;gap:4px;font-size:11px;line-height:1.2">${STAGES.map(s=>`<span style="flex:1">${s.t}</span>`).join('')}</div>
+      <div class="row" style="justify-content:center;margin-top:12px">
+        <a class="btn btn-sm" target="_top" href="tel:${esc(a.tel.replace(/[^\d+]/g,''))}">📞 Call</a>
+        <a class="btn btn-sm" target="_blank" href="https://wa.me/${esc(waNum(a.tel))}">💬 WhatsApp</a>
+        ${next?`<button class="btn-sm btn-primary" id="adv">→ ${next.t}</button>`:''}
+      </div>
+    </div>
+    <div class="card">
+      <dl class="kv">
+        <dt>Telefon</dt><dd>${esc(a.tel)}</dd>
+        <dt>No. IC</dt><dd>${esc(a.ic)||'-'}</dd>
+        <dt>Alamat</dt><dd>${esc(a.alamat).replace(/\n/g,'<br>')||'-'}</dd>
+        <dt>Pendidikan</dt><dd>${esc(a.pendidikan)||'-'}</dd>
+        <dt>Sumber</dt><dd>${esc(a.sumber)||'-'}</dd>
+        <dt>Nota</dt><dd>${esc(a.nota).replace(/\n/g,'<br>')||'-'}</dd>
+        <dt>Didaftar</dt><dd>${fmtDate(a.createdAt)}</dd>
+      </dl>
+    </div>
+    ${d ? discResultHTML(d) + `<button class="btn-sm" onclick="go('#/disc/${a.id}')">Ulang Ujian DISC</button>`
+        : `<div class="card empty"><p>Calon ini belum jawab soalan DISC.</p><div class="row" style="justify-content:center"><button class="btn-primary" onclick="go('#/disc/${a.id}')">Jawab Sekarang (20 soalan)</button><button onclick="go('#/hantar/${a.id}')">📤 Hantar via WhatsApp</button></div></div>`}
+    <div class="card" style="margin-top:12px">
+      <h3 style="margin-top:0">Sejarah Status</h3>
+      <div class="hist">${(a.history||[]).slice().reverse().map(h=>`<div>${fmtDate(h.date)} — <b>${STAGE_NAME[h.status]}</b></div>`).join('')||'-'}</div>
+    </div>
+    <div class="row">
+      <button class="grow" onclick="go('#/edit/${a.id}')">✏️ Kemaskini</button>
+      <button class="btn-danger" id="del">Padam</button>
+    </div>`;
+  $('#adv') && ($('#adv').onclick=async()=>{ const now=Date.now(); a.status=next.k; a.updatedAt=now; a.history=[...(a.history||[]),{status:next.k,date:now}]; await DB.put(a); toast(next.k==='coded'?'🎉 Tahniah, sudah Coded!':'Status: '+next.t); viewProfile(id); });
+  $('#del').onclick=async()=>{ if(await ask(`Padam ${a.nama}? Tindakan ini tak boleh diundur.`,'Padam')){ await DB.del(id); toast('Dipadam'); go('#/'); } };
+}
+function waNum(t){ let d=(t||'').replace(/\D/g,''); if(d.startsWith('0')) d='6'+d; return d; }
+
+function discResultHTML(d){
+  const P = PROFILE[d.primary], P2 = d.secondary && PROFILE[d.secondary];
+  const list = arr => `<ul>${arr.map(x=>`<li>${esc(x)}</li>`).join('')}</ul>`;
+  return `
+    <div class="type-hero ${d.primary}" style="background:${P.color}">
+      <div class="small" style="opacity:.85">Jenis Personaliti · ${fmtDate(d.date)}</div>
+      <h2>${d.style} — ${NAMES[d.primary]}${d.secondary?' / '+NAMES[d.secondary]:''}</h2>
+      <div>${P.tag}${P2?' + '+P2.tag:''}</div>
+    </div>
+    <div class="card bars">
+      ${'DISC'.split('').map(k=>`<div class="bar"><span class="lbl">${NAMES[k]}</span><div class="trk"><div class="fill" style="width:${d.pct[k]}%;background:var(--${k})"></div></div><span class="val">${d.pct[k]}</span></div>`).join('')}
+      <div class="small muted">Skor = (Paling Saya − Paling Bukan Saya), diskala 0–100.</div>
+    </div>
+    <div class="card">
+      <h3 style="margin-top:0">Ciri-ciri</h3>${list(P.ciri)}
+      <h3>✅ Kekuatan sebagai Ejen Takaful</h3>${list(P.kuat)}
+      <h3>⚠️ Perlu Perhatian</h3>${list(P.risiko)}
+      <h3>🎯 Cara Coach / Bimbing</h3>${list(P.coach)}
+      <h3>🗣 Cara Pujuk Join (Recruitment Pitch)</h3>${list(P.pitch)}
+      <h3>💬 Cara Bercakap Dengan Dia</h3><p style="margin:4px 0">${esc(P.cakap)}</p>
+      ${P2?`<h3>Gaya sekunder: ${NAMES[d.secondary]}</h3>${list(P2.kuat.slice(0,2))}`:''}
+      <p class="small muted" style="margin-top:12px">DISC adalah panduan gaya kerja, bukan ukuran baik/buruk. Semua jenis boleh berjaya sebagai ejen — bezanya cara coach.</p>
+    </div>`;
+}
+
+async function viewQuiz(id){
+  const a = await DB.get(id); if(!a) return go('#/');
+  const ans = QUESTIONS.map(()=>({m:null,l:null}));
+  let i = 0;
+  const render = () => {
+    const Q = QUESTIONS[i], ord = orderFor(i), cur = ans[i];
+    const done = ans.filter(x=>x.m&&x.l).length;
+    $('#app').innerHTML = `
+      <div class="row"><div class="grow"><b>${esc(a.nama)}</b><div class="small muted">Soalan ${i+1} / ${QUESTIONS.length}</div></div>
+        <button class="btn-sm" onclick="go('#/calon/${a.id}')">Keluar</button></div>
+      <div class="progress"><div style="width:${done/QUESTIONS.length*100}%"></div></div>
+      <div class="card">
+        <h2>${esc(Q.q)}</h2>
+        <p class="small muted" style="margin-top:-6px">Pilih <b style="color:var(--S)">✓ Paling Saya</b> dan <b style="color:#d32f2f">✕ Paling Bukan Saya</b>. Jawab ikut diri sebenar, bukan apa yang "sepatutnya".</p>
+        ${ord.map(k=>`<div class="q-opt">
+          <span class="txt">${esc(Q.o[k])}</span>
+          <button class="most ${cur.m===k?'on':''}" data-k="${k}" data-t="m" aria-label="Paling saya">✓</button>
+          <button class="least ${cur.l===k?'on':''}" data-k="${k}" data-t="l" aria-label="Paling bukan saya">✕</button>
+        </div>`).join('')}
+      </div>
+      <div class="row">
+        <button ${i===0?'disabled':''} id="prev">← Sebelum</button>
+        <span class="grow"></span>
+        ${i<QUESTIONS.length-1 ? `<button class="btn-primary" id="next" ${cur.m&&cur.l?'':'disabled'}>Seterusnya →</button>`
+          : `<button class="btn-primary" id="finish" ${done===QUESTIONS.length?'':'disabled'}>Lihat Keputusan</button>`}
+      </div>`;
+    document.querySelectorAll('.q-opt button').forEach(b=>b.onclick=()=>{
+      const k=b.dataset.k, t=b.dataset.t, o=t==='m'?'l':'m';
+      cur[t] = cur[t]===k ? null : k; if(cur[o]===k) cur[o]=null;
+      if(cur.m && cur.l && i<QUESTIONS.length-1){ render(); setTimeout(()=>{ i++; render(); window.scrollTo(0,0); },250); }
+      else render();
+    });
+    $('#prev').onclick=()=>{ if(i>0){i--;render();} };
+    $('#next') && ($('#next').onclick=()=>{ i++; render(); window.scrollTo(0,0); });
+    $('#finish') && ($('#finish').onclick=async()=>{
+      a.disc = {...scoreDisc(ans), answers: ans}; a.updatedAt=Date.now(); await DB.put(a);
+      go('#/calon/'+a.id); setTimeout(()=>{ const h=document.querySelector('.type-hero'); h && h.scrollIntoView({behavior:'smooth'}); },150);
+    });
+  };
+  render();
+}
+
+async function viewSettings(){
+  const all = await DB.all();
+  $('#app').innerHTML = `
+    <h2>Tetapan & Backup</h2>
+    <div class="card">
+      <p>Jumlah calon: <b>${all.length}</b></p>
+      <p class="small muted">${DB.mode==='cloud' ? (window.__HOSTED?'Data disimpan dalam talian (Firebase) — hanya leader boleh baca data Rekrut, dan sama di semua peranti bila log masuk. Backup tetap digalakkan.':'Data disimpan dalam akaun Claude anda — peribadi untuk anda sahaja dan sama di semua peranti bila log masuk. Backup tetap digalakkan.') : 'Data disimpan dalam browser peranti ini sahaja. Buat backup selalu — kalau clear browser / tukar telefon, data hilang.'}</p>
+      <div class="row">
+        <button class="btn-primary" id="exp">⬇️ Backup (JSON)</button>
+        <label class="btn" style="margin:0">⬆️ Restore<input type="file" accept="application/json" id="imp" class="hidden"></label>
+        <button id="csv">📊 Export Excel (CSV)</button>
+      </div>
+    </div>
+    <div class="card small muted">
+      <b>Privasi (PDPA):</b> Maklumat No. IC & alamat adalah data peribadi. Dapatkan persetujuan calon, jangan kongsi fail backup sembarangan, dan simpan di tempat selamat.
+    </div>`;
+  const dl = async (name, data, type) => {
+    const dc = window.claude?.use ? await claude.use('downloads').catch(()=>null) : null;
+    if(dc){ try{ await dc.save({filename:name, data:new Blob([data],{type})}); }catch(e){ if(e?.code && e.code!=='declined' && e.code!=='dismissed') toast('Gagal muat turun'); } return; }
+    const b=new Blob([data],{type}); const u=URL.createObjectURL(b); const l=document.createElement('a'); l.href=u; l.download=name; l.click(); setTimeout(()=>URL.revokeObjectURL(u),1000); };
+  const stamp = new Date().toISOString().slice(0,10);
+  $('#exp').onclick=()=>dl(`rekrut-backup-${stamp}.json`, JSON.stringify({v:1,agents:all}), 'application/json');
+  $('#csv').onclick=()=>{
+    const cols=['nama','tel','ic','alamat','pendidikan','status','sumber','disc','D','I','S','C','nota','didaftar'];
+    const q=v=>`"${String(v??'').replace(/"/g,'""')}"`;
+    const rows=all.map(a=>[a.nama,a.tel,a.ic,a.alamat,a.pendidikan,STAGE_NAME[a.status],a.sumber,a.disc?.style||'',a.disc?.pct.D??'',a.disc?.pct.I??'',a.disc?.pct.S??'',a.disc?.pct.C??'',a.nota,fmtDate(a.createdAt)].map(q).join(','));
+    dl(`rekrut-${stamp}.csv`, '﻿'+[cols.join(','),...rows].join('\n'), 'text/csv');
+  };
+  $('#imp').onchange=async e=>{
+    const f=e.target.files[0]; if(!f) return;
+    try{ const j=JSON.parse(await f.text()); const list=j.agents||j; if(!Array.isArray(list)) throw 0;
+      if(!await ask(`Restore ${list.length} calon? Rekod dengan ID sama akan ditimpa.`,'Restore')) return;
+      for(const a of list) if(a.id && a.nama) await DB.put(a);
+      toast('Restore berjaya'); viewSettings();
+    }catch{ toast('Fail tidak sah'); }
+  };
+}
+
+
+/* ===================== WHATSAPP: HANTAR & TAMPAL ===================== */
+const LETTERS = ['A','B','C','D'];
+function borangText(){
+  const qs = QUESTIONS.map((Q,i)=>`*${i+1}. ${Q.q}*\n` + orderFor(i).map((k,j)=>`${LETTERS[j]}. ${Q.o[k]}`).join('\n')).join('\n\n');
+  return `Assalamualaikum & salam sejahtera 👋
+Terima kasih atas minat untuk menyertai kerjaya takaful bersama kami.
+
+Sila jawab *2 bahagian* di bawah dan balas dalam WhatsApp ini. Tiada jawapan betul atau salah — jawab ikut diri sebenar 🙂
+
+━━━━━━━━━━━━━━
+*BAHAGIAN 1: MAKLUMAT DIRI*
+━━━━━━━━━━━━━━
+Nama penuh (ikut IC) : 
+No. tel : 
+No. IC : 
+Alamat : 
+Pendidikan (SPM / Diploma / Ijazah) : 
+
+📸 Sertakan juga *1 gambar selfie*.
+
+━━━━━━━━━━━━━━
+*BAHAGIAN 2: GAYA PERSONALITI (20 soalan)*
+━━━━━━━━━━━━━━
+Setiap soalan, pilih *2 huruf*:
+✅ Huruf pertama = PALING macam saya
+❌ Huruf kedua = PALING TIDAK macam saya
+
+${qs}
+
+━━━━━━━━━━━━━━
+👉 *Untuk balas:* salin templat jawapan yang saya hantar selepas ini, isi, dan hantar semula. Contoh: *1. B D*
+Terima kasih! 🙏`;
+}
+function templatText(){
+  return `Nama penuh (ikut IC) : 
+No. tel : 
+No. IC : 
+Alamat : 
+Pendidikan (SPM / Diploma / Ijazah) : 
+
+JAWAPAN (✅ Paling saya, ❌ Paling tidak saya)
+${QUESTIONS.map((_,i)=>`${i+1}. `).join('\n')}`;
+}
+async function copyText(t){
+  try{ await navigator.clipboard.writeText(t); toast('Disalin ✓'); return; }catch{}
+  const ta=document.createElement('textarea'); ta.value=t; ta.style.position='fixed'; ta.style.opacity='0'; document.body.appendChild(ta);
+  ta.select(); let ok=false; try{ ok=document.execCommand('copy'); }catch{} ta.remove();
+  toast(ok?'Disalin ✓':'Tak dapat salin — guna butang WhatsApp');
+}
+
+async function viewHantar(id){
+  const a = id ? await DB.get(id) : null;
+  $('#app').innerHTML = `
+    <h2>📤 Hantar Borang via WhatsApp</h2>
+    <div class="card">
+      <label>No. WhatsApp calon (boleh kosong — pilih kenalan dalam WhatsApp)</label>
+      <input id="waTel" type="tel" inputmode="tel" value="${esc(a?.tel)}" placeholder="012-3456789">
+      <h3>Langkah 1 — Hantar soalan</h3>
+      <div class="row"><a class="btn btn-primary grow" id="wa1" target="_blank">💬 Hantar Borang</a><button id="cp1">📋 Salin</button></div>
+      <h3>Langkah 2 — Hantar templat jawapan</h3>
+      <p class="small muted" style="margin:0 0 6px">Mesej pendek berasingan supaya calon senang tekan lama → Salin → isi → hantar balik.</p>
+      <div class="row"><a class="btn btn-primary grow" id="wa2" target="_blank">💬 Hantar Templat</a><button id="cp2">📋 Salin</button></div>
+      <h3>Langkah 3</h3>
+      <p class="small" style="margin:0">Bila calon balas, tekan lama mesej dia → <b>Copy</b> → buka <a href="#/tampal">📥 Tampal Jawapan</a>.</p>
+    </div>
+    <details class="card"><summary><b>Lihat mesej borang</b></summary><pre class="preview">${esc(borangText())}</pre></details>`;
+  const upd = () => { const n=waNum($('#waTel').value); const base='https://wa.me/'+(n||'')+'?text=';
+    $('#wa1').href = base+encodeURIComponent(borangText()); $('#wa2').href = base+encodeURIComponent(templatText()); };
+  $('#waTel').oninput=upd; upd();
+  $('#cp1').onclick=()=>copyText(borangText()); $('#cp2').onclick=()=>copyText(templatText());
+}
+
+function parseReply(txt){
+  const out = {fields:{}, ans: QUESTIONS.map(()=>({m:null,l:null})), problems:[]};
+  const F = [
+    [/^(?:nama(?:\s*penuh)?)$/i,'nama'], [/^(?:no\.?\s*)?(?:tel(?:efon)?|hp|phone|whatsapp)$/i,'tel'],
+    [/^(?:no\.?\s*)?(?:ic|k\/?p|kad\s*pengenalan|mykad)$/i,'ic'], [/^alamat$/i,'alamat'], [/^pendidikan$/i,'pendidikan'],
+  ];
+  const lines = txt.replace(/\r/g,'').split('\n').map(l=>l.replace(/[*_~]/g,'').trim());
+  let lastField=null;
+  for(const line of lines){
+    const am = line.match(/^(\d{1,2})\s*[.)\-:]?\s*([A-D])\s*[,\/&\-–\s]*\s*([A-D])\s*$/i);
+    if(am){ const n=+am[1]-1; if(n>=0 && n<QUESTIONS.length){ const ord=orderFor(n), m=am[2].toUpperCase(), l=am[3].toUpperCase();
+      if(m===l) out.problems.push(`Soalan ${n+1}: huruf ✅ dan ❌ sama (${m})`); else out.ans[n]={m:ord[LETTERS.indexOf(m)], l:ord[LETTERS.indexOf(l)]}; }
+      lastField=null; continue; }
+    const fm = line.match(/^([^:：]{1,50})\s*[:：]\s*(.*)$/);
+    if(fm){ const hit = F.find(([re])=>re.test(fm[1].replace(/\([^)]*\)/g,'').trim())); if(hit){ out.fields[hit[1]] = fm[2].trim(); lastField = hit[1]==='alamat'?'alamat':null; continue; } }
+    if(lastField==='alamat' && line && !/^jawapan/i.test(line) && !/^\d/.test(line)) out.fields.alamat += (out.fields.alamat?', ':'')+line;
+    else lastField=null;
+  }
+  const f=out.fields;
+  if(f.ic) f.ic = fmtIC(f.ic);
+  if(f.pendidikan!==undefined){ const p=f.pendidikan.toLowerCase();
+    f.pendidikan = /ijazah|degree|sarjana|master|phd|bachelor/.test(p)?'Ijazah (Degree)':/dip/.test(p)?'Diploma':/spm|spmv/.test(p)?'SPM':(p?'Lain-lain':''); }
+  out.answered = out.ans.filter(x=>x.m&&x.l).length;
+  return out;
+}
+const sameTel = (a,b) => a && b && waNum(a)===waNum(b);
+const sameIC = (a,b) => a && b && a.replace(/\D/g,'')===b.replace(/\D/g,'');
+
+async function viewTampal(){
+  $('#app').innerHTML = `
+    <h2>📥 Tampal Jawapan WhatsApp</h2>
+    <div class="card">
+      <p class="small muted" style="margin-top:0">Dalam WhatsApp: tekan lama mesej balasan calon → <b>Copy</b> → tampal di bawah. Kalau calon balas dalam beberapa mesej, tampal semuanya sekali.</p>
+      <textarea id="paste" style="min-height:180px" placeholder="Nama: Ahmad&#10;No Tel: 0123456789&#10;...&#10;1. B D&#10;2. A C"></textarea>
+    </div>
+    <div id="res"></div>`;
+  const ta=$('#paste');
+  const run = async () => {
+    const r = parseReply(ta.value), f = r.fields;
+    if(!ta.value.trim()){ $('#res').innerHTML=''; return; }
+    const all = await DB.all();
+    const match = all.find(a=>sameIC(a.ic,f.ic)) || all.find(a=>sameTel(a.tel,f.tel));
+    const missingQ = r.ans.map((x,i)=>x.m&&x.l?null:i+1).filter(Boolean);
+    const disc = r.answered===QUESTIONS.length ? scoreDisc(r.ans) : null;
+    const name = f.nama || match?.nama;
+    $('#res').innerHTML = `
+      <div class="card">
+        <h3 style="margin-top:0">Semak</h3>
+        <dl class="kv">
+          <dt>Nama</dt><dd>${f.nama?esc(f.nama):'<span class="err">tiada</span>'}</dd>
+          <dt>Telefon</dt><dd>${f.tel?esc(f.tel):'<span class="err">tiada</span>'}</dd>
+          <dt>No. IC</dt><dd>${esc(f.ic)||'-'} <span class="small muted">${icInfo(f.ic)}</span></dd>
+          <dt>Alamat</dt><dd>${esc(f.alamat)||'-'}</dd>
+          <dt>Pendidikan</dt><dd>${esc(f.pendidikan)||'-'}</dd>
+          <dt>Jawapan DISC</dt><dd class="${disc?'ok':'err'}"><b>${r.answered}/${QUESTIONS.length}</b>${missingQ.length&&missingQ.length<QUESTIONS.length?` — belum: ${missingQ.join(', ')}`:''}</dd>
+          ${disc?`<dt>Keputusan</dt><dd><span class="badge ${disc.primary}">${disc.style} · ${NAMES[disc.primary]}</span></dd>`:''}
+        </dl>
+        ${r.problems.length?`<p class="small err">${r.problems.map(esc).join('<br>')}</p>`:''}
+        ${match?`<p class="small">🔁 Padan dengan calon sedia ada: <b>${esc(match.nama)}</b> — maklumat akan dikemaskini.</p>`:''}
+        ${!disc && r.answered>0?`<p class="small muted">Boleh simpan maklumat dulu; DISC dikira bila semua 20 dijawab.</p>`:''}
+        <button class="btn-primary" id="imp" style="width:100%" ${name&&(f.tel||match)?'':'disabled'}>${match?'Kemaskini':'Simpan'} Calon</button>
+        ${name&&(f.tel||match)?'':'<p class="small err">Perlu sekurang-kurangnya Nama & No. Tel.</p>'}
+      </div>`;
+    const btn=$('#imp'); if(btn) btn.onclick = async () => {
+      const now=Date.now(), base = match || {id:uid(), status:'prospek', createdAt:now, history:[{status:'prospek',date:now}], pendidikan:'SPM', foto:''};
+      const rec = {...base, updatedAt:now};
+      for(const k of ['nama','tel','ic','alamat','pendidikan']) if(f[k]) rec[k]=f[k];
+      if(disc) rec.disc = {...disc, answers:r.ans, sumber:'whatsapp'};
+      if(!rec.sumber) rec.sumber='WhatsApp';
+      await DB.put(rec); toast(disc?`Disimpan · ${disc.style}`:'Disimpan');
+      go('#/calon/'+rec.id);
+    };
+  };
+  ta.oninput = () => { clearTimeout(ta._t); ta._t=setTimeout(run,300); };
+}
+
+/* ===================== ROUTER ===================== */
+async function route(){
+  const h = location.hash || '#/';
+  const [, view, id] = h.split('/');
+  const sect = (view==='apa') ? 'apa' : (view==='pasukan') ? 'pasukan' : 'rekrut';
+  $('#fab').classList.toggle('hidden', !!view || ROLE==='agent');
+  $('#title').textContent = sect==='rekrut' ? 'Rekrut Takaful · DISC' : sect==='apa' ? 'APA '+new Date().getFullYear() : 'Pasukan';
+  $('#nav').innerHTML = ROLE==='agent' ? '' : [['rekrut','Rekrut','#/'],['apa','APA','#/apa'],['pasukan','Pasukan','#/pasukan']]
+    .map(([k,l,hh])=>`<button class="btn-sm ${sect===k?'on':''}" onclick="go('${hh}')">${l}</button>`).join('') + (sect==='rekrut'?`<button class="btn-sm" onclick="go('#/tetapan')">⚙︎</button>`:'');
+  window.scrollTo(0,0);
+  if(sect!=='rekrut') return APA.route(h.slice(2).split('/'));
+  if(ROLE==='agent') return go('#/apa');
+  if(view==='baru') return viewForm();
+  if(view==='edit') return viewForm(id);
+  if(view==='calon') return viewProfile(id);
+  if(view==='disc') return viewQuiz(id);
+  if(view==='tetapan') return viewSettings();
+  if(view==='hantar') return viewHantar(id);
+  if(view==='tampal') return viewTampal();
+  return viewList();
+}
+window.addEventListener('hashchange', route);
+$('#app').innerHTML='<div class="card empty muted">Memuatkan…</div>';
+DB.init(()=>{ const v=(location.hash||'#/').split('/')[1]; if(!v||v==='calon'||v==='tetapan') route(); })
+  .then(async ctx=>{ ROLE = ctx.role; await APA.init(ctx); route(); });
+</script>
+</body>
+</html>

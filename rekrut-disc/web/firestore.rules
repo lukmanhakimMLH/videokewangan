@@ -1,0 +1,46 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ===== GANTI emel di bawah dengan emel leader (huruf kecil) =====
+    function isLeader() {
+      return request.auth != null
+        && request.auth.token.email == 'EMEL_LEADER@gmail.com'
+        && request.auth.token.email_verified == true;
+    }
+    function signedIn() { return request.auth != null; }
+    function isSelf(uid) { return signedIn() && request.auth.uid == uid; }
+    function approved() {
+      return signedIn()
+        && exists(/databases/$(database)/documents/users/$(request.auth.uid))
+        && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.status == 'approved';
+    }
+
+    // Untuk app kenal pasti leader
+    match /meta/{d} { allow read, write: if isLeader(); }
+
+    // Data Rekrut + DISC: leader sahaja
+    match /rekrut/{id} { allow read, write: if isLeader(); }
+
+    // Akaun ejen: ejen daftar sendiri (pending), leader luluskan
+    match /users/{uid} {
+      allow read: if isLeader() || isSelf(uid);
+      allow create: if isSelf(uid) && request.resource.data.status == 'pending';
+      allow update: if isLeader()
+        || (isSelf(uid) && request.resource.data.status == resource.data.status);
+      allow delete: if isLeader();
+    }
+
+    // APA: ejen baca/tulis APA sendiri sahaja; leader baca semua
+    match /apa/{uid} {
+      allow read: if isLeader() || isSelf(uid);
+      allow write: if isLeader() || (isSelf(uid) && approved());
+    }
+
+    // Contest: leader tetapkan, ejen yang diluluskan baca
+    match /config/{d} {
+      allow read: if isLeader() || approved();
+      allow write: if isLeader();
+    }
+  }
+}

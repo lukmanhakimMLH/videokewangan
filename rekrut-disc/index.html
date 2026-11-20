@@ -216,16 +216,16 @@ const DB = (()=>{
     }
     const role = !user ? 'local' : (await user.isOwner().catch(()=>false)) ? 'owner' : 'agent';
     const ctx = {db, user, uid, role};
-    if(role==='agent'){ setSync(db&&uid ? '☁ Disimpan dalam akaun Claude anda' : '⚠ Tiada akses data'); return ctx; }
+    if(role==='agent'){ setSync(db&&uid ? (window.__HOSTED?'☁ Disimpan dalam talian':'☁ Disimpan dalam akaun Claude anda') : '⚠ Tiada akses data'); return ctx; }
     if(db && uid){
-      mode='cloud'; col = db.collection('data/users/'+uid);
+      mode='cloud'; col = db.collection(window.__REKRUT_COL || 'data/users/'+uid);
       setSync('Memuatkan data…');
       await new Promise(res=>{
         let first=true;
         const t=setTimeout(()=>{ setSync('⚠ Tak dapat sambung — data mungkin tak terkini'); res(); },10000);
         col.onSnapshot(snap=>{
           cache = new Map(snap.docs.map(d=>[d.id, d.data()]));
-          if(!snap.metadata.fromCache){ clearTimeout(t); setSync('☁ Disimpan dalam akaun Claude anda'); }
+          if(!snap.metadata.fromCache){ clearTimeout(t); setSync((window.__HOSTED?'☁ Disimpan dalam talian':'☁ Disimpan dalam akaun Claude anda')); }
           if(first){ first=false; res(); } else onChange();
         }, e=>{ clearTimeout(t); setSync('⚠ Ralat sambungan data ('+e.code+')'); res(); });
       });
@@ -517,7 +517,7 @@ async function viewSettings(){
     <h2>Tetapan & Backup</h2>
     <div class="card">
       <p>Jumlah calon: <b>${all.length}</b></p>
-      <p class="small muted">${DB.mode==='cloud' ? 'Data disimpan dalam akaun Claude anda — peribadi untuk anda sahaja dan sama di semua peranti bila log masuk. Backup tetap digalakkan.' : 'Data disimpan dalam browser peranti ini sahaja. Buat backup selalu — kalau clear browser / tukar telefon, data hilang.'}</p>
+      <p class="small muted">${DB.mode==='cloud' ? (window.__HOSTED?'Data disimpan dalam talian (Firebase) — hanya leader boleh baca data Rekrut, dan sama di semua peranti bila log masuk. Backup tetap digalakkan.':'Data disimpan dalam akaun Claude anda — peribadi untuk anda sahaja dan sama di semua peranti bila log masuk. Backup tetap digalakkan.') : 'Data disimpan dalam browser peranti ini sahaja. Buat backup selalu — kalau clear browser / tukar telefon, data hilang.'}</p>
       <div class="row">
         <button class="btn-primary" id="exp">⬇️ Backup (JSON)</button>
         <label class="btn" style="margin:0">⬆️ Restore<input type="file" accept="application/json" id="imp" class="hidden"></label>
