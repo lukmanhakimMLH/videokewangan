@@ -859,11 +859,10 @@ function figureSVG(kind, color, opts){
 function renderTree(rows, r){
   const h = state.faraid, el = $('f-tree');
   const decName = (state.client.name || '').trim();
-  const title = h.gender === 'L' ? 'Allahyarham' : 'Allahyarhamah';
   const per = x => x.n ? x.share / x.n : x.share;
   const top = `<div class="tree-top"><div class="dec">
       <div class="dec-fig">${figureSVG(h.gender === 'L' ? 'man' : 'woman', '#9ca3af', {grey:true})}</div>
-      <div><small>${title}</small><b>${esc(decName || 'Si mati')}</b><span>Harta untuk faraid (dengan hibah): ${rm(r.A)}</span></div>
+      <div><b>${esc(decName || 'Nama pelanggan')}</b><span>Harta untuk faraid (dengan hibah): ${rm(r.A)}</span></div>
     </div></div>`;
   if(!rows.length){ el.innerHTML = top + '<div class="tree-empty">Isi maklumat waris di atas untuk lihat pembahagian.</div>'; $('f-bar').innerHTML = ''; return; }
   const cards = rows.map(x => {
@@ -918,7 +917,7 @@ function renderFaraidInputs(){
 function renderAll(){ renderClient(); renderDebts(); renderAssets(); renderFaraidInputs(); renderSummary(); }
 
 /* ---------- Events ---------- */
-['name','ic','source','date'].forEach(k => $('c-'+k).addEventListener('input', e => { state.client[k] = e.target.value; }));
+['name','ic','source','date'].forEach(k => $('c-'+k).addEventListener('input', e => { state.client[k] = e.target.value; if(k === 'name') renderSummary(); }));
 
 function bindList(listId, arr, rerender){
   const el = $(listId);
