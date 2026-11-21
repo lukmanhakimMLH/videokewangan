@@ -197,11 +197,11 @@ const chip=o=>o.label?`<span class="st" style="background:${esc(o.label.bg)};col
 const needWa=o=>(o.labelId||'')!==(DB.sent[o.id]??null);
 // Kes tak layak yang dah di-WhatsApp -> Arkib (muncul semula jika HQ tukar label)
 const HIDE_LABELS=['Case Tak Layak','Tidak Berjaya Panel','Loan Reject'];
-// Case Layak yang dah di-WhatsApp -> page Case Layak. Client Cancel -> Arkib.
+// Semua Case Layak -> terus ke page Case Layak. Client Cancel -> Arkib.
 const STAGES={proses:'Tengah Proses Loan',approve:'Approve',cancel:'Client Cancel'};
 const stageOf=o=>DB.stage[o.id]?.s||'';
 const archived=o=>stageOf(o)==='cancel'||(!stageOf(o)&&HIDE_LABELS.includes(lblName(o))&&!needWa(o));
-const inLayak=o=>!archived(o)&&(['proses','approve'].includes(stageOf(o))||(lblName(o)==='Case Layak'&&!needWa(o)));
+const inLayak=o=>!archived(o)&&(['proses','approve'].includes(stageOf(o))||lblName(o)==='Case Layak');
 const stageTag=o=>{const s=stageOf(o);return s==='approve'?'<span class="wt yes">✅ Approve</span>':s==='proses'?'<span class="wt no">⏳ Tengah Proses</span>':s==='cancel'?'<span class="wt" style="background:var(--chip);color:var(--neg)">✖ Client Cancel</span>':'<span class="wt" style="background:var(--brand-soft);color:var(--brand)">Baru</span>';};
 const rmF=n=>'RM'+Number(n||0).toLocaleString('ms-MY',{minimumFractionDigits:2,maximumFractionDigits:2});
 const numV=v=>{const n=parseFloat(String(v??'').replace(/[^0-9.]/g,''));return isNaN(n)?0:n;};
@@ -387,9 +387,9 @@ function rLayakBody(){
     <div class="card" style="cursor:pointer" onclick="go('detail','${o.id}')">
       <div class="row" style="flex-wrap:nowrap"><div class="info" style="flex:1;min-width:0"><div class="nm" style="font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(o.name)}</div>
         <div class="small muted">#${esc(o.no)} · ${esc(o.phone)}</div></div>
-        <div style="text-align:right;flex:none">${chip(o)}<br>${stageTag(o)}</div></div>
+        <div style="text-align:right;flex:none">${chip(o)}<br>${stageTag(o)} ${waTag(o)}</div></div>
       ${stageBtns(o,'rLayak()')}
-    </div>`).join(''):`<div class="empty">${Object.values(DB.orders).some(inLayak)?'Tiada kes dalam kategori ni.':'Belum ada Case Layak.<br><span class="small">Case Layak masuk sini selepas kau tanda ✓ Dah WhatsApp.</span>'}</div>`;
+    </div>`).join(''):`<div class="empty">${Object.values(DB.orders).some(inLayak)?'Tiada kes dalam kategori ni.':'Belum ada Case Layak.'}</div>`;
 }
 
 // ===== Komisen =====
