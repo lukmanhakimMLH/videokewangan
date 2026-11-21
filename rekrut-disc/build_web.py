@@ -18,6 +18,7 @@ assert '<meta name="theme-color"' in html
 html = html.replace('<meta name="theme-color"', head + '<meta name="theme-color"', 1)
 (out / 'index.html').write_text(html)
 shutil.copy(here / 'apa.js', out / 'apa.js')
+shutil.copy(here / 'mapa.js', out / 'mapa.js')
 shutil.copy(here / 'web' / 'fb.js', out / 'fb.js')
 for f in ['manifest.json', 'icon-192.png', 'icon-512.png']:
     shutil.copy(here / 'web' / f, out / f)

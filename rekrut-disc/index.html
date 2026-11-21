@@ -116,6 +116,7 @@ nav#nav button.on{background:var(--accent);color:var(--bg);border-color:var(--ac
 <button id="fab" class="btn-primary fab" onclick="go('#/baru')">+ Calon Baru</button>
 
 <script src="apa.js"></script>
+<script src="mapa.js"></script>
 <script>
 let ROLE = 'local';
 /* ===================== DATA ===================== */
@@ -127,6 +128,7 @@ const STAGES = [
   {k:'coded',    t:'Coded'},
 ];
 const STAGE_NAME = Object.fromEntries(STAGES.map(s=>[s.k,s.t]));
+const LATIHAN = [['tbe','TBE lulus'],['onboarding','Onboarding Program'],['fighter','Fighter 1.0'],['startup','Start Up']];
 const EDU = ['SPM','Diploma','Ijazah (Degree)','Lain-lain'];
 const NAMES = {D:'Dominance',I:'Influence',S:'Steadiness',C:'Compliance'};
 
@@ -432,6 +434,12 @@ async function viewProfile(id){
     ${d ? discResultHTML(d) + `<button class="btn-sm" onclick="go('#/disc/${a.id}')">Ulang Ujian DISC</button>`
         : `<div class="card empty"><p>Calon ini belum jawab soalan DISC.</p><div class="row" style="justify-content:center"><button class="btn-primary" onclick="go('#/disc/${a.id}')">Jawab Sekarang (20 soalan)</button><button onclick="go('#/hantar/${a.id}')">📤 Hantar via WhatsApp</button></div></div>`}
     <div class="card" style="margin-top:12px">
+      <h3 style="margin-top:0">🎓 Recruitment 100 — Latihan</h3>
+      ${LATIHAN.map(([k,t])=>{ const done = k==='tbe' ? (idx>=3 || a.latihan?.tbe) : a.latihan?.[k];
+        return `<label class="row" style="font-weight:500;margin:8px 0;cursor:pointer"><input type="checkbox" data-lat="${k}" style="width:auto" ${done?'checked':''} ${k==='tbe'&&idx>=3?'disabled':''}>
+          <span class="grow">${t}</span><span class="small muted">${done&&typeof done==='number'?fmtDate(done):''}</span></label>`; }).join('')}
+    </div>
+    <div class="card">
       <h3 style="margin-top:0">Sejarah Status</h3>
       <div class="hist">${(a.history||[]).slice().reverse().map(h=>`<div>${fmtDate(h.date)} — <b>${STAGE_NAME[h.status]}</b></div>`).join('')||'-'}</div>
     </div>
@@ -439,6 +447,8 @@ async function viewProfile(id){
       <button class="grow" onclick="go('#/edit/${a.id}')">✏️ Kemaskini</button>
       <button class="btn-danger" id="del">Padam</button>
     </div>`;
+  document.querySelectorAll('[data-lat]').forEach(cb=>cb.onchange=async()=>{
+    a.latihan = {...(a.latihan||{}), [cb.dataset.lat]: cb.checked ? Date.now() : 0}; a.updatedAt=Date.now(); await DB.put(a); viewProfile(id); });
   $('#adv') && ($('#adv').onclick=async()=>{ const now=Date.now(); a.status=next.k; a.updatedAt=now; a.history=[...(a.history||[]),{status:next.k,date:now}]; await DB.put(a); toast(next.k==='coded'?'🎉 Tahniah, sudah Coded!':'Status: '+next.t); viewProfile(id); });
   $('#del').onclick=async()=>{ if(await ask(`Padam ${a.nama}? Tindakan ini tak boleh diundur.`,'Padam')){ await DB.del(id); toast('Dipadam'); go('#/'); } };
 }
@@ -534,9 +544,9 @@ async function viewSettings(){
   const stamp = new Date().toISOString().slice(0,10);
   $('#exp').onclick=()=>dl(`rekrut-backup-${stamp}.json`, JSON.stringify({v:1,agents:all}), 'application/json');
   $('#csv').onclick=()=>{
-    const cols=['nama','tel','ic','alamat','pendidikan','status','sumber','disc','D','I','S','C','nota','didaftar'];
+    const cols=['nama','tel','ic','alamat','pendidikan','status','sumber','disc','D','I','S','C','TBE','Onboarding','Fighter 1.0','Start Up','nota','didaftar'];
     const q=v=>`"${String(v??'').replace(/"/g,'""')}"`;
-    const rows=all.map(a=>[a.nama,a.tel,a.ic,a.alamat,a.pendidikan,STAGE_NAME[a.status],a.sumber,a.disc?.style||'',a.disc?.pct.D??'',a.disc?.pct.I??'',a.disc?.pct.S??'',a.disc?.pct.C??'',a.nota,fmtDate(a.createdAt)].map(q).join(','));
+    const rows=all.map(a=>[a.nama,a.tel,a.ic,a.alamat,a.pendidikan,STAGE_NAME[a.status],a.sumber,a.disc?.style||'',a.disc?.pct.D??'',a.disc?.pct.I??'',a.disc?.pct.S??'',a.disc?.pct.C??'',...LATIHAN.map(([k])=>(k==='tbe'&&['lulus','coded'].includes(a.status))||a.latihan?.[k]?'Ya':''),a.nota,fmtDate(a.createdAt)].map(q).join(','));
     dl(`rekrut-${stamp}.csv`, '﻿'+[cols.join(','),...rows].join('\n'), 'text/csv');
   };
   $('#imp').onchange=async e=>{
@@ -704,8 +714,8 @@ async function route(){
   const [, view, id] = h.split('/');
   const sect = (view==='apa') ? 'apa' : (view==='pasukan') ? 'pasukan' : 'rekrut';
   $('#fab').classList.toggle('hidden', !!view || ROLE==='agent');
-  $('#title').textContent = sect==='rekrut' ? 'Rekrut Takaful · DISC' : sect==='apa' ? 'APA '+new Date().getFullYear() : 'Pasukan';
-  $('#nav').innerHTML = ROLE==='agent' ? '' : [['rekrut','Rekrut','#/'],['apa','APA','#/apa'],['pasukan','Pasukan','#/pasukan']]
+  $('#title').textContent = sect==='rekrut' ? 'Rekrut Takaful · DISC' : sect==='apa' ? 'APA '+new Date().getFullYear() : 'MAPA '+new Date().getFullYear();
+  $('#nav').innerHTML = ROLE==='agent' ? '' : [['rekrut','Rekrut','#/'],['apa','APA','#/apa'],['pasukan','MAPA','#/pasukan']]
     .map(([k,l,hh])=>`<button class="btn-sm ${sect===k?'on':''}" onclick="go('${hh}')">${l}</button>`).join('') + (sect==='rekrut'?`<button class="btn-sm" onclick="go('#/tetapan')">⚙︎</button>`:'');
   window.scrollTo(0,0);
   if(sect!=='rekrut') return APA.route(h.slice(2).split('/'));

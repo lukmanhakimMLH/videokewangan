@@ -44,6 +44,7 @@ async function init({db, uid, role}){
       }, ()=>{ clearTimeout(t); S.me ||= emptyDoc(); if(first){first=false; res();} });
     });
     db.doc('config/contests').onSnapshot(s=>{ S.contests = s.exists ? (s.data().list||[]) : []; notify(); }, ()=>{ S.contests=[]; });
+    if(role==='owner') window.MAPA?.init(db);
     if(role==='owner' && window.__HOSTED){
       db.collection('users').onSnapshot(s=>{ S.users = s.docs.map(d=>({uid:d.id, ...clone(d.data())})); notify(); }, ()=>{});
     }
@@ -55,6 +56,7 @@ async function init({db, uid, role}){
     try{ S.me = JSON.parse(localStorage.getItem('apa-local')||'null') || emptyDoc(); }catch{ S.me = emptyDoc(); }
     try{ S.contests = JSON.parse(localStorage.getItem('apa-contests')||'null') || []; }catch{ S.contests = []; }
     S.team = [{uid:'local', ...S.me}];
+    window.MAPA?.init(null);
   }
 }
 let saveT;
@@ -336,7 +338,7 @@ async function vPasukan(){
   const leads = team.flatMap(({a})=>(a.p100||[]).filter(p=>p.jenis==='rekrut').map(p=>({p, a, key:a.uid+':'+p.id})));
   const sum = k => team.reduce((s,t)=>s+t.C[k],0);
   $('#app').innerHTML = `
-    <h2>Pasukan <span class="small muted">(asas MAPA)</span></h2>
+    ${window.MAPA?MAPA.tabs('ejen'):''}
     ${approvalsHTML()}
     <div class="stats" style="margin-bottom:12px">
       <div class="stat"><b>${team.length}</b><span class="small muted">Ejen aktif</span></div>
@@ -355,8 +357,7 @@ async function vPasukan(){
         <div class="grow"><b>${esc(p.nama)}</b><div class="small muted">${[p.tel,p.umur&&p.umur+' thn',p.kerja].filter(Boolean).map(esc).join(' · ')}<br>dari ${esc(a.profile.nama)}</div></div>
         ${imported.has(key) ? '<span class="badge S">✓ Dalam Rekrut</span>' : `<button class="btn-sm btn-primary" data-imp="${esc(key)}">→ Rekrut</button>`}
       </div>`).join('') : '<div class="card empty muted small">Ejen boleh tanda nama Project 100 sebagai "Calon Rekrut".</div>'}
-    <h3>Contest pasukan</h3>
-    <button style="width:100%" onclick="go('#/pasukan/contest')">🏆 Tetapkan Contest (${(S.contests||[]).length})</button>`;
+`;
   document.querySelectorAll('[data-lulus]').forEach(b=>b.onclick=async()=>{
     const [id, st] = b.dataset.lulus.split('|');
     try{ await S.db.doc('users/'+id).update({status:st, reviewedAt:Date.now()}); toast(st==='approved'?'Diluluskan ✓':'Ditolak'); }catch{ toast('Gagal kemaskini'); }
@@ -383,7 +384,7 @@ function vAhli(id){
   const a = (S.team||[]).find(x=>x.uid===id); if(!a) return go('#/pasukan');
   const C = calc(a);
   $('#app').innerHTML = `
-    <div class="row"><h2 class="grow">${esc(a.profile.nama)}</h2><button class="btn-sm" onclick="go('#/pasukan')">← Pasukan</button></div>
+    <div class="row"><h2 class="grow">${esc(a.profile.nama)}</h2><button class="btn-sm" onclick="go('#/pasukan/ejen')">← Ejen</button></div>
     <div class="small muted" style="margin:-8px 0 10px">${esc(a.profile.kod||'')} ${a.profile.tel?`· <a target="_blank" href="https://wa.me/${esc(waNum(a.profile.tel))}">${esc(a.profile.tel)}</a>`:''} · kemaskini ${a.updatedAt?fmtDate(a.updatedAt):'-'}</div>
     ${dashboardHTML(a, true)}
     ${contestCards(a, true)}
@@ -394,7 +395,7 @@ function vContestSetup(){
   const list = clone(S.contests||[]);
   const draw = () => {
     $('#app').innerHTML = `
-      <div class="row"><h2 class="grow">Contest Pasukan</h2><button class="btn-sm" onclick="go('#/pasukan')">← Pasukan</button></div>
+      <div class="row"><h2 class="grow">Contest Ejen</h2><button class="btn-sm" onclick="go('#/pasukan/kumpulan')">← Contest</button></div>
       <p class="small muted" style="margin-top:-6px">Semua ejen nampak contest ini, dan progress dikira automatik dari Achieve mereka.</p>
       ${list.map((c,i)=>`<div class="card">
         <label style="margin-top:0">Nama contest</label><input data-i="${i}" data-k="nama" value="${esc(c.nama)}">
@@ -416,7 +417,7 @@ function vContestSetup(){
     document.querySelectorAll('[data-del]').forEach(b=>b.onclick=()=>{ list.splice(+b.dataset.del,1); draw(); });
     $('#add').onclick=()=>{ list.push({id:uid(), nama:'', sasaran:0, jenis:'ace', dari:1, hingga:12}); draw(); };
     $('#contoh') && ($('#contoh').onclick=()=>{ list.push(...clone(CONTEST_CONTOH)); draw(); });
-    $('#sv').onclick=async()=>{ await saveContests(list.filter(c=>c.nama)); toast('Contest disimpan'); go('#/pasukan'); };
+    $('#sv').onclick=async()=>{ await saveContests(list.filter(c=>c.nama)); toast('Contest disimpan'); go('#/pasukan/kumpulan'); };
   };
   draw();
 }
@@ -424,14 +425,17 @@ function vContestSetup(){
 /* ---------------- ROUTER ---------------- */
 const APA = window.APA = {
   init, S,
+  h: { S, calc, RM, pct, num, bar, colorFor, BULAN, BLN, PROP_ASAL, CUR_M, YEAR },
   route(parts, fromRemote){
     const [view, a, b, c] = parts;
     const editing = /\/(kes|p100\/|tetapan|contest$)/.test(location.hash) && location.hash!=='#/apa/p100' && location.hash!=='#/apa/contest';
-    if(fromRemote && (editing || location.hash==='#/pasukan/contest')) return;   // jangan ganggu borang
+    if(fromRemote && (editing || /^#\/pasukan\/(contest|.*\/edit)/.test(location.hash))) return;   // jangan ganggu borang
     if(view==='pasukan'){
       if(S.role==='agent') return go('#/apa');
       if(a==='contest') return vContestSetup();
-      return a ? vAhli(a) : vPasukan();
+      if(a==='ejen') return vPasukan();
+      if(!a || ['plan','kumpulan','tetapan-mapa'].includes(a)) return window.MAPA ? MAPA.route(a,b,c) : vPasukan();
+      return vAhli(a);
     }
     if(!S.me) return;
     if(needSetup() && a!=='tetapan') return vSetup();
