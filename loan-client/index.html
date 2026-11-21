@@ -62,6 +62,12 @@ h2{font-size:16px;margin:0 0 6px}
 .client .sub{font-size:13px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .client .info{flex:1;min-width:0}
 .st{display:inline-block;font-size:12px;font-weight:700;padding:2px 9px;border-radius:999px;white-space:nowrap;background:var(--chip);color:var(--muted)}
+.wt{display:inline-block;font-size:11px;font-weight:700;padding:1px 7px;border-radius:999px;margin-top:4px}
+.wt.yes{background:#dcf5e6;color:#11763a} .wt.no{background:#fff2d9;color:#8a5300}
+@media (prefers-color-scheme: dark){.wt.yes{background:#11331f;color:#6fe0a0}.wt.no{background:#3a2a0e;color:#f5c26b}}
+.wabar{display:flex;align-items:center;gap:10px;margin-top:12px;padding:10px 12px;border-radius:12px;background:var(--bg)}
+.wabar.done{background:#dcf5e6;color:#11763a}
+@media (prefers-color-scheme: dark){.wabar.done{background:#11331f;color:#6fe0a0}}
 .kv{display:grid;grid-template-columns:auto 1fr;gap:4px 12px;font-size:14px}
 .kv div:nth-child(odd){color:var(--muted)}
 .tpl-pick{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:6px;margin-bottom:8px}
@@ -176,6 +182,10 @@ async function copy(txt){ try{ await navigator.clipboard.writeText(txt); toast('
 const lblName=o=>o.label?.name||'';
 const chip=o=>o.label?`<span class="st" style="background:${esc(o.label.bg)};color:${esc(o.label.fg)}">${esc(o.label.name)}</span>`:`<span class="st">Submitted</span>`;
 const needWa=o=>(o.labelId||'')!==(DB.sent[o.id]??null);
+// Kes tak layak yang dah di-WhatsApp -> Arkib (muncul semula jika HQ tukar label)
+const HIDE_LABELS=['Case Tak Layak','Tidak Berjaya Panel','Loan Reject'];
+const archived=o=>HIDE_LABELS.includes(lblName(o))&&!needWa(o);
+const waTag=o=>needWa(o)?'<span class="wt no">Belum WA</span>':'<span class="wt yes">✓ Dah WA</span>';
 
 // ===== API =====
 async function sbFetch(path,{body,auth=true,method}={}){
@@ -294,23 +304,25 @@ function rList(){
   if(!os.length){
     $('app').innerHTML=`<div class="card empty">${DB.session?.refresh?'Tekan <b>⟳ Sync</b> untuk tarik semua kes dari ejenplus.':'Sambungkan akaun ejenplus dulu.<br><br><button class="pri" onclick="go(\'set\')">Login ejenplus</button>'}</div>`; return;
   }
-  const cnt={}; os.forEach(o=>{const k=o.labelId||'';cnt[k]=(cnt[k]||0)+1;});
-  const nNeed=os.filter(needWa).length;
+  const act=os.filter(o=>!archived(o)), nArk=os.length-act.length;
+  const cnt={}; act.forEach(o=>{const k=o.labelId||'';cnt[k]=(cnt[k]||0)+1;});
+  const nNeed=act.filter(needWa).length;
   const labels=[...DB.labels.filter(l=>cnt[l.id]),...(cnt['']?[{id:'',name:'Submitted (tiada label)'}]:[])];
   $('app').innerHTML=`
   <input id="q" placeholder="Cari nama, no. tel, IC, no. submission…" value="${esc(q)}" oninput="q=this.value;rListBody()" style="margin-bottom:10px">
   <div class="chips">
     <button class="need ${filter==='perlu'?'on':''}" onclick="filter='perlu';rList()">Perlu WhatsApp (${nNeed})</button>
-    <button class="${filter==='semua'?'on':''}" onclick="filter='semua';rList()">Semua (${os.length})</button>
+    <button class="${filter==='semua'?'on':''}" onclick="filter='semua';rList()">Semua (${act.length})</button>
     ${labels.map(l=>`<button class="${filter==='L:'+l.id?'on':''}" onclick="filter='L:${l.id}';rList()">${esc(l.name)} (${cnt[l.id]})</button>`).join('')}
+    ${nArk?`<button class="${filter==='arkib'?'on':''}" onclick="filter='arkib';rList()">🗄 Arkib (${nArk})</button>`:''}
   </div>
   <div class="small muted" style="margin:-4px 0 8px">${DB.lastSync?'Sync terakhir: '+fmtDT(DB.lastSync):''}</div>
   <div id="listBody"></div>`;
   rListBody();
 }
 function rListBody(){
-  let list=Object.values(DB.orders).filter(o=>filter==='semua'?true:filter==='perlu'?needWa(o):('L:'+(o.labelId||''))===filter);
-  if(q){ const k=q.toLowerCase().replace(/[\s-]/g,''); list=list.filter(o=>[o.name,o.phone,o.form?.ic,o.no].join('|').toLowerCase().replace(/[\s-]/g,'').includes(k)); }
+  let list=Object.values(DB.orders).filter(o=>filter==='arkib'?archived(o):!archived(o)&&(filter==='semua'?true:filter==='perlu'?needWa(o):('L:'+(o.labelId||''))===filter));
+  if(q){ list=Object.values(DB.orders); const k=q.toLowerCase().replace(/[\s-]/g,''); list=list.filter(o=>[o.name,o.phone,o.form?.ic,o.no].join('|').toLowerCase().replace(/[\s-]/g,'').includes(k)); }
   const key=o=>lastUpdate(o)?.at||o.submitted||'';
   list.sort((a,b)=>key(b).localeCompare(key(a)));
   const shown=list.slice(0,200);
@@ -319,9 +331,9 @@ function rListBody(){
       <div class="avatar">${esc((o.name||'?')[0].toUpperCase())}${needWa(o)?'<span class="dot"></span>':''}</div>
       <div class="info"><div class="nm">${esc(o.name)}</div>
         <div class="sub">#${esc(o.no)} · ${esc(o.phone)}</div></div>
-      <div style="text-align:right;flex:none">${chip(o)}<div class="small muted" style="margin-top:3px">${fmtD(key(o))}</div></div>
+      <div style="text-align:right;flex:none">${chip(o)}<div class="small muted" style="margin-top:3px">${fmtD(key(o))}</div>${waTag(o)}</div>
     </div>`).join('')+(list.length>200?`<div class="empty small">+${list.length-200} lagi… guna carian</div>`:'')
-    :`<div class="empty">${filter==='perlu'?'Semua klien dah dimaklumkan 👍':'Tiada kes.'}</div>`;
+    :`<div class="empty">${filter==='perlu'?'Semua klien dah dimaklumkan 👍':filter==='arkib'?'Arkib kosong.':'Tiada kes.'}</div>`;
 }
 
 // ===== Butiran =====
@@ -347,10 +359,11 @@ function rDetail(){
       <button class="sm" onclick="copy(infoText(DB.orders[curId]))">Salin info</button>
       <button class="sm" onclick="refreshOne()">⟳ Nota HQ</button>
     </div>
+    ${needWa(o)?`<div class="wabar"><span style="flex:1"><b>Belum WhatsApp</b><br><span class="small muted">untuk status ${esc(lblName(o)||'Submitted')}</span></span><button class="wa" onclick="markSent(true)">✓ Tanda Dah WhatsApp</button></div>`
+      :`<div class="wabar done"><span style="flex:1"><b>✓ Dah WhatsApp</b>${archived(o)?'<br><span class="small">Kes ni dalam Arkib</span>':''}</span><button class="sm" onclick="markSent(false)">Batal</button></div>`}
   </div>
   <div class="card">
-    <div class="row"><h2 style="margin:0">Hantar WhatsApp</h2><span class="spacer"></span>
-      ${needWa(o)?`<button class="sm" onclick="markSent(true)">Tanda dah WA</button>`:`<span class="small" style="color:var(--pos);font-weight:700">✓ Dah WA untuk status ni</span> <button class="sm" onclick="markSent(false)">Batal</button>`}</div>
+    <h2 style="margin:0">Hantar WhatsApp</h2>
     <div class="tpl-pick" style="margin-top:10px">${DB.tpl.map(t=>`<button class="${t.id===tplSel?'on':''}" onclick="tplSel='${t.id}';rDetail()">${esc(t.nm)}</button>`).join('')}</div>
     <textarea id="msg" style="min-height:220px">${esc(fill(DB.tpl.find(t=>t.id===tplSel).txt,o))}</textarea>
     <div class="row" style="margin-top:8px">
@@ -382,7 +395,11 @@ function sendWa(){
   window.open('https://wa.me/'+n+'?text='+encodeURIComponent($('msg').value),'_blank');
   DB.sent[o.id]=o.labelId||''; save(); setTimeout(rDetail,300);
 }
-function markSent(on){ const o=DB.orders[curId]; if(on) DB.sent[o.id]=o.labelId||''; else delete DB.sent[o.id]; save(); rDetail(); }
+function markSent(on){
+  const o=DB.orders[curId]; if(on) DB.sent[o.id]=o.labelId||''; else delete DB.sent[o.id]; save();
+  if(on&&archived(o)){ toast('Ditanda dah WhatsApp · dipindah ke Arkib'); go('list'); }
+  else { toast(on?'Ditanda dah WhatsApp':'Ditanda belum WhatsApp'); rDetail(); }
+}
 async function refreshOne(){ const o=DB.orders[curId]; try{ toast('Ambil nota HQ…'); await fetchUpdates(o); save(); tplSel=null; rDetail(); toast('Dikemaskini'); }catch(e){ toast(e.message,3500); } }
 function infoText(o){
   const L=(l,v)=>v?`${l}: ${v}\n`:'';
