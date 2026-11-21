@@ -1,0 +1,472 @@
+<!doctype html>
+<html lang="ms">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#1d4ed8">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Klien Loan">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>Klien Loan</title>
+<style>
+:root{
+  --bg:#f3f5f9; --card:#fff; --ink:#141b2b; --muted:#5f6b80; --line:#dde2ec;
+  --brand:#1d4ed8; --brand-ink:#fff; --brand-soft:#e5ecfc; --chip:#eef1f6;
+  --pos:#15803d; --neg:#c0392b; --warn:#b26a00; --wa:#1fa855;
+  --shadow:0 1px 2px rgba(0,0,0,.06),0 2px 8px rgba(0,0,0,.04);
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    --bg:#0d1119; --card:#161c28; --ink:#e6ebf4; --muted:#98a3b8; --line:#273044;
+    --brand:#6b93f5; --brand-ink:#0b1020; --brand-soft:#1c2740; --chip:#1e2638;
+    --pos:#4fd18b; --neg:#ff7b6b; --warn:#f0b04a; --wa:#34c46e; --shadow:none;
+  }
+}
+*{box-sizing:border-box}
+html,body{overflow-x:hidden;margin:0;background:var(--bg);color:var(--ink);font:15px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+header{position:sticky;top:0;z-index:5;background:var(--brand);color:var(--brand-ink);padding:12px 16px;padding-top:max(12px,env(safe-area-inset-top));display:flex;align-items:center;gap:8px}
+header h1{font-size:17px;margin:0;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+header button{background:transparent;color:inherit;border:1px solid currentColor}
+nav.tabs{display:flex;gap:4px;padding:8px 16px;background:var(--card);border-bottom:1px solid var(--line)}
+nav.tabs button{background:transparent;border:0;color:var(--muted);padding:8px 12px;border-radius:8px}
+nav.tabs button.on{background:var(--brand-soft);color:var(--brand)}
+main{max-width:760px;margin:0 auto;padding:16px;padding-bottom:calc(40px + env(safe-area-inset-bottom))}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;box-shadow:var(--shadow);margin-bottom:12px}
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.spacer{flex:1}
+button,.btn{font:inherit;font-weight:600;padding:9px 14px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:6px}
+button:disabled{opacity:.5;cursor:default}
+button.pri{background:var(--brand);border-color:var(--brand);color:var(--brand-ink)}
+button.wa{background:var(--wa);border-color:var(--wa);color:#fff}
+button.danger{color:var(--neg);border-color:var(--neg);background:transparent}
+button.sm,.btn.sm{padding:5px 10px;font-size:13px}
+input,select,textarea{font:inherit;font-size:16px;width:100%;padding:9px 10px;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink)}
+textarea{resize:vertical;min-height:80px}
+label{display:block;font-size:12px;color:var(--muted);margin:10px 0 3px;font-weight:600}
+h2{font-size:16px;margin:0 0 6px}
+.muted{color:var(--muted)} .small{font-size:13px}
+.chips{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px;margin-bottom:10px;scrollbar-width:none}
+.chips button{flex:none;border-radius:999px;padding:6px 12px;font-size:13px;background:var(--chip);border-color:transparent;color:var(--ink)}
+.chips button.on{background:var(--brand);color:var(--brand-ink)}
+.chips button.need{background:#dcf5e6;color:#11763a}
+.chips button.need.on{background:var(--wa);color:#fff}
+.client{display:flex;align-items:center;gap:12px;cursor:pointer;padding:12px 14px}
+.client:hover{border-color:var(--brand)}
+.avatar{width:38px;height:38px;border-radius:50%;background:var(--brand-soft);color:var(--brand);display:grid;place-items:center;font-weight:700;flex:none;position:relative}
+.avatar .dot{position:absolute;right:-2px;top:-2px;width:12px;height:12px;border-radius:50%;background:var(--wa);border:2px solid var(--card)}
+.client .nm{font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.client .sub{font-size:13px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.client .info{flex:1;min-width:0}
+.st{display:inline-block;font-size:12px;font-weight:700;padding:2px 9px;border-radius:999px;white-space:nowrap;background:var(--chip);color:var(--muted)}
+.kv{display:grid;grid-template-columns:auto 1fr;gap:4px 12px;font-size:14px}
+.kv div:nth-child(odd){color:var(--muted)}
+.tpl-pick{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:6px;margin-bottom:8px}
+.tpl-pick button{justify-content:flex-start;font-size:13px;padding:8px 10px}
+.tpl-pick button.on{border-color:var(--brand);background:var(--brand-soft);color:var(--brand)}
+.tl{border-left:2px solid var(--line);margin-left:4px;padding-left:12px}
+.tl .it{margin-bottom:12px;font-size:14px}
+.tl .it .h{display:flex;gap:6px;align-items:center;flex-wrap:wrap;font-size:12px;color:var(--muted)}
+.tl .it .t{white-space:pre-wrap;margin-top:3px}
+.pre{white-space:pre-wrap;font-size:13px;background:var(--bg);border-radius:10px;padding:10px;max-height:320px;overflow:auto}
+details summary{cursor:pointer;font-weight:700}
+.empty{text-align:center;color:var(--muted);padding:30px 10px}
+.bar{height:4px;background:var(--brand-soft);border-radius:4px;overflow:hidden;margin-top:6px}
+.bar div{height:100%;background:var(--brand);width:0;transition:width .2s}
+#toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:10px;font-size:14px;opacity:0;transition:opacity .2s;pointer-events:none;z-index:20;max-width:90vw}
+#toast.show{opacity:1}
+code{background:var(--chip);padding:1px 5px;border-radius:5px;font-size:13px}
+</style>
+</head>
+<body>
+<header>
+  <button class="sm" id="backBtn" style="display:none" onclick="go('list')">←</button>
+  <h1 id="title">Klien Loan</h1>
+  <button class="sm" id="syncBtn" onclick="sync()">⟳ Sync</button>
+</header>
+<nav class="tabs" id="tabs">
+  <button data-t="list" class="on" onclick="go('list')">Klien</button>
+  <button data-t="tpl" onclick="go('tpl')">Template WhatsApp</button>
+  <button data-t="set" onclick="go('set')">Tetapan</button>
+</nav>
+<div id="syncBar" style="display:none;padding:6px 16px;background:var(--card);border-bottom:1px solid var(--line)" class="small"><span id="syncTxt"></span><div class="bar"><div id="syncPct"></div></div></div>
+<main id="app"></main>
+<div id="toast"></div>
+<input type="file" id="importFile" accept=".json,application/json" style="display:none">
+
+<script>
+// ===== ejenplus (Supabase) =====
+const SB='https://zpryhnhsmxrxwmybcqyt.supabase.co';
+const SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpwcnlobmhzbXhyeHdteWJjcXl0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjI5MjMyNzksImV4cCI6MjA3ODQ5OTI3OX0.5PBRGD99pGDyF7abqin6cyFywU3u6a-hL6H0urhDKVc';
+const EJ='https://agent.ejenplus.com/orders/';
+
+// ===== Template asal =====
+const DEFAULT_TPL=[
+  {id:'taklayak',nm:'Tak layak',labels:['Case Tak Layak','Tidak Berjaya Panel','Loan Reject'],txt:`Salam {nama},
+
+Terima kasih sebab percaya dengan saya untuk semak kes {nama}. Selepas semakan pihak HQ, buat masa ni kes {nama} belum layak diteruskan sebab:
+{nota}
+
+Jangan risau, ni bukan muktamad. Bila keadaan dah berubah (contoh komitmen dah berkurang atau rekod CCRIS/CTOS dah bersih), saya boleh tolong semak semula. Ada apa-apa soalan, WhatsApp je saya ya.
+
+{agent}`},
+  {id:'layak',nm:'Layak ✅',labels:['Case Layak'],txt:`Salam {nama} 😊
+
+Alhamdulillah, berita baik! Selepas semakan pihak HQ, kes {nama} LAYAK untuk diteruskan ✅
+
+Bila {nama} free untuk saya terangkan langkah seterusnya? Boleh call atau WhatsApp saya.
+
+{agent}`},
+  {id:'dokumen',nm:'Minta maklumat / dokumen',labels:['Pending Details/Docs','Checking Q&A'],txt:`Salam {nama},
+
+Pihak HQ sedang semak kes {nama} dan perlukan maklumat / dokumen tambahan:
+{nota}
+
+Boleh hantar kepada saya secepat mungkin ya supaya proses tak tertangguh. Terima kasih 🙏
+
+{agent}`},
+  {id:'semak',nm:'Dalam semakan',labels:['','Case Review HQ'],txt:`Salam {nama} 😊
+
+Kes {nama} dah saya submit dan sedang disemak oleh pihak HQ. Saya update secepat mungkin bila ada keputusan ya.
+
+{agent}`},
+  {id:'proses',nm:'Dalam proses',labels:['Client Proceed - Alif','Client Proceed - Aisyah','Client Proceed - Zaf','Client Proceed HQ','Loan Process'],txt:`Salam {nama},
+
+Kes {nama} sekarang dalam proses ✅ Kalau ada pihak bank / HQ call, tolong angkat ya. Saya akan update dari masa ke semasa.
+
+{agent}`},
+  {id:'lulus',nm:'Lulus 🎉',labels:['Loan Approved','Case Close - PAID'],txt:`Tahniah {nama}! 🎉
+
+Kes {nama} telah berjaya diselesaikan. Terima kasih sebab percaya dengan saya 🙏
+
+Kalau ada kawan atau family yang perlukan bantuan yang sama, boleh kenalkan kepada saya ya.
+
+{agent}`},
+  {id:'followup',nm:'Follow up',labels:['Pending Response - Client','Client Hold','Case Perlu Hold','Client Request Reduce Fee','Client Not Proceed'],txt:`Salam {nama}, sekadar follow up pasal kes {nama} hari tu. Ada apa-apa yang saya boleh bantu? 😊
+
+{agent}`},
+];
+
+// ===== Data =====
+const KEY='loanClient.v2';
+let DB=load();
+function load(){
+  let d=null; try{ d=JSON.parse(localStorage.getItem(KEY)); }catch(e){}
+  d=d||{};
+  d.orders=d.orders||{}; d.sent=d.sent||{}; d.notes=d.notes||{}; d.labels=d.labels||[];
+  d.tpl=d.tpl||structuredClone(DEFAULT_TPL); d.settings=d.settings||{}; d.session=d.session||null;
+  return d;
+}
+function save(){ try{ localStorage.setItem(KEY,JSON.stringify(DB)); }catch(e){ toast('Gagal simpan (storan penuh?)'); } }
+
+// ===== Helpers =====
+const $=id=>document.getElementById(id);
+const val=id=>($(id)?.value||'').trim();
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const fmtD=s=>s?new Date(s).toLocaleDateString('ms-MY',{day:'numeric',month:'short',year:'numeric'}):'';
+const fmtDT=s=>s?new Date(s).toLocaleString('ms-MY',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'}):'';
+const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,6);
+const cleanPhone=p=>String(p||'').replace(/[^\d+]/g,'');
+function waNum(p){ let n=String(p||'').replace(/\D/g,''); if(n.startsWith('0')) n='6'+n; else if(n.startsWith('1')) n='60'+n; return n; }
+function toast(m,ms=2000){const t=$('toast');t.textContent=m;t.classList.add('show');clearTimeout(t._h);t._h=setTimeout(()=>t.classList.remove('show'),ms);}
+async function copy(txt){ try{ await navigator.clipboard.writeText(txt); toast('Disalin'); }catch(e){ const ta=document.createElement('textarea');ta.value=txt;document.body.appendChild(ta);ta.select();document.execCommand('copy');ta.remove();toast('Disalin'); } }
+const lblName=o=>o.label?.name||'';
+const chip=o=>o.label?`<span class="st" style="background:${esc(o.label.bg)};color:${esc(o.label.fg)}">${esc(o.label.name)}</span>`:`<span class="st">Submitted</span>`;
+const needWa=o=>(o.labelId||'')!==(DB.sent[o.id]??null);
+
+// ===== API =====
+async function sbFetch(path,{body,auth=true,method}={}){
+  const h={'apikey':SB_KEY,'Content-Type':'application/json'};
+  if(auth){ await ensureToken(); h.Authorization='Bearer '+DB.session.access; }
+  const r=await fetch(SB+path,{method:method||(body!==undefined?'POST':'GET'),headers:h,body:body!==undefined?JSON.stringify(body):undefined});
+  const t=await r.text(); let j=null; try{ j=t?JSON.parse(t):null; }catch(e){}
+  if(!r.ok){ const e=new Error(j?.error_description||j?.msg||j?.message||('HTTP '+r.status)); e.status=r.status; throw e; }
+  return j;
+}
+function setSession(d){
+  DB.session=Object.assign(DB.session||{},{access:d.access_token,refresh:d.refresh_token,exp:Date.now()+(d.expires_in||3600)*1000,userId:d.user?.id||DB.session?.userId,email:d.user?.email||DB.session?.email});
+  save();
+}
+async function ensureToken(){
+  const s=DB.session; if(!s?.refresh) throw new Error('Belum login ejenplus');
+  if(s.access && s.exp-60000>Date.now()) return;
+  try{ setSession(await sbFetch('/auth/v1/token?grant_type=refresh_token',{auth:false,body:{refresh_token:s.refresh}})); }
+  catch(e){ DB.session.refresh=null; save(); throw new Error('Sesi ejenplus tamat. Sila login semula dalam Tetapan.'); }
+}
+async function login(email,password){
+  setSession(await sbFetch('/auth/v1/token?grant_type=password',{auth:false,body:{email,password}}));
+  const roles=await sbFetch(`/rest/v1/user_org_roles?select=agency_id,agent_id,access_status,agencies(name,brand_name)&user_id=eq.${DB.session.userId}&order=created_at.desc`);
+  const r=(roles||[]).find(x=>x.agent_id&&x.access_status==='active')||roles?.[0];
+  if(!r?.agent_id) throw new Error('Akaun agent tak dijumpai');
+  DB.session.agentId=r.agent_id; DB.session.agencyId=r.agency_id; DB.session.agency=r.agencies?.brand_name||r.agencies?.name||'';
+  const ag=await sbFetch(`/rest/v1/agents?select=full_name,code,phone&id=eq.${r.agent_id}`);
+  if(ag?.[0]){ DB.session.agentName=ag[0].full_name; DB.session.agentCode=ag[0].code;
+    if(!DB.settings.agentName) DB.settings.agentName=ag[0].full_name; if(!DB.settings.agentPhone&&ag[0].phone) DB.settings.agentPhone=cleanPhone(ag[0].phone); }
+  save();
+}
+function progress(txt,pct){ $('syncBar').style.display=txt?'':'none'; $('syncTxt').textContent=txt||''; $('syncPct').style.width=(pct||0)+'%'; }
+async function pool(items,n,fn){ let i=0; await Promise.all(Array.from({length:n},async()=>{ while(i<items.length){ const it=items[i++]; await fn(it); } })); }
+
+let syncing=false;
+async function sync(){
+  if(syncing) return;
+  if(!DB.session?.refresh){ toast('Login ejenplus dulu'); go('set'); return; }
+  syncing=true; $('syncBtn').disabled=true;
+  const first=!DB.lastSync;
+  try{
+    progress('Ambil senarai submission…',5);
+    try{ const lb=await sbFetch('/rest/v1/rpc/get_agency_labels',{body:{p_agency_id:DB.session.agencyId}}); if(Array.isArray(lb)) DB.labels=lb.map(l=>({id:l.id,name:l.label_name,bg:l.label_colour,fg:l.text_colour})); }catch(e){}
+    let all=[],off=0;
+    while(true){
+      const page=await sbFetch('/rest/v1/rpc/get_agent_orders_v2',{body:{p_view_agent_id:DB.session.agentId,p_scope:'self',p_agency_id:DB.session.agencyId,p_status:null,p_search:null,p_date_from:null,p_date_to:null,p_label_id:null,p_limit:500,p_offset:off}});
+      all=all.concat(page||[]); if(!page||page.length<500) break; off+=500;
+    }
+    const seen=new Set();
+    for(const x of all){
+      seen.add(x.id);
+      const o=DB.orders[x.id]||{id:x.id};
+      Object.assign(o,{no:x.order_number,name:(x.customer_name||'').trim(),phone:cleanPhone(x.customer_phone),email:x.customer_email,
+        product:(x.order_items||[]).map(i=>i.product_name).join(', '),amount:x.total_sales_amount,status:x.status,
+        submitted:x.submitted_at||x.created_at,pic:x.pic_snapshot?.display_name||'',labelId:x.label_id||'',
+        label:x.labels?{name:x.labels.label_name,bg:x.labels.label_colour,fg:x.labels.text_colour}:null});
+      DB.orders[x.id]=o;
+    }
+    for(const id of Object.keys(DB.orders)) if(!seen.has(id)) delete DB.orders[id];
+    // maklumat borang (IC + nota pelanggan) untuk order baru
+    const needForm=Object.values(DB.orders).filter(o=>o.form===undefined).map(o=>o.id);
+    for(let i=0;i<needForm.length;i+=40){
+      progress(`Ambil maklumat pelanggan… ${Math.min(i+40,needForm.length)}/${needForm.length}`,10+40*i/Math.max(needForm.length,1));
+      const ch=needForm.slice(i,i+40);
+      const rows=await sbFetch(`/rest/v1/order_submissions?select=order_id,form_data,submitted_at&order_id=in.(${ch.join(',')})&order=submitted_at.desc`);
+      for(const id of ch) DB.orders[id].form=null;
+      for(const r of rows||[]){ const o=DB.orders[r.order_id]; if(o&&!o.form){ const f=r.form_data||{}; o.form={ic:f.ic_number||'',notes:f.additional_notes||'',type:f.client_type||''}; } }
+    }
+    // update HQ (nota) untuk order yang label berubah
+    const needUpd=Object.values(DB.orders).filter(o=>o.labelId&&(o.updLabel!==o.labelId||!o.updates));
+    let done=0;
+    await pool(needUpd,6,async o=>{
+      try{ await fetchUpdates(o); }catch(e){}
+      done++; progress(`Ambil nota HQ… ${done}/${needUpd.length}`,50+50*done/Math.max(needUpd.length,1));
+    });
+    if(first){ // kali pertama: anggap kes lama (>3 hari) dah dimaklumkan
+      const cut=Date.now()-3*864e5;
+      for(const o of Object.values(DB.orders)){ const last=lastUpdate(o)?.at||o.submitted; if(new Date(last).getTime()<cut) DB.sent[o.id]=o.labelId||''; }
+    }
+    DB.lastSync=new Date().toISOString(); save();
+    const n=Object.values(DB.orders).filter(needWa).length;
+    toast(`Sync siap · ${all.length} kes · ${n} perlu WhatsApp`,3000);
+  }catch(e){ toast('Sync gagal: '+e.message,4000); }
+  finally{ syncing=false; $('syncBtn').disabled=false; progress(''); render(); }
+}
+async function fetchUpdates(o){
+  const u=await sbFetch('/rest/v1/rpc/get_order_updates',{body:{p_order_id:o.id}});
+  o.updates=(u||[]).map(x=>({at:x.created_at,txt:x.note_text||'',by:x.author?.name||'',lid:x.label_id||x.label?.id||'',lbl:x.label?{name:x.label.label_name,bg:x.label.label_colour,fg:x.label.text_colour}:null}))
+    .sort((a,b)=>a.at.localeCompare(b.at));
+  o.updLabel=o.labelId;
+}
+const isUpload=t=>/^Uploaded document/i.test(t||'');
+function lastUpdate(o){ const u=(o.updates||[]).filter(x=>x.lid||!isUpload(x.txt)); return u[u.length-1]; }
+function hqNote(o){
+  const u=(o.updates||[]).filter(x=>x.txt&&!isUpload(x.txt));
+  const m=[...u].reverse().find(x=>x.lid&&x.lid===o.labelId)||u[u.length-1];
+  return m?.txt||'';
+}
+function bullets(t){ return String(t||'').split(/\n+/).map(s=>s.replace(/^\s*([-•*·]|\d+[.)])\s*/,'').trim()).filter(s=>s&&!/^[^\p{L}]*(case\s+)?(tidak\s+|tak\s+)?layak[^\p{L}]*$/iu.test(s)).map(s=>'• '+s).join('\n'); }
+
+// ===== Routing =====
+let view='list', curId=null, filter='perlu', q='', tplSel=null;
+function go(v,id){ view=v; if(id!==undefined){ curId=id; tplSel=null; } render(); window.scrollTo(0,0); }
+function render(){
+  document.querySelectorAll('#tabs button').forEach(b=>b.classList.toggle('on',b.dataset.t===view));
+  const sub=view==='detail';
+  $('tabs').style.display=sub?'none':'flex';
+  $('backBtn').style.display=sub?'':'none';
+  $('title').textContent=sub?(DB.orders[curId]?.name||'Klien'):'Klien Loan';
+  ({list:rList,detail:rDetail,tpl:rTpl,set:rSet})[view]();
+}
+
+// ===== Senarai =====
+function rList(){
+  const os=Object.values(DB.orders);
+  if(!os.length){
+    $('app').innerHTML=`<div class="card empty">${DB.session?.refresh?'Tekan <b>⟳ Sync</b> untuk tarik semua kes dari ejenplus.':'Sambungkan akaun ejenplus dulu.<br><br><button class="pri" onclick="go(\'set\')">Login ejenplus</button>'}</div>`; return;
+  }
+  const cnt={}; os.forEach(o=>{const k=o.labelId||'';cnt[k]=(cnt[k]||0)+1;});
+  const nNeed=os.filter(needWa).length;
+  const labels=[...DB.labels.filter(l=>cnt[l.id]),...(cnt['']?[{id:'',name:'Submitted (tiada label)'}]:[])];
+  $('app').innerHTML=`
+  <input id="q" placeholder="Cari nama, no. tel, IC, no. submission…" value="${esc(q)}" oninput="q=this.value;rListBody()" style="margin-bottom:10px">
+  <div class="chips">
+    <button class="need ${filter==='perlu'?'on':''}" onclick="filter='perlu';rList()">Perlu WhatsApp (${nNeed})</button>
+    <button class="${filter==='semua'?'on':''}" onclick="filter='semua';rList()">Semua (${os.length})</button>
+    ${labels.map(l=>`<button class="${filter==='L:'+l.id?'on':''}" onclick="filter='L:${l.id}';rList()">${esc(l.name)} (${cnt[l.id]})</button>`).join('')}
+  </div>
+  <div class="small muted" style="margin:-4px 0 8px">${DB.lastSync?'Sync terakhir: '+fmtDT(DB.lastSync):''}</div>
+  <div id="listBody"></div>`;
+  rListBody();
+}
+function rListBody(){
+  let list=Object.values(DB.orders).filter(o=>filter==='semua'?true:filter==='perlu'?needWa(o):('L:'+(o.labelId||''))===filter);
+  if(q){ const k=q.toLowerCase().replace(/[\s-]/g,''); list=list.filter(o=>[o.name,o.phone,o.form?.ic,o.no].join('|').toLowerCase().replace(/[\s-]/g,'').includes(k)); }
+  const key=o=>lastUpdate(o)?.at||o.submitted||'';
+  list.sort((a,b)=>key(b).localeCompare(key(a)));
+  const shown=list.slice(0,200);
+  $('listBody').innerHTML=list.length?shown.map(o=>`
+    <div class="card client" onclick="go('detail','${o.id}')">
+      <div class="avatar">${esc((o.name||'?')[0].toUpperCase())}${needWa(o)?'<span class="dot"></span>':''}</div>
+      <div class="info"><div class="nm">${esc(o.name)}</div>
+        <div class="sub">#${esc(o.no)} · ${esc(o.phone)}</div></div>
+      <div style="text-align:right;flex:none">${chip(o)}<div class="small muted" style="margin-top:3px">${fmtD(key(o))}</div></div>
+    </div>`).join('')+(list.length>200?`<div class="empty small">+${list.length-200} lagi… guna carian</div>`:'')
+    :`<div class="empty">${filter==='perlu'?'Semua klien dah dimaklumkan 👍':'Tiada kes.'}</div>`;
+}
+
+// ===== Butiran =====
+function tplFor(o){ return DB.tpl.find(t=>(t.labels||[]).includes(lblName(o)))||DB.tpl.find(t=>t.id==='followup')||DB.tpl[0]; }
+function rDetail(){
+  const o=DB.orders[curId]; if(!o){ go('list'); return; }
+  if(!tplSel||!DB.tpl.find(t=>t.id===tplSel)) tplSel=tplFor(o).id;
+  const kv=(l,v)=>v?`<div>${l}</div><div>${v}</div>`:'';
+  const ups=[...(o.updates||[])].reverse();
+  $('app').innerHTML=`
+  <div class="card">
+    <div class="row"><h2 style="margin:0;flex:1;min-width:0">${esc(o.name)}</h2>${chip(o)}</div>
+    <div class="kv" style="margin-top:10px">
+      ${kv('Telefon',`<a href="tel:${esc(o.phone)}">${esc(o.phone)}</a>`)}
+      ${kv('No. IC',esc(o.form?.ic))}
+      ${kv('Submission','#'+esc(o.no)+' · '+fmtD(o.submitted))}
+      ${kv('Produk',esc(o.product))}
+      ${kv('PIC HQ',esc(o.pic))}
+    </div>
+    <div class="row" style="margin-top:12px">
+      <a class="btn sm" href="${EJ+esc(o.id)}" target="_blank" rel="noopener">Buka ejenplus ↗</a>
+      <a class="btn sm" href="tel:${esc(o.phone)}">Call</a>
+      <button class="sm" onclick="copy(infoText(DB.orders[curId]))">Salin info</button>
+      <button class="sm" onclick="refreshOne()">⟳ Nota HQ</button>
+    </div>
+  </div>
+  <div class="card">
+    <div class="row"><h2 style="margin:0">Hantar WhatsApp</h2><span class="spacer"></span>
+      ${needWa(o)?`<button class="sm" onclick="markSent(true)">Tanda dah WA</button>`:`<span class="small" style="color:var(--pos);font-weight:700">✓ Dah WA untuk status ni</span> <button class="sm" onclick="markSent(false)">Batal</button>`}</div>
+    <div class="tpl-pick" style="margin-top:10px">${DB.tpl.map(t=>`<button class="${t.id===tplSel?'on':''}" onclick="tplSel='${t.id}';rDetail()">${esc(t.nm)}</button>`).join('')}</div>
+    <textarea id="msg" style="min-height:220px">${esc(fill(DB.tpl.find(t=>t.id===tplSel).txt,o))}</textarea>
+    <div class="row" style="margin-top:8px">
+      <button class="sm" onclick="copy(val('msg'))">Salin</button><span class="spacer"></span>
+      <button class="wa" onclick="sendWa()">Hantar WhatsApp</button>
+    </div>
+    <div class="small muted" style="margin-top:6px">Semak & edit mesej dulu (nota HQ kadang-kadang ada istilah dalaman).</div>
+  </div>
+  <div class="card"><h2>Update HQ</h2>
+    ${ups.length?`<div class="tl">${ups.map(u=>`<div class="it"><div class="h">${u.lbl?`<span class="st" style="background:${esc(u.lbl.bg)};color:${esc(u.lbl.fg)}">${esc(u.lbl.name)}</span>`:''}<span>${fmtDT(u.at)}${u.by?' · '+esc(u.by):''}</span></div>${u.txt?`<div class="t">${esc(u.txt)}</div>`:''}</div>`).join('')}</div>`
+      :`<div class="muted small">${o.labelId?'Tekan ⟳ Nota HQ untuk ambil.':'Belum ada update dari HQ.'}</div>`}
+  </div>
+  <div class="card"><h2>Nota saya</h2>
+    <textarea id="myNote" placeholder="Nota peribadi (simpan dalam phone ni sahaja)" onchange="DB.notes[curId]=this.value;save();toast('Nota disimpan')">${esc(DB.notes[o.id]||'')}</textarea>
+  </div>
+  ${o.form?.notes?`<div class="card"><details><summary>Maklumat pelanggan (borang)</summary><div class="pre" style="margin-top:8px">${esc(o.form.notes)}</div></details></div>`:''}`;
+}
+function fill(txt,o){
+  const s=DB.settings;
+  const agent=s.sign||[s.agentName,s.agentPhone].filter(Boolean).join('\n');
+  const nm=(o.name||'').toLowerCase().replace(/\b\w/g,c=>c.toUpperCase());
+  const short=nm.split(/\s+(bin|binti|bt|bte|b\.|a\/l|a\/p)\s+/i)[0].split(' ').slice(0,2).join(' ');
+  const map={nama:short,nama_penuh:nm,no_order:o.no||'',status:lblName(o)||'Submitted',nota:bullets(hqNote(o))||'• (tiada nota dari HQ)',ic:o.form?.ic||'',agent};
+  return txt.replace(/\{(\w+)\}/g,(m,k)=>k in map?map[k]:m).replace(/\n{3,}/g,'\n\n').trim();
+}
+function sendWa(){
+  const o=DB.orders[curId], n=waNum(o.phone);
+  if(n.length<10){ toast('No. telefon tak sah'); return; }
+  window.open('https://wa.me/'+n+'?text='+encodeURIComponent($('msg').value),'_blank');
+  DB.sent[o.id]=o.labelId||''; save(); setTimeout(rDetail,300);
+}
+function markSent(on){ const o=DB.orders[curId]; if(on) DB.sent[o.id]=o.labelId||''; else delete DB.sent[o.id]; save(); rDetail(); }
+async function refreshOne(){ const o=DB.orders[curId]; try{ toast('Ambil nota HQ…'); await fetchUpdates(o); save(); tplSel=null; rDetail(); toast('Dikemaskini'); }catch(e){ toast(e.message,3500); } }
+function infoText(o){
+  const L=(l,v)=>v?`${l}: ${v}\n`:'';
+  return (L('Nama',o.name)+L('No. IC',o.form?.ic)+L('No. Tel',o.phone)+L('Submission','#'+o.no)+L('Status',lblName(o)||'Submitted')+L('Nota HQ',hqNote(o))).trim();
+}
+
+// ===== Template =====
+function rTpl(){
+  const allL=[...new Set([...DB.labels.map(l=>l.name)])];
+  $('app').innerHTML=`
+  <div class="card small">Template dipilih automatik ikut label HQ. Kod yang diganti automatik:<br>
+  <code>{nama}</code> <code>{nama_penuh}</code> <code>{nota}</code> (nota HQ terkini) <code>{status}</code> <code>{no_order}</code> <code>{agent}</code></div>
+  ${DB.tpl.map((t,i)=>`<div class="card">
+    <div class="row"><input value="${esc(t.nm)}" onchange="DB.tpl[${i}].nm=this.value;save()" style="flex:1;font-weight:700">
+    <button class="sm danger" onclick="if(confirm('Padam template?')){DB.tpl.splice(${i},1);save();rTpl()}">Padam</button></div>
+    <textarea style="min-height:150px;margin-top:8px" onchange="DB.tpl[${i}].txt=this.value;save();toast('Template disimpan')">${esc(t.txt)}</textarea>
+    <details style="margin-top:6px"><summary class="small">Guna automatik untuk label: ${esc((t.labels||[]).filter(Boolean).join(', ')||'—')}</summary>
+      <div class="row" style="margin-top:6px">${allL.map(n=>`<label style="margin:0;display:inline-flex;gap:5px;align-items:center;font-weight:500;color:var(--ink);background:var(--chip);padding:5px 9px;border-radius:999px"><input type="checkbox" style="width:auto" ${(t.labels||[]).includes(n)?'checked':''} onchange="setTplLabel(${i},'${esc(n)}',this.checked)">${esc(n)}</label>`).join('')||'<span class="muted small">Sync dulu untuk senarai label.</span>'}</div>
+    </details>
+  </div>`).join('')}
+  <div class="row"><button onclick="if(confirm('Kembalikan semua template asal?')){DB.tpl=structuredClone(DEFAULT_TPL);save();rTpl();}">Reset template asal</button>
+  <span class="spacer"></span><button class="pri" onclick="DB.tpl.push({id:uid(),nm:'Template baru',labels:[],txt:'Salam {nama},\\n\\n\\n{agent}'});save();rTpl()">+ Template baru</button></div>`;
+}
+function setTplLabel(i,n,on){
+  DB.tpl.forEach((t,j)=>{ t.labels=(t.labels||[]).filter(x=>x!==n); });
+  if(on) DB.tpl[i].labels.push(n);
+  save(); rTpl();
+}
+
+// ===== Tetapan =====
+function rSet(){
+  const s=DB.settings, ss=DB.session;
+  $('app').innerHTML=`
+  <div class="card"><h2>Akaun ejenplus</h2>
+    ${ss?.refresh?`<div class="small">Disambung sebagai <b>${esc(ss.agentName||ss.email)}</b> ${ss.agentCode?'('+esc(ss.agentCode)+')':''}<br><span class="muted">${esc(ss.agency||'')}</span></div>
+      <div class="row" style="margin-top:10px"><button class="pri" onclick="sync()">⟳ Sync sekarang</button><span class="spacer"></span><button class="danger sm" onclick="logout()">Log keluar</button></div>`
+    :`<p class="small muted">Login sekali sahaja. Password tak disimpan, cuma token sesi dalam phone ni.</p>
+      <label>Email</label><input id="l_email" type="email" autocomplete="username" value="${esc(ss?.email||'')}">
+      <label>Password</label><input id="l_pass" type="password" autocomplete="current-password">
+      <div class="row" style="margin-top:10px"><span class="spacer"></span><button class="pri" id="l_btn" onclick="doLogin()">Login & Sync</button></div>`}
+  </div>
+  <div class="card"><h2>Tandatangan mesej</h2>
+    <div class="row"><div style="flex:1;min-width:140px"><label>Nama</label><input id="s_name" value="${esc(s.agentName)}"></div>
+    <div style="flex:1;min-width:140px"><label>No. telefon</label><input id="s_phone" type="tel" value="${esc(s.agentPhone)}"></div></div>
+    <label>Tandatangan penuh (ganti <code>{agent}</code>; kosong = nama + telefon)</label>
+    <textarea id="s_sign" placeholder="cth: Lukman | Jom Consult Solutions&#10;0123456789">${esc(s.sign)}</textarea>
+    <div class="row" style="margin-top:10px"><span class="spacer"></span><button class="pri" onclick="DB.settings={agentName:val('s_name'),agentPhone:val('s_phone'),sign:$('s_sign').value.trim()};save();toast('Disimpan')">Simpan</button></div>
+  </div>
+  <div class="card"><h2>Backup</h2>
+    <p class="small muted">Data kes boleh ditarik semula dengan Sync. Backup untuk simpan template, nota saya & rekod siapa dah di-WhatsApp.</p>
+    <div class="row"><button onclick="exportData()">⬇ Backup</button><button onclick="$('importFile').click()">⬆ Import</button></div>
+  </div>`;
+}
+async function doLogin(){
+  const e=val('l_email'), p=$('l_pass').value;
+  if(!e||!p){ toast('Isi email & password'); return; }
+  $('l_btn').disabled=true; $('l_btn').textContent='Login…';
+  try{ await login(e,p); toast('Berjaya login'); go('list'); sync(); }
+  catch(err){ toast('Login gagal: '+err.message,4000); $('l_btn').disabled=false; $('l_btn').textContent='Login & Sync'; }
+}
+function logout(){
+  if(!confirm('Log keluar dari ejenplus? Data kes dalam phone ni akan dipadam (template & nota kekal).')) return;
+  const tok=DB.session?.access; fetch(SB+'/auth/v1/logout',{method:'POST',headers:{apikey:SB_KEY,Authorization:'Bearer '+tok}}).catch(()=>{});
+  DB.session=null; DB.orders={}; DB.lastSync=null; save(); render();
+}
+function exportData(){
+  const {session,orders,...keep}=DB;
+  const blob=new Blob([JSON.stringify(keep,null,1)],{type:'application/json'});
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='klien-loan-backup-'+new Date().toISOString().slice(0,10)+'.json'; a.click();
+  setTimeout(()=>URL.revokeObjectURL(a.href),2000);
+}
+$('importFile').onchange=e=>{
+  const f=e.target.files[0]; if(!f) return;
+  const r=new FileReader(); r.onload=()=>{
+    try{ const d=JSON.parse(r.result);
+      if(d.tpl) DB.tpl=d.tpl; Object.assign(DB.sent,d.sent||{}); Object.assign(DB.notes,d.notes||{}); if(d.settings) DB.settings=d.settings;
+      save(); toast('Backup diimport'); render();
+    }catch(err){ toast('Fail tak sah'); }
+  }; r.readAsText(f); e.target.value='';
+};
+
+render();
+if(DB.session?.refresh && (!DB.lastSync || Date.now()-new Date(DB.lastSync).getTime()>30*60000)) sync();
+if('serviceWorker' in navigator && window.isSecureContext && location.protocol!=='file:') navigator.serviceWorker.register('sw.js').catch(()=>{});
+</script>
+</body>
+</html>
