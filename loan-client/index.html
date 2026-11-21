@@ -162,7 +162,7 @@ let DB=load();
 function load(){
   let d=null; try{ d=JSON.parse(localStorage.getItem(KEY)); }catch(e){}
   d=d||{};
-  d.orders=d.orders||{}; d.sent=d.sent||{}; d.notes=d.notes||{}; d.labels=d.labels||[];
+  d.orders=d.orders||{}; d.sent=d.sent||{}; if(!d.sentManual){ d.sent={}; d.sentManual=true; } d.notes=d.notes||{}; d.labels=d.labels||[];
   d.tpl=d.tpl||structuredClone(DEFAULT_TPL); d.settings=d.settings||{}; d.session=d.session||null;
   return d;
 }
@@ -225,7 +225,6 @@ async function sync(){
   if(syncing) return;
   if(!DB.session?.refresh){ toast('Login ejenplus dulu'); go('set'); return; }
   syncing=true; $('syncBtn').disabled=true;
-  const first=!DB.lastSync;
   try{
     progress('Ambil senarai submission…',5);
     try{ const lb=await sbFetch('/rest/v1/rpc/get_agency_labels',{body:{p_agency_id:DB.session.agencyId}}); if(Array.isArray(lb)) DB.labels=lb.map(l=>({id:l.id,name:l.label_name,bg:l.label_colour,fg:l.text_colour})); }catch(e){}
@@ -261,10 +260,6 @@ async function sync(){
       try{ await fetchUpdates(o); }catch(e){}
       done++; progress(`Ambil nota HQ… ${done}/${needUpd.length}`,50+50*done/Math.max(needUpd.length,1));
     });
-    if(first){ // kali pertama: anggap kes lama (>3 hari) dah dimaklumkan
-      const cut=Date.now()-3*864e5;
-      for(const o of Object.values(DB.orders)){ const last=lastUpdate(o)?.at||o.submitted; if(new Date(last).getTime()<cut) DB.sent[o.id]=o.labelId||''; }
-    }
     DB.lastSync=new Date().toISOString(); save();
     const n=Object.values(DB.orders).filter(needWa).length;
     toast(`Sync siap · ${all.length} kes · ${n} perlu WhatsApp`,3000);
@@ -393,7 +388,7 @@ function sendWa(){
   const o=DB.orders[curId], n=waNum(o.phone);
   if(n.length<10){ toast('No. telefon tak sah'); return; }
   window.open('https://wa.me/'+n+'?text='+encodeURIComponent($('msg').value),'_blank');
-  DB.sent[o.id]=o.labelId||''; save(); setTimeout(rDetail,300);
+  setTimeout(()=>toast('Dah hantar? Tekan ✓ Tanda Dah WhatsApp',3500),800);
 }
 function markSent(on){
   const o=DB.orders[curId]; if(on) DB.sent[o.id]=o.labelId||''; else delete DB.sent[o.id]; save();
