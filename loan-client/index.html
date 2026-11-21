@@ -124,6 +124,7 @@ code{background:var(--chip);padding:1px 5px;border-radius:5px;font-size:13px}
 <input type="file" id="importFile" accept=".json,application/json" style="display:none">
 
 <script>
+const APP_VER='v10 · 21 Nov';
 // ===== ejenplus (Supabase) =====
 const SB='https://zpryhnhsmxrxwmybcqyt.supabase.co';
 const SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpwcnlobmhzbXhyeHdteWJjcXl0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjI5MjMyNzksImV4cCI6MjA3ODQ5OTI3OX0.5PBRGD99pGDyF7abqin6cyFywU3u6a-hL6H0urhDKVc';
@@ -587,7 +588,8 @@ function rSet(){
   <div class="card"><h2>Backup</h2>
     <p class="small muted">Data kes boleh ditarik semula dengan Sync. Backup untuk simpan template, nota saya, rekod WhatsApp, status Case Layak & komisen.</p>
     <div class="row"><button onclick="exportData()">⬇ Backup</button><button onclick="$('importFile').click()">⬆ Import</button></div>
-  </div>`;
+  </div>
+  <div class="small muted" style="text-align:center">Versi app: ${APP_VER}</div>`;
 }
 async function doLogin(){
   const e=val('l_email'), p=$('l_pass').value;
@@ -623,7 +625,15 @@ function autoSync(){ if(DB.session?.refresh && !syncing && (!DB.lastSync || Date
 autoSync();
 document.addEventListener('visibilitychange',()=>{ if(document.visibilityState==='visible') autoSync(); });
 window.addEventListener('pageshow',e=>{ if(e.persisted) autoSync(); });
-if('serviceWorker' in navigator && window.isSecureContext && location.protocol!=='file:') navigator.serviceWorker.register('sw.js').catch(()=>{});
+// Auto-update: semak versi baru setiap kali app dibuka; reload sendiri bila ada
+if('serviceWorker' in navigator && window.isSecureContext && location.protocol!=='file:'){
+  const hadCtrl=!!navigator.serviceWorker.controller; let reloaded=false;
+  navigator.serviceWorker.addEventListener('controllerchange',()=>{ if(hadCtrl&&!reloaded){ reloaded=true; location.reload(); } });
+  navigator.serviceWorker.register('sw.js').then(reg=>{
+    reg.update().catch(()=>{});
+    document.addEventListener('visibilitychange',()=>{ if(document.visibilityState==='visible') reg.update().catch(()=>{}); });
+  }).catch(()=>{});
+}
 </script>
 </body>
 </html>
