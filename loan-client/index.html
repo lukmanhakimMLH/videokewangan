@@ -79,6 +79,12 @@ h2{font-size:16px;margin:0 0 6px}
 .comm{display:flex;gap:8px;align-items:center;margin-top:10px}
 .comm input{flex:1;min-width:0}
 .paid{background:var(--pos);border-color:var(--pos);color:#fff}
+.badge{position:absolute;top:-7px;right:-7px;min-width:18px;height:18px;padding:0 5px;border-radius:9px;background:#e11d48;color:#fff;font-size:11px;font-weight:700;line-height:18px;text-align:center}
+.nbox{background:#fff7e0;border:1px solid #f3d27a;border-radius:14px;padding:12px 14px;margin-bottom:12px}
+@media (prefers-color-scheme: dark){.nbox{background:#2e2410;border-color:#6b5420}}
+.nitem{cursor:pointer}
+.nbox .t{white-space:pre-wrap;font-size:14px;margin-top:4px}
+.nitem .t{white-space:pre-wrap;font-size:14px;margin-top:4px;display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden}
 .kv{display:grid;grid-template-columns:auto 1fr;gap:4px 12px;font-size:14px}
 .kv div:nth-child(odd){color:var(--muted)}
 .tpl-pick{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:6px;margin-bottom:8px}
@@ -100,8 +106,9 @@ code{background:var(--chip);padding:1px 5px;border-radius:5px;font-size:13px}
 </head>
 <body>
 <header>
-  <button class="sm" id="backBtn" style="display:none" onclick="go('list')">←</button>
+  <button class="sm" id="backBtn" style="display:none" onclick="goBack()">←</button>
   <h1 id="title">Klien Loan</h1>
+  <button class="sm" id="bellBtn" onclick="go('notif')" aria-label="Notifikasi" style="position:relative">🔔<span id="bellN" class="badge" style="display:none"></span></button>
   <button class="sm" id="syncBtn" onclick="sync()">⟳ Sync</button>
 </header>
 <nav class="tabs" id="tabs">
@@ -175,7 +182,7 @@ let DB=load();
 function load(){
   let d=null; try{ d=JSON.parse(localStorage.getItem(KEY)); }catch(e){}
   d=d||{};
-  d.orders=d.orders||{}; d.sent=d.sent||{}; if(!d.sentManual){ d.sent={}; d.sentManual=true; } d.notes=d.notes||{}; d.labels=d.labels||[]; d.stage=d.stage||{}; d.comm=d.comm||{};
+  d.orders=d.orders||{}; d.sent=d.sent||{}; if(!d.sentManual){ d.sent={}; d.sentManual=true; } d.notes=d.notes||{}; d.labels=d.labels||[]; d.stage=d.stage||{}; d.comm=d.comm||{}; d.notifs=d.notifs||{};
   d.tpl=d.tpl||structuredClone(DEFAULT_TPL); d.settings=d.settings||{}; d.session=d.session||null;
   return d;
 }
@@ -209,7 +216,7 @@ function setStage(id,st){
   const o=DB.orders[id];
   if(st==='cancel'&&!confirm('Client cancel? Kes '+o.name+' akan dipindah ke Arkib.')) return false;
   if(!st||DB.stage[id]?.s===st) delete DB.stage[id]; else DB.stage[id]={s:st,at:new Date().toISOString()};
-  save();
+  clearNotifs(id); save();
   toast(!DB.stage[id]?'Status dibuang':st==='cancel'?'Client cancel · dipindah ke Arkib':st==='approve'?'Approve ✅ · boleh isi komisen dalam tab Komisen':'Tengah proses loan');
   return true;
 }
@@ -289,21 +296,34 @@ async function sync(){
       for(const id of ch) DB.orders[id].form=null;
       for(const r of rows||[]){ const o=DB.orders[r.order_id]; if(o&&!o.form){ const f=r.form_data||{}; o.form={ic:f.ic_number||'',notes:f.additional_notes||'',type:f.client_type||''}; } }
     }
-    // update HQ (nota) untuk order yang label berubah
-    const needUpd=Object.values(DB.orders).filter(o=>o.labelId&&(o.updLabel!==o.labelId||!o.updates));
+    // semak semua nota HQ (satu panggilan) untuk kesan update baru
+    progress('Semak update HQ…',50);
+    let notes=null; try{ notes=await sbFetch('/rest/v1/order_notes?select=id,order_id,created_at,author_type&order=created_at.asc&limit=20000'); }catch(e){}
+    const changed=new Set(), hasNotes=new Set(), fresh=[];
+    if(Array.isArray(notes)){
+      const firstTime=DB.notesSeen===undefined, seenN=new Set(DB.notesSeen||[]);
+      for(const n of notes){ if(!DB.orders[n.order_id]) continue; hasNotes.add(n.order_id);
+        if(!seenN.has(n.id)){ changed.add(n.order_id); if(!firstTime&&n.author_type!=='agent') fresh.push(n); } }
+      DB.notesSeen=notes.map(n=>n.id);
+    }
+    const needUpd=Object.values(DB.orders).filter(o=>changed.has(o.id)||(o.labelId&&o.updLabel!==o.labelId)||(!o.updates&&(notes?hasNotes.has(o.id):o.labelId)));
     let done=0;
     await pool(needUpd,6,async o=>{
       try{ await fetchUpdates(o); }catch(e){}
       done++; progress(`Ambil nota HQ… ${done}/${needUpd.length}`,50+50*done/Math.max(needUpd.length,1));
     });
+    for(const n of fresh){
+      const o=DB.orders[n.order_id], u=(o.updates||[]).find(x=>x.id===n.id);
+      DB.notifs[n.id]={id:n.id,orderId:o.id,at:n.created_at,by:u?.by||o.pic||'HQ',txt:u?.txt||'',lbl:u?.lbl||null};
+    }
     DB.lastSync=new Date().toISOString(); save();
-    toast(`Sync siap · ${all.length} kes`,3000);
+    toast(fresh.length?`🔔 ${fresh.length} update baru dari HQ`:`Sync siap · ${all.length} kes`,3000);
   }catch(e){ toast('Sync gagal: '+e.message,4000); }
-  finally{ syncing=false; $('syncBtn').disabled=false; progress(''); if(view!=='detail') render(); }
+  finally{ syncing=false; $('syncBtn').disabled=false; progress(''); if(view!=='detail') render(); else updBell(); }
 }
 async function fetchUpdates(o){
   const u=await sbFetch('/rest/v1/rpc/get_order_updates',{body:{p_order_id:o.id}});
-  o.updates=(u||[]).map(x=>({at:x.created_at,txt:x.note_text||'',by:x.author?.name||'',lid:x.label_id||x.label?.id||'',lbl:x.label?{name:x.label.label_name,bg:x.label.label_colour,fg:x.label.text_colour}:null}))
+  o.updates=(u||[]).map(x=>({id:x.id,at:x.created_at,txt:x.note_text||'',by:x.author?.name||'',lid:x.label_id||x.label?.id||'',lbl:x.label?{name:x.label.label_name,bg:x.label.label_colour,fg:x.label.text_colour}:null}))
     .sort((a,b)=>a.at.localeCompare(b.at));
   o.updLabel=o.labelId;
 }
@@ -317,16 +337,18 @@ function hqNote(o){
 function bullets(t){ return String(t||'').split(/\n+/).map(s=>s.replace(/^\s*([-•*·]|\d+[.)])\s*/,'').trim()).filter(s=>s&&!/^[^\p{L}]*(case\s+)?(tidak\s+|tak\s+)?layak[^\p{L}]*$/iu.test(s)).map(s=>'• '+s).join('\n'); }
 
 // ===== Routing =====
-let view='list', curId=null, filter='semua', q='', tplSel=null, lfilter='semua', kfilter='semua';
-function go(v,id){ if(v!==view&&v!=='detail'&&view!=='detail') q=''; view=v; if(id!==undefined){ curId=id; tplSel=null; } render(); window.scrollTo(0,0); }
+let backTo='list', view='list', curId=null, filter='semua', q='', tplSel=null, lfilter='semua', kfilter='semua';
+function goBack(){ go(backTo&&backTo!=='detail'?backTo:'list'); }
+function go(v,id){ if((v==='detail'||v==='notif')&&view!=='detail'&&view!=='notif') backTo=view; if(v==='detail'&&view==='notif') backTo='notif'; if(v!==view&&v!=='detail'&&view!=='detail') q=''; view=v; if(id!==undefined){ curId=id; tplSel=null; } render(); window.scrollTo(0,0); }
 function render(){
   document.querySelectorAll('#tabs button').forEach(b=>b.classList.toggle('on',b.dataset.t===view));
-  const sub=view==='detail';
-  const TT={layak:'Case Layak',komisen:'Komisen'};
+  const sub=view==='detail'||view==='notif';
+  const TT={layak:'Case Layak',komisen:'Komisen',notif:'Notifikasi'};
+  updBell();
   $('tabs').style.display=sub?'none':'flex';
   $('backBtn').style.display=sub?'':'none';
-  $('title').textContent=sub?(DB.orders[curId]?.name||'Klien'):(TT[view]||'Klien Loan');
-  ({list:rList,detail:rDetail,tpl:rTpl,set:rSet,layak:rLayak,komisen:rKomisen})[view]();
+  $('title').textContent=view==='detail'?(DB.orders[curId]?.name||'Klien'):(TT[view]||'Klien Loan');
+  ({list:rList,detail:rDetail,tpl:rTpl,set:rSet,layak:rLayak,komisen:rKomisen,notif:rNotif})[view]();
 }
 
 // ===== Senarai =====
@@ -338,7 +360,9 @@ function rList(){
   const act=os.filter(o=>!archived(o)&&!inLayak(o)), nArk=os.filter(archived).length;
   const cnt={}; act.forEach(o=>{const k=o.labelId||'';cnt[k]=(cnt[k]||0)+1;});
   const labels=[...DB.labels.filter(l=>cnt[l.id]),...(cnt['']?[{id:'',name:'Submitted (tiada label)'}]:[])];
+  const nN=notifList().length;
   $('app').innerHTML=`
+  ${nN?`<div class="nbox row" style="cursor:pointer" onclick="go('notif')"><span style="flex:1"><b>🔔 ${nN} update baru dari HQ</b><br><span class="small muted">Tekan untuk settle</span></span><b>›</b></div>`:''}
   <input id="q" placeholder="Cari nama, no. tel, IC, no. submission…" value="${esc(q)}" oninput="q=this.value;rListBody()" style="margin-bottom:10px">
   <div class="chips">
     <button class="${filter==='semua'?'on':''}" onclick="filter='semua';rList()">Semua (${act.length})</button>
@@ -363,6 +387,23 @@ function rListBody(){
       <div style="text-align:right;flex:none">${chip(o)}<div class="small muted" style="margin-top:3px">${fmtD(key(o))}</div>${stageOf(o)==='cancel'?stageTag(o):inLayak(o)?'<span class="wt" style="background:var(--brand-soft);color:var(--brand)">→ Case Layak</span>':waTag(o)}</div>
     </div>`).join('')+(list.length>200?`<div class="empty small">+${list.length-200} lagi… guna carian</div>`:'')
     :`<div class="empty">${filter==='arkib'?'Arkib kosong.':'Tiada kes.'}</div>`;
+}
+
+// ===== Notifikasi =====
+function notifList(){ return Object.values(DB.notifs).filter(n=>DB.orders[n.orderId]).sort((a,b)=>b.at.localeCompare(a.at)); }
+function updBell(){ const n=notifList().length; const b=$('bellN'); b.style.display=n?'':'none'; b.textContent=n>99?'99+':n; }
+function clearNotifs(orderId){ let c=0; for(const k in DB.notifs) if(DB.notifs[k].orderId===orderId){ delete DB.notifs[k]; c++; } if(c) save(); updBell(); return c; }
+function notifHtml(n,showName){
+  const o=DB.orders[n.orderId];
+  return `<div class="h small muted" style="display:flex;gap:6px;flex-wrap:wrap;align-items:center">${showName?`<b style="color:var(--ink);font-size:14px">${esc(o.name)}</b>`:''}${n.lbl?`<span class="st" style="background:${esc(n.lbl.bg)};color:${esc(n.lbl.fg)}">${esc(n.lbl.name)}</span>`:''}<span>${esc(n.by)} · ${fmtDT(n.at)}</span></div>${n.txt?`<div class="t">${esc(n.txt)}</div>`:''}`;
+}
+function rNotif(){
+  const list=notifList();
+  $('app').innerHTML=list.length?`
+    <div class="row" style="margin-bottom:10px"><span class="small muted" style="flex:1">Tekan untuk buka klien. Notifikasi hilang bila kau tekan ✓ Selesai, tanda Dah WhatsApp atau tukar status Case Layak.</span></div>
+    ${list.map(n=>`<div class="card nitem" onclick="go('detail','${n.orderId}')">${notifHtml(n,true)}</div>`).join('')}
+    <div class="row"><span class="spacer"></span><button class="sm danger" onclick="if(confirm('Kosongkan semua notifikasi?')){DB.notifs={};save();rNotif();updBell();}">Kosongkan semua</button></div>`
+    :`<div class="empty">🔔<br>Tiada notifikasi baru.<br><span class="small">Update baru dari HQ akan muncul di sini selepas sync.</span></div>`;
 }
 
 // ===== Case Layak =====
@@ -434,7 +475,9 @@ function rDetail(){
   if(!tplSel||!DB.tpl.find(t=>t.id===tplSel)) tplSel=tplFor(o).id;
   const kv=(l,v)=>v?`<div>${l}</div><div>${v}</div>`:'';
   const ups=[...(o.updates||[])].reverse();
+  const myN=notifList().filter(n=>n.orderId===o.id);
   $('app').innerHTML=`
+  ${myN.length?`<div class="nbox"><div class="row"><b style="flex:1">🔔 Update baru dari HQ</b><button class="sm pri" onclick="clearNotifs(curId);toast('Notifikasi selesai');rDetail()">✓ Selesai</button></div>${myN.map(n=>`<div style="margin-top:8px">${notifHtml(n,false)}</div>`).join('')}</div>`:''}
   <div class="card">
     <div class="row"><h2 style="margin:0;flex:1;min-width:0">${esc(o.name)}</h2>${chip(o)}</div>
     <div class="kv" style="margin-top:10px">
@@ -488,7 +531,7 @@ function sendWa(){
   setTimeout(()=>toast('Dah hantar? Tekan ✓ Tanda Dah WhatsApp',3500),800);
 }
 function markSent(on){
-  const o=DB.orders[curId]; if(on) DB.sent[o.id]=o.labelId||''; else delete DB.sent[o.id]; save();
+  const o=DB.orders[curId]; if(on){ DB.sent[o.id]=o.labelId||''; clearNotifs(o.id); } else delete DB.sent[o.id]; save();
   if(on&&archived(o)){ toast('Ditanda dah WhatsApp · dipindah ke Arkib'); go('list'); }
   else if(on&&inLayak(o)){ toast('Ditanda dah WhatsApp · dipindah ke Case Layak'); go('list'); }
   else { toast(on?'Ditanda dah WhatsApp':'Ditanda belum WhatsApp'); rDetail(); }

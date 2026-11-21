@@ -9,6 +9,7 @@ App untuk WhatsApp klien ikut status kes dalam **ejenplus** (agent.ejenplus.com)
 4. Buka klien → template dipilih automatik ikut label. Nota HQ (sebab tak layak / dokumen diperlukan) masuk sebagai `{nota}`. Edit kalau perlu → **Hantar WhatsApp**.
 5. **Case Layak**: semua kes berlabel Case Layak terus masuk tab **Case Layak**. Tekan ✅ Approve / ⏳ Tengah Proses Loan / ✖ Client Cancel (cancel → Arkib).
 6. **Komisen**: kes Approve masuk sini (atau cari mana-mana klien). Isi jumlah komisen & tanda Dibayar / Belum bayar.
-7. Ubah template & label mana guna template mana dalam tab **Template WhatsApp**.
+7. **🔔 Notifikasi**: setiap sync, nota baru dari HQ (cth PIC update nota) muncul sebagai notifikasi. Tekan → terus ke klien. Hilang bila tekan ✓ Selesai, tanda Dah WhatsApp atau tukar status Case Layak.
+8. Ubah template & label mana guna template mana dalam tab **Template WhatsApp**.
 
 Data kes disimpan dalam browser phone sahaja dan tak masuk repo ni. App auto-sync setiap kali dibuka atau kembali ke depan (kecuali baru sync < 1 minit).
