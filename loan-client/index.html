@@ -28,8 +28,8 @@
 }
 *{box-sizing:border-box}
 html,body{overflow-x:hidden;margin:0;background:var(--bg);color:var(--ink);font:15px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
-header{position:sticky;top:0;z-index:5;background:var(--brand);color:var(--brand-ink);padding:12px 16px;padding-top:max(12px,env(safe-area-inset-top));display:flex;align-items:center;gap:10px}
-header h1{font-size:17px;margin:0;flex:1}
+header{position:sticky;top:0;z-index:5;background:var(--brand);color:var(--brand-ink);padding:12px 16px;padding-top:max(12px,env(safe-area-inset-top));display:flex;align-items:center;gap:8px}
+header h1{font-size:17px;margin:0;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 header button{background:transparent;color:inherit;border:1px solid currentColor}
 nav.tabs{display:flex;gap:4px;padding:8px 16px;background:var(--card);border-bottom:1px solid var(--line)}
 nav.tabs button{background:transparent;border:0;color:var(--muted);padding:8px 12px;border-radius:8px}
@@ -39,415 +39,433 @@ main{max-width:760px;margin:0 auto;padding:16px;padding-bottom:calc(40px + env(s
 .row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
 .spacer{flex:1}
 button,.btn{font:inherit;font-weight:600;padding:9px 14px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:6px}
+button:disabled{opacity:.5;cursor:default}
 button.pri{background:var(--brand);border-color:var(--brand);color:var(--brand-ink)}
-button.wa,.btn.wa{background:var(--wa);border-color:var(--wa);color:#fff}
+button.wa{background:var(--wa);border-color:var(--wa);color:#fff}
 button.danger{color:var(--neg);border-color:var(--neg);background:transparent}
 button.sm,.btn.sm{padding:5px 10px;font-size:13px}
 input,select,textarea{font:inherit;font-size:16px;width:100%;padding:9px 10px;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink)}
 textarea{resize:vertical;min-height:80px}
 label{display:block;font-size:12px;color:var(--muted);margin:10px 0 3px;font-weight:600}
-.grid2{display:grid;grid-template-columns:1fr 1fr;gap:0 10px}
-@media (max-width:420px){.grid2{grid-template-columns:1fr}}
 h2{font-size:16px;margin:0 0 6px}
-h3{font-size:14px;margin:14px 0 4px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
 .muted{color:var(--muted)} .small{font-size:13px}
 .chips{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px;margin-bottom:10px;scrollbar-width:none}
 .chips button{flex:none;border-radius:999px;padding:6px 12px;font-size:13px;background:var(--chip);border-color:transparent;color:var(--ink)}
 .chips button.on{background:var(--brand);color:var(--brand-ink)}
-.client{display:flex;align-items:center;gap:12px;cursor:pointer}
+.chips button.need{background:#dcf5e6;color:#11763a}
+.chips button.need.on{background:var(--wa);color:#fff}
+.client{display:flex;align-items:center;gap:12px;cursor:pointer;padding:12px 14px}
 .client:hover{border-color:var(--brand)}
-.avatar{width:40px;height:40px;border-radius:50%;background:var(--brand-soft);color:var(--brand);display:grid;place-items:center;font-weight:700;flex:none}
-.client .nm{font-weight:700}
+.avatar{width:38px;height:38px;border-radius:50%;background:var(--brand-soft);color:var(--brand);display:grid;place-items:center;font-weight:700;flex:none;position:relative}
+.avatar .dot{position:absolute;right:-2px;top:-2px;width:12px;height:12px;border-radius:50%;background:var(--wa);border:2px solid var(--card)}
+.client .nm{font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .client .sub{font-size:13px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .client .info{flex:1;min-width:0}
-.st{display:inline-block;font-size:12px;font-weight:700;padding:2px 9px;border-radius:999px;white-space:nowrap}
-.st-baru{background:#e5ecfc;color:#1d4ed8}
-.st-dokumen{background:#fff2d9;color:#8a5300}
-.st-submit{background:#ece6fd;color:#5b34c9}
-.st-lulus{background:#dcf5e6;color:#11763a}
-.st-taklayak{background:#fde4e1;color:#b42318}
-.st-batal{background:#eceef2;color:#5f6b80}
-@media (prefers-color-scheme: dark){
-  .st-baru{background:#1c2a4d;color:#9db8ff}.st-dokumen{background:#3a2a0e;color:#f5c26b}
-  .st-submit{background:#2b2150;color:#c2b1ff}.st-lulus{background:#11331f;color:#6fe0a0}
-  .st-taklayak{background:#3d1714;color:#ff9a8c}.st-batal{background:#262c38;color:#a5aec0}
-}
-.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:12px}
-@media (max-width:480px){.kpis{grid-template-columns:repeat(2,1fr)}}
-.kpi{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:8px 10px}
-.kpi .l{font-size:12px;color:var(--muted)} .kpi .v{font-size:18px;font-weight:700}
-.tick{display:flex;flex-wrap:wrap;gap:6px}
-.tick label{margin:0;display:inline-flex;align-items:center;gap:6px;font-size:14px;font-weight:500;color:var(--ink);background:var(--chip);padding:6px 10px;border-radius:999px;cursor:pointer}
-.tick input{width:auto;margin:0}
+.st{display:inline-block;font-size:12px;font-weight:700;padding:2px 9px;border-radius:999px;white-space:nowrap;background:var(--chip);color:var(--muted)}
 .kv{display:grid;grid-template-columns:auto 1fr;gap:4px 12px;font-size:14px}
 .kv div:nth-child(odd){color:var(--muted)}
-.dsr{font-weight:700}
-.dsr.ok{color:var(--pos)} .dsr.mid{color:var(--warn)} .dsr.bad{color:var(--neg)}
 .tpl-pick{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:6px;margin-bottom:8px}
 .tpl-pick button{justify-content:flex-start;font-size:13px;padding:8px 10px}
 .tpl-pick button.on{border-color:var(--brand);background:var(--brand-soft);color:var(--brand)}
-.log{font-size:13px;border-left:2px solid var(--line);padding-left:10px;margin-left:4px}
-.log div{margin-bottom:6px}
+.tl{border-left:2px solid var(--line);margin-left:4px;padding-left:12px}
+.tl .it{margin-bottom:12px;font-size:14px}
+.tl .it .h{display:flex;gap:6px;align-items:center;flex-wrap:wrap;font-size:12px;color:var(--muted)}
+.tl .it .t{white-space:pre-wrap;margin-top:3px}
+.pre{white-space:pre-wrap;font-size:13px;background:var(--bg);border-radius:10px;padding:10px;max-height:320px;overflow:auto}
+details summary{cursor:pointer;font-weight:700}
 .empty{text-align:center;color:var(--muted);padding:30px 10px}
-#toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:10px;font-size:14px;opacity:0;transition:opacity .2s;pointer-events:none;z-index:20}
+.bar{height:4px;background:var(--brand-soft);border-radius:4px;overflow:hidden;margin-top:6px}
+.bar div{height:100%;background:var(--brand);width:0;transition:width .2s}
+#toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:10px;font-size:14px;opacity:0;transition:opacity .2s;pointer-events:none;z-index:20;max-width:90vw}
 #toast.show{opacity:1}
-.fab{position:fixed;right:18px;bottom:calc(18px + env(safe-area-inset-bottom));width:56px;height:56px;border-radius:50%;font-size:28px;justify-content:center;padding:0;box-shadow:0 4px 14px rgba(0,0,0,.25);z-index:6}
+code{background:var(--chip);padding:1px 5px;border-radius:5px;font-size:13px}
 </style>
 </head>
 <body>
-<header><h1 id="title">Klien Loan</h1><button class="sm" id="backBtn" style="display:none" onclick="go('list')">← Senarai</button></header>
+<header>
+  <button class="sm" id="backBtn" style="display:none" onclick="go('list')">←</button>
+  <h1 id="title">Klien Loan</h1>
+  <button class="sm" id="syncBtn" onclick="sync()">⟳ Sync</button>
+</header>
 <nav class="tabs" id="tabs">
   <button data-t="list" class="on" onclick="go('list')">Klien</button>
   <button data-t="tpl" onclick="go('tpl')">Template WhatsApp</button>
   <button data-t="set" onclick="go('set')">Tetapan</button>
 </nav>
+<div id="syncBar" style="display:none;padding:6px 16px;background:var(--card);border-bottom:1px solid var(--line)" class="small"><span id="syncTxt"></span><div class="bar"><div id="syncPct"></div></div></div>
 <main id="app"></main>
 <div id="toast"></div>
 <input type="file" id="importFile" accept=".json,application/json" style="display:none">
 
 <script>
-// ===== Data =====
-const KEY='loanClient.v1';
-const STATUS=[
-  {id:'baru',    nm:'Baru / Semak'},
-  {id:'dokumen', nm:'Dokumen Kurang'},
-  {id:'submit',  nm:'Dah Submit'},
-  {id:'lulus',   nm:'Lulus'},
-  {id:'taklayak',nm:'Tak Layak'},
-  {id:'batal',   nm:'Batal / KIV'},
-];
-const SECTOR=['Kerajaan','Badan Berkanun / GLC','Swasta','Bekerja Sendiri','Pesara'];
-const DOCS=['Salinan IC (depan & belakang)','Slip gaji 3 bulan terkini','Penyata bank 3 bulan (gaji masuk)','Surat pengesahan majikan','Penyata KWSP terkini','Borang EA / BE','Bil utiliti (alamat)','Kad kerja / staf'];
-const REASONS=['DSR / komitmen terlalu tinggi','Rekod CCRIS bermasalah (tunggakan)','Rekod CTOS / senarai hitam','Dalam AKPK','Majikan bukan panel / tidak disokong','Gaji tidak mencapai syarat minimum','Tempoh berkhidmat belum cukup','Status kerja kontrak / sementara','Umur tidak menepati syarat','Dokumen tidak lengkap / tidak sah'];
+// ===== ejenplus (Supabase) =====
+const SB='https://zpryhnhsmxrxwmybcqyt.supabase.co';
+const SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpwcnlobmhzbXhyeHdteWJjcXl0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjI5MjMyNzksImV4cCI6MjA3ODQ5OTI3OX0.5PBRGD99pGDyF7abqin6cyFywU3u6a-hL6H0urhDKVc';
+const EJ='https://agent.ejenplus.com/orders/';
 
+// ===== Template asal =====
 const DEFAULT_TPL=[
-  {id:'baru',nm:'Terima permohonan',txt:`Salam {nama} 😊
+  {id:'taklayak',nm:'Tak layak',labels:['Case Tak Layak','Tidak Berjaya Panel','Loan Reject'],txt:`Salam {nama},
 
-Terima kasih sebab berminat nak buat pembiayaan dengan saya. Saya tengah semak kelayakan {nama} sekarang.
+Terima kasih sebab percaya dengan saya untuk semak kes {nama}. Selepas semakan pihak HQ, buat masa ni kes {nama} belum layak diteruskan sebab:
+{nota}
 
-Nanti saya update secepat mungkin ya.
-
-{agent}`},
-  {id:'dokumen',nm:'Minta dokumen',txt:`Salam {nama},
-
-Untuk teruskan permohonan, boleh tolong hantar dokumen berikut:
-{dokumen}
-
-Snap gambar yang jelas dan WhatsApp terus ke saya pun boleh. Terima kasih 🙏
+Jangan risau, ni bukan muktamad. Bila keadaan dah berubah (contoh komitmen dah berkurang atau rekod CCRIS/CTOS dah bersih), saya boleh tolong semak semula. Ada apa-apa soalan, WhatsApp je saya ya.
 
 {agent}`},
-  {id:'submit',nm:'Dah submit',txt:`Salam {nama},
+  {id:'layak',nm:'Layak ✅',labels:['Case Layak'],txt:`Salam {nama} 😊
 
-Permohonan pembiayaan {produk} sebanyak RM{jumlah} telah saya hantar ✅
+Alhamdulillah, berita baik! Selepas semakan pihak HQ, kes {nama} LAYAK untuk diteruskan ✅
 
-Proses biasanya ambil beberapa hari bekerja. Kalau pihak bank call, tolong angkat ya. Saya akan update bila ada keputusan.
-
-{agent}`},
-  {id:'lulus',nm:'Lulus 🎉',txt:`Tahniah {nama}! 🎉
-
-Permohonan pembiayaan {produk} anda telah DILULUSKAN sebanyak RM{jumlah_lulus}.
-
-Saya akan maklumkan langkah seterusnya (tandatangan dokumen / pengeluaran) tak lama lagi.
-
-Terima kasih sebab percaya dengan saya 🙏
-{agent}`},
-  {id:'taklayak',nm:'Tak layak',txt:`Salam {nama},
-
-Terima kasih atas kepercayaan {nama}. Selepas semakan, buat masa ini permohonan belum dapat diteruskan sebab:
-{sebab}
-
-Jangan risau, ini bukan muktamad. Bila keadaan dah berubah (contoh: komitmen dah berkurang atau rekod dah bersih), saya boleh tolong semak semula. Kalau ada soalan, WhatsApp je saya.
+Bila {nama} free untuk saya terangkan langkah seterusnya? Boleh call atau WhatsApp saya.
 
 {agent}`},
-  {id:'followup',nm:'Follow up',txt:`Salam {nama}, sekadar follow up pasal permohonan pembiayaan hari tu. Ada apa-apa yang saya boleh bantu? 😊
+  {id:'dokumen',nm:'Minta maklumat / dokumen',labels:['Pending Details/Docs','Checking Q&A'],txt:`Salam {nama},
+
+Pihak HQ sedang semak kes {nama} dan perlukan maklumat / dokumen tambahan:
+{nota}
+
+Boleh hantar kepada saya secepat mungkin ya supaya proses tak tertangguh. Terima kasih 🙏
+
+{agent}`},
+  {id:'semak',nm:'Dalam semakan',labels:['','Case Review HQ'],txt:`Salam {nama} 😊
+
+Kes {nama} dah saya submit dan sedang disemak oleh pihak HQ. Saya update secepat mungkin bila ada keputusan ya.
+
+{agent}`},
+  {id:'proses',nm:'Dalam proses',labels:['Client Proceed - Alif','Client Proceed - Aisyah','Client Proceed - Zaf','Client Proceed HQ','Loan Process'],txt:`Salam {nama},
+
+Kes {nama} sekarang dalam proses ✅ Kalau ada pihak bank / HQ call, tolong angkat ya. Saya akan update dari masa ke semasa.
+
+{agent}`},
+  {id:'lulus',nm:'Lulus 🎉',labels:['Loan Approved','Case Close - PAID'],txt:`Tahniah {nama}! 🎉
+
+Kes {nama} telah berjaya diselesaikan. Terima kasih sebab percaya dengan saya 🙏
+
+Kalau ada kawan atau family yang perlukan bantuan yang sama, boleh kenalkan kepada saya ya.
+
+{agent}`},
+  {id:'followup',nm:'Follow up',labels:['Pending Response - Client','Client Hold','Case Perlu Hold','Client Request Reduce Fee','Client Not Proceed'],txt:`Salam {nama}, sekadar follow up pasal kes {nama} hari tu. Ada apa-apa yang saya boleh bantu? 😊
 
 {agent}`},
 ];
 
+// ===== Data =====
+const KEY='loanClient.v2';
 let DB=load();
 function load(){
-  try{ const d=JSON.parse(localStorage.getItem(KEY)); if(d&&d.clients) { d.tpl=d.tpl||structuredClone(DEFAULT_TPL); d.settings=d.settings||{}; return d; } }catch(e){}
-  return {clients:[],tpl:structuredClone(DEFAULT_TPL),settings:{agentName:'',agentPhone:'',sign:''}};
+  let d=null; try{ d=JSON.parse(localStorage.getItem(KEY)); }catch(e){}
+  d=d||{};
+  d.orders=d.orders||{}; d.sent=d.sent||{}; d.notes=d.notes||{}; d.labels=d.labels||[];
+  d.tpl=d.tpl||structuredClone(DEFAULT_TPL); d.settings=d.settings||{}; d.session=d.session||null;
+  return d;
 }
-function save(){ try{ localStorage.setItem(KEY,JSON.stringify(DB)); }catch(e){ toast('Gagal simpan!'); } }
+function save(){ try{ localStorage.setItem(KEY,JSON.stringify(DB)); }catch(e){ toast('Gagal simpan (storan penuh?)'); } }
 
 // ===== Helpers =====
 const $=id=>document.getElementById(id);
 const val=id=>($(id)?.value||'').trim();
-const num=v=>{const n=parseFloat(String(v||'').replace(/[^0-9.]/g,''));return isNaN(n)?0:n;};
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const rm=n=>n?Number(num(n)).toLocaleString('ms-MY',{maximumFractionDigits:0}):'0';
-const today=()=>new Date().toISOString().slice(0,10);
 const fmtD=s=>s?new Date(s).toLocaleDateString('ms-MY',{day:'numeric',month:'short',year:'numeric'}):'';
+const fmtDT=s=>s?new Date(s).toLocaleString('ms-MY',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'}):'';
 const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,6);
-const stName=id=>(STATUS.find(s=>s.id===id)||STATUS[0]).nm;
-const stChip=id=>`<span class="st st-${id}">${esc(stName(id))}</span>`;
-function toast(m){const t=$('toast');t.textContent=m;t.classList.add('show');clearTimeout(t._h);t._h=setTimeout(()=>t.classList.remove('show'),1800);}
+const cleanPhone=p=>String(p||'').replace(/[^\d+]/g,'');
 function waNum(p){ let n=String(p||'').replace(/\D/g,''); if(n.startsWith('0')) n='6'+n; else if(n.startsWith('1')) n='60'+n; return n; }
+function toast(m,ms=2000){const t=$('toast');t.textContent=m;t.classList.add('show');clearTimeout(t._h);t._h=setTimeout(()=>t.classList.remove('show'),ms);}
 async function copy(txt){ try{ await navigator.clipboard.writeText(txt); toast('Disalin'); }catch(e){ const ta=document.createElement('textarea');ta.value=txt;document.body.appendChild(ta);ta.select();document.execCommand('copy');ta.remove();toast('Disalin'); } }
-function installment(c){ const P=num(c.amount), r=num(c.rate)/100, y=num(c.tenure); if(!P||!y) return 0; return (P+P*r*y)/(y*12); }
-function dsr(c){ const net=num(c.netIncome); if(!net) return null; return (num(c.commitment)+installment(c))/net*100; }
-function dsrCls(d){ return d==null?'':d<=60?'ok':d<=70?'mid':'bad'; }
+const lblName=o=>o.label?.name||'';
+const chip=o=>o.label?`<span class="st" style="background:${esc(o.label.bg)};color:${esc(o.label.fg)}">${esc(o.label.name)}</span>`:`<span class="st">Submitted</span>`;
+const needWa=o=>(o.labelId||'')!==(DB.sent[o.id]??null);
+
+// ===== API =====
+async function sbFetch(path,{body,auth=true,method}={}){
+  const h={'apikey':SB_KEY,'Content-Type':'application/json'};
+  if(auth){ await ensureToken(); h.Authorization='Bearer '+DB.session.access; }
+  const r=await fetch(SB+path,{method:method||(body!==undefined?'POST':'GET'),headers:h,body:body!==undefined?JSON.stringify(body):undefined});
+  const t=await r.text(); let j=null; try{ j=t?JSON.parse(t):null; }catch(e){}
+  if(!r.ok){ const e=new Error(j?.error_description||j?.msg||j?.message||('HTTP '+r.status)); e.status=r.status; throw e; }
+  return j;
+}
+function setSession(d){
+  DB.session=Object.assign(DB.session||{},{access:d.access_token,refresh:d.refresh_token,exp:Date.now()+(d.expires_in||3600)*1000,userId:d.user?.id||DB.session?.userId,email:d.user?.email||DB.session?.email});
+  save();
+}
+async function ensureToken(){
+  const s=DB.session; if(!s?.refresh) throw new Error('Belum login ejenplus');
+  if(s.access && s.exp-60000>Date.now()) return;
+  try{ setSession(await sbFetch('/auth/v1/token?grant_type=refresh_token',{auth:false,body:{refresh_token:s.refresh}})); }
+  catch(e){ DB.session.refresh=null; save(); throw new Error('Sesi ejenplus tamat. Sila login semula dalam Tetapan.'); }
+}
+async function login(email,password){
+  setSession(await sbFetch('/auth/v1/token?grant_type=password',{auth:false,body:{email,password}}));
+  const roles=await sbFetch(`/rest/v1/user_org_roles?select=agency_id,agent_id,access_status,agencies(name,brand_name)&user_id=eq.${DB.session.userId}&order=created_at.desc`);
+  const r=(roles||[]).find(x=>x.agent_id&&x.access_status==='active')||roles?.[0];
+  if(!r?.agent_id) throw new Error('Akaun agent tak dijumpai');
+  DB.session.agentId=r.agent_id; DB.session.agencyId=r.agency_id; DB.session.agency=r.agencies?.brand_name||r.agencies?.name||'';
+  const ag=await sbFetch(`/rest/v1/agents?select=full_name,code,phone&id=eq.${r.agent_id}`);
+  if(ag?.[0]){ DB.session.agentName=ag[0].full_name; DB.session.agentCode=ag[0].code;
+    if(!DB.settings.agentName) DB.settings.agentName=ag[0].full_name; if(!DB.settings.agentPhone&&ag[0].phone) DB.settings.agentPhone=cleanPhone(ag[0].phone); }
+  save();
+}
+function progress(txt,pct){ $('syncBar').style.display=txt?'':'none'; $('syncTxt').textContent=txt||''; $('syncPct').style.width=(pct||0)+'%'; }
+async function pool(items,n,fn){ let i=0; await Promise.all(Array.from({length:n},async()=>{ while(i<items.length){ const it=items[i++]; await fn(it); } })); }
+
+let syncing=false;
+async function sync(){
+  if(syncing) return;
+  if(!DB.session?.refresh){ toast('Login ejenplus dulu'); go('set'); return; }
+  syncing=true; $('syncBtn').disabled=true;
+  const first=!DB.lastSync;
+  try{
+    progress('Ambil senarai submission…',5);
+    try{ const lb=await sbFetch('/rest/v1/rpc/get_agency_labels',{body:{p_agency_id:DB.session.agencyId}}); if(Array.isArray(lb)) DB.labels=lb.map(l=>({id:l.id,name:l.label_name,bg:l.label_colour,fg:l.text_colour})); }catch(e){}
+    let all=[],off=0;
+    while(true){
+      const page=await sbFetch('/rest/v1/rpc/get_agent_orders_v2',{body:{p_view_agent_id:DB.session.agentId,p_scope:'self',p_agency_id:DB.session.agencyId,p_status:null,p_search:null,p_date_from:null,p_date_to:null,p_label_id:null,p_limit:500,p_offset:off}});
+      all=all.concat(page||[]); if(!page||page.length<500) break; off+=500;
+    }
+    const seen=new Set();
+    for(const x of all){
+      seen.add(x.id);
+      const o=DB.orders[x.id]||{id:x.id};
+      Object.assign(o,{no:x.order_number,name:(x.customer_name||'').trim(),phone:cleanPhone(x.customer_phone),email:x.customer_email,
+        product:(x.order_items||[]).map(i=>i.product_name).join(', '),amount:x.total_sales_amount,status:x.status,
+        submitted:x.submitted_at||x.created_at,pic:x.pic_snapshot?.display_name||'',labelId:x.label_id||'',
+        label:x.labels?{name:x.labels.label_name,bg:x.labels.label_colour,fg:x.labels.text_colour}:null});
+      DB.orders[x.id]=o;
+    }
+    for(const id of Object.keys(DB.orders)) if(!seen.has(id)) delete DB.orders[id];
+    // maklumat borang (IC + nota pelanggan) untuk order baru
+    const needForm=Object.values(DB.orders).filter(o=>o.form===undefined).map(o=>o.id);
+    for(let i=0;i<needForm.length;i+=40){
+      progress(`Ambil maklumat pelanggan… ${Math.min(i+40,needForm.length)}/${needForm.length}`,10+40*i/Math.max(needForm.length,1));
+      const ch=needForm.slice(i,i+40);
+      const rows=await sbFetch(`/rest/v1/order_submissions?select=order_id,form_data,submitted_at&order_id=in.(${ch.join(',')})&order=submitted_at.desc`);
+      for(const id of ch) DB.orders[id].form=null;
+      for(const r of rows||[]){ const o=DB.orders[r.order_id]; if(o&&!o.form){ const f=r.form_data||{}; o.form={ic:f.ic_number||'',notes:f.additional_notes||'',type:f.client_type||''}; } }
+    }
+    // update HQ (nota) untuk order yang label berubah
+    const needUpd=Object.values(DB.orders).filter(o=>o.labelId&&(o.updLabel!==o.labelId||!o.updates));
+    let done=0;
+    await pool(needUpd,6,async o=>{
+      try{ await fetchUpdates(o); }catch(e){}
+      done++; progress(`Ambil nota HQ… ${done}/${needUpd.length}`,50+50*done/Math.max(needUpd.length,1));
+    });
+    if(first){ // kali pertama: anggap kes lama (>3 hari) dah dimaklumkan
+      const cut=Date.now()-3*864e5;
+      for(const o of Object.values(DB.orders)){ const last=lastUpdate(o)?.at||o.submitted; if(new Date(last).getTime()<cut) DB.sent[o.id]=o.labelId||''; }
+    }
+    DB.lastSync=new Date().toISOString(); save();
+    const n=Object.values(DB.orders).filter(needWa).length;
+    toast(`Sync siap · ${all.length} kes · ${n} perlu WhatsApp`,3000);
+  }catch(e){ toast('Sync gagal: '+e.message,4000); }
+  finally{ syncing=false; $('syncBtn').disabled=false; progress(''); render(); }
+}
+async function fetchUpdates(o){
+  const u=await sbFetch('/rest/v1/rpc/get_order_updates',{body:{p_order_id:o.id}});
+  o.updates=(u||[]).map(x=>({at:x.created_at,txt:x.note_text||'',by:x.author?.name||'',lid:x.label_id||x.label?.id||'',lbl:x.label?{name:x.label.label_name,bg:x.label.label_colour,fg:x.label.text_colour}:null}))
+    .sort((a,b)=>a.at.localeCompare(b.at));
+  o.updLabel=o.labelId;
+}
+const isUpload=t=>/^Uploaded document/i.test(t||'');
+function lastUpdate(o){ const u=(o.updates||[]).filter(x=>x.lid||!isUpload(x.txt)); return u[u.length-1]; }
+function hqNote(o){
+  const u=(o.updates||[]).filter(x=>x.txt&&!isUpload(x.txt));
+  const m=[...u].reverse().find(x=>x.lid&&x.lid===o.labelId)||u[u.length-1];
+  return m?.txt||'';
+}
+function bullets(t){ return String(t||'').split(/\n+/).map(s=>s.replace(/^\s*([-•*·]|\d+[.)])\s*/,'').trim()).filter(s=>s&&!/^[^\p{L}]*(case\s+)?(tidak\s+|tak\s+)?layak[^\p{L}]*$/iu.test(s)).map(s=>'• '+s).join('\n'); }
 
 // ===== Routing =====
-let view='list', curId=null, filter='aktif', q='';
-function go(v,id){ view=v; if(id!==undefined) curId=id; render(); window.scrollTo(0,0); }
+let view='list', curId=null, filter='perlu', q='', tplSel=null;
+function go(v,id){ view=v; if(id!==undefined){ curId=id; tplSel=null; } render(); window.scrollTo(0,0); }
 function render(){
   document.querySelectorAll('#tabs button').forEach(b=>b.classList.toggle('on',b.dataset.t===view));
-  const sub=view==='form'||view==='detail';
+  const sub=view==='detail';
   $('tabs').style.display=sub?'none':'flex';
   $('backBtn').style.display=sub?'':'none';
-  $('title').textContent=view==='detail'?(getC()?.name||'Klien'):view==='form'?(curId?'Edit Klien':'Klien Baru'):'Klien Loan';
-  ({list:rList,form:rForm,detail:rDetail,tpl:rTpl,set:rSet})[view]();
+  $('title').textContent=sub?(DB.orders[curId]?.name||'Klien'):'Klien Loan';
+  ({list:rList,detail:rDetail,tpl:rTpl,set:rSet})[view]();
 }
-const getC=()=>DB.clients.find(c=>c.id===curId);
 
 // ===== Senarai =====
 function rList(){
-  const cs=DB.clients;
-  const cnt=id=>cs.filter(c=>c.status===id).length;
-  const active=c=>['baru','dokumen','submit'].includes(c.status);
-  let list=cs.filter(c=>filter==='semua'?true:filter==='aktif'?active(c):c.status===filter);
-  if(q){const k=q.toLowerCase(); list=list.filter(c=>[c.name,c.phone,c.ic,c.employer,c.product].join(' ').toLowerCase().includes(k));}
-  list.sort((a,b)=>(b.updated||'').localeCompare(a.updated||''));
-  const lulusAmt=cs.filter(c=>c.status==='lulus').reduce((s,c)=>s+num(c.approved||c.amount),0);
-  const chips=[['aktif','Aktif ('+cs.filter(active).length+')'],...STATUS.map(s=>[s.id,s.nm+' ('+cnt(s.id)+')']),['semua','Semua ('+cs.length+')']];
+  const os=Object.values(DB.orders);
+  if(!os.length){
+    $('app').innerHTML=`<div class="card empty">${DB.session?.refresh?'Tekan <b>⟳ Sync</b> untuk tarik semua kes dari ejenplus.':'Sambungkan akaun ejenplus dulu.<br><br><button class="pri" onclick="go(\'set\')">Login ejenplus</button>'}</div>`; return;
+  }
+  const cnt={}; os.forEach(o=>{const k=o.labelId||'';cnt[k]=(cnt[k]||0)+1;});
+  const nNeed=os.filter(needWa).length;
+  const labels=[...DB.labels.filter(l=>cnt[l.id]),...(cnt['']?[{id:'',name:'Submitted (tiada label)'}]:[])];
   $('app').innerHTML=`
-  <div class="kpis">
-    <div class="kpi"><div class="l">Dalam proses</div><div class="v">${cs.filter(active).length}</div></div>
-    <div class="kpi"><div class="l">Lulus</div><div class="v" style="color:var(--pos)">${cnt('lulus')}</div></div>
-    <div class="kpi"><div class="l">Tak layak</div><div class="v" style="color:var(--neg)">${cnt('taklayak')}</div></div>
-    <div class="kpi"><div class="l">Jumlah lulus</div><div class="v">RM${rm(lulusAmt)}</div></div>
+  <input id="q" placeholder="Cari nama, no. tel, IC, no. submission…" value="${esc(q)}" oninput="q=this.value;rListBody()" style="margin-bottom:10px">
+  <div class="chips">
+    <button class="need ${filter==='perlu'?'on':''}" onclick="filter='perlu';rList()">Perlu WhatsApp (${nNeed})</button>
+    <button class="${filter==='semua'?'on':''}" onclick="filter='semua';rList()">Semua (${os.length})</button>
+    ${labels.map(l=>`<button class="${filter==='L:'+l.id?'on':''}" onclick="filter='L:${l.id}';rList()">${esc(l.name)} (${cnt[l.id]})</button>`).join('')}
   </div>
-  <input id="q" placeholder="Cari nama, no. tel, IC, majikan…" value="${esc(q)}" oninput="q=this.value;rListBody()" style="margin-bottom:10px">
-  <div class="chips">${chips.map(([id,nm])=>`<button class="${filter===id?'on':''}" onclick="filter='${id}';rList()">${esc(nm)}</button>`).join('')}</div>
-  <div id="listBody"></div>
-  <button class="pri fab" onclick="go('form',null)" aria-label="Tambah klien">+</button>`;
-  rListBody(list);
+  <div class="small muted" style="margin:-4px 0 8px">${DB.lastSync?'Sync terakhir: '+fmtDT(DB.lastSync):''}</div>
+  <div id="listBody"></div>`;
+  rListBody();
 }
-function rListBody(list){
-  if(!list){ rList(); $('q').focus(); const v=$('q'); v.setSelectionRange(v.value.length,v.value.length); return; }
-  $('listBody').innerHTML=list.length?list.map(c=>`
-    <div class="card client" onclick="go('detail','${c.id}')">
-      <div class="avatar">${esc((c.name||'?').trim()[0]?.toUpperCase()||'?')}</div>
-      <div class="info"><div class="nm">${esc(c.name)}</div>
-        <div class="sub">${c.amount?'RM'+rm(c.amount)+' · ':''}${esc(c.product||c.employer||c.phone||'')}</div></div>
-      <div style="text-align:right">${stChip(c.status)}<div class="small muted" style="margin-top:3px">${fmtD(c.updated)}</div></div>
-    </div>`).join(''):`<div class="empty">${DB.clients.length?'Tiada klien dalam kategori ni.':'Belum ada klien.<br>Tekan <b>+</b> untuk tambah klien pertama.'}</div>`;
+function rListBody(){
+  let list=Object.values(DB.orders).filter(o=>filter==='semua'?true:filter==='perlu'?needWa(o):('L:'+(o.labelId||''))===filter);
+  if(q){ const k=q.toLowerCase().replace(/[\s-]/g,''); list=list.filter(o=>[o.name,o.phone,o.form?.ic,o.no].join('|').toLowerCase().replace(/[\s-]/g,'').includes(k)); }
+  const key=o=>lastUpdate(o)?.at||o.submitted||'';
+  list.sort((a,b)=>key(b).localeCompare(key(a)));
+  const shown=list.slice(0,200);
+  $('listBody').innerHTML=list.length?shown.map(o=>`
+    <div class="card client" onclick="go('detail','${o.id}')">
+      <div class="avatar">${esc((o.name||'?')[0].toUpperCase())}${needWa(o)?'<span class="dot"></span>':''}</div>
+      <div class="info"><div class="nm">${esc(o.name)}</div>
+        <div class="sub">#${esc(o.no)} · ${esc(o.phone)}</div></div>
+      <div style="text-align:right;flex:none">${chip(o)}<div class="small muted" style="margin-top:3px">${fmtD(key(o))}</div></div>
+    </div>`).join('')+(list.length>200?`<div class="empty small">+${list.length-200} lagi… guna carian</div>`:'')
+    :`<div class="empty">${filter==='perlu'?'Semua klien dah dimaklumkan 👍':'Tiada kes.'}</div>`;
 }
 
-// ===== Borang =====
-function rForm(){
-  const c=getC()||{status:'baru',sector:'Kerajaan',docsMissing:[],reasons:[],date:today()};
-  const opt=(arr,v)=>arr.map(x=>{const id=x.id??x,nm=x.nm??x;return `<option value="${esc(id)}" ${id===v?'selected':''}>${esc(nm)}</option>`;}).join('');
-  const ticks=(name,arr,sel)=>`<div class="tick">${arr.map(x=>`<label><input type="checkbox" name="${name}" value="${esc(x)}" ${sel?.includes(x)?'checked':''}>${esc(x)}</label>`).join('')}</div>`;
-  $('app').innerHTML=`
-  <div class="card">
-    <h2>Maklumat klien</h2>
-    <label>Nama penuh *</label><input id="f_name" value="${esc(c.name)}" autocomplete="off">
-    <div class="grid2">
-      <div><label>No. telefon (WhatsApp) *</label><input id="f_phone" type="tel" value="${esc(c.phone)}" placeholder="0123456789"></div>
-      <div><label>No. IC</label><input id="f_ic" value="${esc(c.ic)}" placeholder="900101-01-1234"></div>
-      <div><label>Majikan</label><input id="f_employer" value="${esc(c.employer)}"></div>
-      <div><label>Sektor</label><select id="f_sector">${opt(SECTOR,c.sector)}</select></div>
-      <div><label>Gaji kasar (RM)</label><input id="f_gross" inputmode="decimal" value="${esc(c.grossIncome)}"></div>
-      <div><label>Gaji bersih (RM)</label><input id="f_net" inputmode="decimal" value="${esc(c.netIncome)}" oninput="calcDsr()"></div>
-      <div><label>Komitmen bulanan sedia ada (RM)</label><input id="f_commit" inputmode="decimal" value="${esc(c.commitment)}" oninput="calcDsr()"></div>
-    </div>
-  </div>
-  <div class="card">
-    <h2>Permohonan</h2>
-    <div class="grid2">
-      <div><label>Produk / Bank</label><input id="f_product" value="${esc(c.product)}" placeholder="cth: Personal Loan Bank X"></div>
-      <div><label>Jumlah mohon (RM)</label><input id="f_amount" inputmode="decimal" value="${esc(c.amount)}" oninput="calcDsr()"></div>
-      <div><label>Kadar untung (% setahun, flat)</label><input id="f_rate" inputmode="decimal" value="${esc(c.rate)}" oninput="calcDsr()"></div>
-      <div><label>Tempoh (tahun)</label><input id="f_tenure" inputmode="decimal" value="${esc(c.tenure)}" oninput="calcDsr()"></div>
-    </div>
-    <div id="dsrBox" class="small" style="margin-top:8px"></div>
-    <label>Link order ejenplus</label><input id="f_link" type="url" value="${esc(c.link)}" placeholder="https://agent.ejenplus.com/orders/…">
-    <div class="grid2">
-      <div><label>Tarikh mohon</label><input id="f_date" type="date" value="${esc(c.date||today())}"></div>
-      <div><label>Status</label><select id="f_status" onchange="toggleSec()">${opt(STATUS,c.status)}</select></div>
-    </div>
-    <div id="sec_dokumen"><label>Dokumen yang belum ada</label>${ticks('doc',DOCS,c.docsMissing)}
-      <label>Dokumen lain</label><input id="f_docOther" value="${esc(c.docOther)}"></div>
-    <div id="sec_taklayak"><label>Sebab tak layak</label>${ticks('rsn',REASONS,c.reasons)}
-      <label>Sebab lain</label><input id="f_rsnOther" value="${esc(c.reasonOther)}"></div>
-    <div id="sec_lulus"><label>Jumlah lulus (RM)</label><input id="f_approved" inputmode="decimal" value="${esc(c.approved)}"></div>
-    <label>Catatan</label><textarea id="f_note">${esc(c.note)}</textarea>
-  </div>
-  <div class="row">
-    ${c.id?`<button class="danger" onclick="delClient()">Padam</button>`:''}
-    <span class="spacer"></span>
-    <button onclick="${c.id?`go('detail')`:`go('list')`}">Batal</button>
-    <button class="pri" onclick="saveClient()">Simpan</button>
-  </div>`;
-  toggleSec(); calcDsr();
-}
-function toggleSec(){ const s=$('f_status').value; ['dokumen','taklayak','lulus'].forEach(k=>$('sec_'+k).style.display=s===k?'':'none'); }
-function formObj(){ return {name:val('f_name'),netIncome:val('f_net'),commitment:val('f_commit'),amount:val('f_amount'),rate:val('f_rate'),tenure:val('f_tenure')}; }
-function dsrHtml(c){
-  const inst=installment(c), d=dsr(c);
-  if(d==null) return `<span class="muted">Isi gaji bersih untuk kira DSR.</span>`;
-  return `${inst?`Anggaran ansuran: <b>RM${rm(inst)}</b>/bulan · `:''}DSR: <span class="dsr ${dsrCls(d)}">${d.toFixed(1)}%</span> <span class="muted">(anggaran; had sebenar ikut bank/produk)</span>`;
-}
-function calcDsr(){ $('dsrBox').innerHTML=dsrHtml(formObj()); }
-function saveClient(){
-  const name=val('f_name'), phone=val('f_phone');
-  if(!name){ toast('Isi nama klien'); $('f_name').focus(); return; }
-  if(!phone){ toast('Isi no. telefon'); $('f_phone').focus(); return; }
-  const checked=n=>[...document.querySelectorAll(`input[name=${n}]:checked`)].map(i=>i.value);
-  const old=getC(); const now=new Date().toISOString();
-  const c=Object.assign(old||{id:uid(),created:now,log:[]},{
-    name,phone,ic:val('f_ic'),employer:val('f_employer'),sector:val('f_sector'),
-    grossIncome:val('f_gross'),netIncome:val('f_net'),commitment:val('f_commit'),
-    product:val('f_product'),amount:val('f_amount'),rate:val('f_rate'),tenure:val('f_tenure'),
-    link:val('f_link'),date:val('f_date'),status:val('f_status'),
-    docsMissing:checked('doc'),docOther:val('f_docOther'),reasons:checked('rsn'),reasonOther:val('f_rsnOther'),
-    approved:val('f_approved'),note:val('f_note'),updated:now});
-  if(!old){ c.log.push({t:now,m:'Klien ditambah · '+stName(c.status)}); DB.clients.push(c); }
-  else if(old._prevStatus!==c.status){ c.log.push({t:now,m:'Status → '+stName(c.status)}); }
-  delete c._prevStatus;
-  save(); toast('Disimpan'); go('detail',c.id);
-}
-function delClient(){ const c=getC(); if(!confirm('Padam '+c.name+'?')) return; DB.clients=DB.clients.filter(x=>x.id!==c.id); save(); toast('Dipadam'); go('list',null); }
-
-// ===== Butiran + WhatsApp =====
-let tplSel=null;
+// ===== Butiran =====
+function tplFor(o){ return DB.tpl.find(t=>(t.labels||[]).includes(lblName(o)))||DB.tpl.find(t=>t.id==='followup')||DB.tpl[0]; }
 function rDetail(){
-  const c=getC(); if(!c){ go('list'); return; }
-  c._prevStatus=c.status;
-  const def=DB.tpl.find(t=>t.id===c.status)||DB.tpl[0];
-  if(!tplSel||!DB.tpl.find(t=>t.id===tplSel)) tplSel=def.id;
+  const o=DB.orders[curId]; if(!o){ go('list'); return; }
+  if(!tplSel||!DB.tpl.find(t=>t.id===tplSel)) tplSel=tplFor(o).id;
   const kv=(l,v)=>v?`<div>${l}</div><div>${v}</div>`:'';
+  const ups=[...(o.updates||[])].reverse();
   $('app').innerHTML=`
   <div class="card">
-    <div class="row"><h2 style="margin:0">${esc(c.name)}</h2><span class="spacer"></span>${stChip(c.status)}</div>
-    <div class="row" style="margin:10px 0 4px">
-      <select id="quickSt" style="width:auto;flex:1" onchange="quickStatus(this.value)">${STATUS.map(s=>`<option value="${s.id}" ${s.id===c.status?'selected':''}>Tukar status: ${esc(s.nm)}</option>`).join('')}</select>
-      <button onclick="go('form')">Edit</button>
-    </div>
+    <div class="row"><h2 style="margin:0;flex:1;min-width:0">${esc(o.name)}</h2>${chip(o)}</div>
     <div class="kv" style="margin-top:10px">
-      ${kv('Telefon',`<a href="tel:${esc(c.phone)}">${esc(c.phone)}</a>`)}
-      ${kv('IC',esc(c.ic))}
-      ${kv('Majikan',esc([c.employer,c.sector].filter(Boolean).join(' · ')))}
-      ${kv('Gaji kasar / bersih',(c.grossIncome||c.netIncome)?[c.grossIncome,c.netIncome].map(x=>x?'RM'+rm(x):'-').join(' / '):'')}
-      ${kv('Komitmen',c.commitment?'RM'+rm(c.commitment):'')}
-      ${kv('Produk',esc(c.product))}
-      ${kv('Jumlah mohon',c.amount?'RM'+rm(c.amount)+(c.tenure?` · ${esc(c.tenure)} thn`:'')+(c.rate?` · ${esc(c.rate)}%`:''):'')}
-      ${kv('Jumlah lulus',c.status==='lulus'&&c.approved?'<b>RM'+rm(c.approved)+'</b>':'')}
-      ${kv('Tarikh mohon',fmtD(c.date))}
-      ${kv('Catatan',esc(c.note).replace(/\n/g,'<br>'))}
+      ${kv('Telefon',`<a href="tel:${esc(o.phone)}">${esc(o.phone)}</a>`)}
+      ${kv('No. IC',esc(o.form?.ic))}
+      ${kv('Submission','#'+esc(o.no)+' · '+fmtD(o.submitted))}
+      ${kv('Produk',esc(o.product))}
+      ${kv('PIC HQ',esc(o.pic))}
     </div>
-    ${c.netIncome?`<div class="small" style="margin-top:8px">${dsrHtml(c)}</div>`:''}
     <div class="row" style="margin-top:12px">
-      ${c.link?`<a class="btn sm" href="${esc(c.link)}" target="_blank" rel="noopener">Buka order ejenplus ↗</a>`:''}
-      <button class="sm" onclick="copy(infoText(getC()))">Salin info klien</button>
-      <a class="btn sm" href="tel:${esc(c.phone)}">Call</a>
+      <a class="btn sm" href="${EJ+esc(o.id)}" target="_blank" rel="noopener">Buka ejenplus ↗</a>
+      <a class="btn sm" href="tel:${esc(o.phone)}">Call</a>
+      <button class="sm" onclick="copy(infoText(DB.orders[curId]))">Salin info</button>
+      <button class="sm" onclick="refreshOne()">⟳ Nota HQ</button>
     </div>
   </div>
   <div class="card">
-    <h2>Hantar WhatsApp</h2>
-    <div class="tpl-pick">${DB.tpl.map(t=>`<button class="${t.id===tplSel?'on':''}" onclick="tplSel='${t.id}';rDetail()">${esc(t.nm)}</button>`).join('')}</div>
-    <textarea id="msg" style="min-height:200px">${esc(fill(DB.tpl.find(t=>t.id===tplSel).txt,c))}</textarea>
+    <div class="row"><h2 style="margin:0">Hantar WhatsApp</h2><span class="spacer"></span>
+      ${needWa(o)?`<button class="sm" onclick="markSent(true)">Tanda dah WA</button>`:`<span class="small" style="color:var(--pos);font-weight:700">✓ Dah WA untuk status ni</span> <button class="sm" onclick="markSent(false)">Batal</button>`}</div>
+    <div class="tpl-pick" style="margin-top:10px">${DB.tpl.map(t=>`<button class="${t.id===tplSel?'on':''}" onclick="tplSel='${t.id}';rDetail()">${esc(t.nm)}</button>`).join('')}</div>
+    <textarea id="msg" style="min-height:220px">${esc(fill(DB.tpl.find(t=>t.id===tplSel).txt,o))}</textarea>
     <div class="row" style="margin-top:8px">
-      <button class="sm" onclick="copy(val('msg'))">Salin</button>
-      <span class="spacer"></span>
+      <button class="sm" onclick="copy(val('msg'))">Salin</button><span class="spacer"></span>
       <button class="wa" onclick="sendWa()">Hantar WhatsApp</button>
     </div>
-    <div class="small muted" style="margin-top:6px">Mesej boleh diedit dulu sebelum hantar. Ubah template asal dalam tab <b>Template WhatsApp</b>.</div>
+    <div class="small muted" style="margin-top:6px">Semak & edit mesej dulu (nota HQ kadang-kadang ada istilah dalaman).</div>
   </div>
-  ${c.log?.length?`<div class="card"><h2>Sejarah</h2><div class="log">${[...c.log].reverse().map(l=>`<div><span class="muted">${new Date(l.t).toLocaleString('ms-MY',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'})}</span> · ${esc(l.m)}</div>`).join('')}</div></div>`:''}`;
+  <div class="card"><h2>Update HQ</h2>
+    ${ups.length?`<div class="tl">${ups.map(u=>`<div class="it"><div class="h">${u.lbl?`<span class="st" style="background:${esc(u.lbl.bg)};color:${esc(u.lbl.fg)}">${esc(u.lbl.name)}</span>`:''}<span>${fmtDT(u.at)}${u.by?' · '+esc(u.by):''}</span></div>${u.txt?`<div class="t">${esc(u.txt)}</div>`:''}</div>`).join('')}</div>`
+      :`<div class="muted small">${o.labelId?'Tekan ⟳ Nota HQ untuk ambil.':'Belum ada update dari HQ.'}</div>`}
+  </div>
+  <div class="card"><h2>Nota saya</h2>
+    <textarea id="myNote" placeholder="Nota peribadi (simpan dalam phone ni sahaja)" onchange="DB.notes[curId]=this.value;save();toast('Nota disimpan')">${esc(DB.notes[o.id]||'')}</textarea>
+  </div>
+  ${o.form?.notes?`<div class="card"><details><summary>Maklumat pelanggan (borang)</summary><div class="pre" style="margin-top:8px">${esc(o.form.notes)}</div></details></div>`:''}`;
 }
-function quickStatus(s){
-  const c=getC(); if(s===c.status) return;
-  c.status=s; c._prevStatus=s; c.updated=new Date().toISOString(); c.log=c.log||[]; c.log.push({t:c.updated,m:'Status → '+stName(s)});
-  save(); tplSel=DB.tpl.find(t=>t.id===s)?s:tplSel;
-  if((s==='taklayak'&&!(c.reasons?.length||c.reasonOther))||(s==='dokumen'&&!(c.docsMissing?.length||c.docOther))||(s==='lulus'&&!c.approved)){
-    toast(s==='lulus'?'Isi jumlah lulus':s==='dokumen'?'Tanda dokumen yang kurang':'Tanda sebab tak layak'); go('form'); return;
-  }
-  toast('Status dikemaskini'); rDetail();
-}
-function bullets(arr){ return arr.filter(Boolean).map(x=>'• '+x).join('\n'); }
-function fill(txt,c){
+function fill(txt,o){
   const s=DB.settings;
   const agent=s.sign||[s.agentName,s.agentPhone].filter(Boolean).join('\n');
-  const map={
-    nama:(c.name||'').split(' ').slice(0,2).join(' '), nama_penuh:c.name||'',
-    jumlah:rm(c.amount), jumlah_lulus:rm(c.approved||c.amount), produk:c.product||'',
-    tempoh:c.tenure?c.tenure+' tahun':'', ansuran:installment(c)?'RM'+rm(installment(c)):'',
-    dokumen:bullets([...(c.docsMissing||[]),c.docOther])||'• (sila nyatakan dokumen)',
-    sebab:bullets([...(c.reasons||[]),c.reasonOther])||'• (sila nyatakan sebab)',
-    agent, ic:c.ic||'', majikan:c.employer||''
-  };
-  return txt.replace(/\{(\w+)\}/g,(m,k)=>k in map?map[k]:m).replace(/  +/g,' ').replace(/\n{3,}/g,'\n\n').trim();
+  const nm=(o.name||'').toLowerCase().replace(/\b\w/g,c=>c.toUpperCase());
+  const short=nm.split(/\s+(bin|binti|bt|bte|b\.|a\/l|a\/p)\s+/i)[0].split(' ').slice(0,2).join(' ');
+  const map={nama:short,nama_penuh:nm,no_order:o.no||'',status:lblName(o)||'Submitted',nota:bullets(hqNote(o))||'• (tiada nota dari HQ)',ic:o.form?.ic||'',agent};
+  return txt.replace(/\{(\w+)\}/g,(m,k)=>k in map?map[k]:m).replace(/\n{3,}/g,'\n\n').trim();
 }
 function sendWa(){
-  const c=getC(), n=waNum(c.phone);
+  const o=DB.orders[curId], n=waNum(o.phone);
   if(n.length<10){ toast('No. telefon tak sah'); return; }
   window.open('https://wa.me/'+n+'?text='+encodeURIComponent($('msg').value),'_blank');
-  c.log=c.log||[]; c.log.push({t:new Date().toISOString(),m:'WhatsApp dihantar: '+DB.tpl.find(t=>t.id===tplSel).nm}); save();
+  DB.sent[o.id]=o.labelId||''; save(); setTimeout(rDetail,300);
 }
-function infoText(c){
+function markSent(on){ const o=DB.orders[curId]; if(on) DB.sent[o.id]=o.labelId||''; else delete DB.sent[o.id]; save(); rDetail(); }
+async function refreshOne(){ const o=DB.orders[curId]; try{ toast('Ambil nota HQ…'); await fetchUpdates(o); save(); tplSel=null; rDetail(); toast('Dikemaskini'); }catch(e){ toast(e.message,3500); } }
+function infoText(o){
   const L=(l,v)=>v?`${l}: ${v}\n`:'';
-  return (L('Nama',c.name)+L('No. IC',c.ic)+L('No. Tel',c.phone)+L('Majikan',c.employer)+L('Sektor',c.sector)+
-    L('Gaji kasar',c.grossIncome&&'RM'+rm(c.grossIncome))+L('Gaji bersih',c.netIncome&&'RM'+rm(c.netIncome))+
-    L('Komitmen',c.commitment&&'RM'+rm(c.commitment))+L('Produk',c.product)+
-    L('Jumlah mohon',c.amount&&'RM'+rm(c.amount))+L('Tempoh',c.tenure&&c.tenure+' tahun')+L('Catatan',c.note)).trim();
+  return (L('Nama',o.name)+L('No. IC',o.form?.ic)+L('No. Tel',o.phone)+L('Submission','#'+o.no)+L('Status',lblName(o)||'Submitted')+L('Nota HQ',hqNote(o))).trim();
 }
 
 // ===== Template =====
 function rTpl(){
+  const allL=[...new Set([...DB.labels.map(l=>l.name)])];
   $('app').innerHTML=`
-  <div class="card small">Kod yang boleh guna dalam template (akan diganti automatik):<br>
-  <code>{nama}</code> <code>{nama_penuh}</code> <code>{jumlah}</code> <code>{jumlah_lulus}</code> <code>{produk}</code> <code>{tempoh}</code> <code>{ansuran}</code> <code>{dokumen}</code> <code>{sebab}</code> <code>{majikan}</code> <code>{agent}</code></div>
+  <div class="card small">Template dipilih automatik ikut label HQ. Kod yang diganti automatik:<br>
+  <code>{nama}</code> <code>{nama_penuh}</code> <code>{nota}</code> (nota HQ terkini) <code>{status}</code> <code>{no_order}</code> <code>{agent}</code></div>
   ${DB.tpl.map((t,i)=>`<div class="card">
     <div class="row"><input value="${esc(t.nm)}" onchange="DB.tpl[${i}].nm=this.value;save()" style="flex:1;font-weight:700">
-    ${DEFAULT_TPL.some(d=>d.id===t.id)?'':`<button class="sm danger" onclick="DB.tpl.splice(${i},1);save();rTpl()">Padam</button>`}</div>
+    <button class="sm danger" onclick="if(confirm('Padam template?')){DB.tpl.splice(${i},1);save();rTpl()}">Padam</button></div>
     <textarea style="min-height:150px;margin-top:8px" onchange="DB.tpl[${i}].txt=this.value;save();toast('Template disimpan')">${esc(t.txt)}</textarea>
+    <details style="margin-top:6px"><summary class="small">Guna automatik untuk label: ${esc((t.labels||[]).filter(Boolean).join(', ')||'—')}</summary>
+      <div class="row" style="margin-top:6px">${allL.map(n=>`<label style="margin:0;display:inline-flex;gap:5px;align-items:center;font-weight:500;color:var(--ink);background:var(--chip);padding:5px 9px;border-radius:999px"><input type="checkbox" style="width:auto" ${(t.labels||[]).includes(n)?'checked':''} onchange="setTplLabel(${i},'${esc(n)}',this.checked)">${esc(n)}</label>`).join('')||'<span class="muted small">Sync dulu untuk senarai label.</span>'}</div>
+    </details>
   </div>`).join('')}
   <div class="row"><button onclick="if(confirm('Kembalikan semua template asal?')){DB.tpl=structuredClone(DEFAULT_TPL);save();rTpl();}">Reset template asal</button>
-  <span class="spacer"></span><button class="pri" onclick="DB.tpl.push({id:uid(),nm:'Template baru',txt:'Salam {nama},\\n\\n\\n{agent}'});save();rTpl()">+ Template baru</button></div>`;
+  <span class="spacer"></span><button class="pri" onclick="DB.tpl.push({id:uid(),nm:'Template baru',labels:[],txt:'Salam {nama},\\n\\n\\n{agent}'});save();rTpl()">+ Template baru</button></div>`;
+}
+function setTplLabel(i,n,on){
+  DB.tpl.forEach((t,j)=>{ t.labels=(t.labels||[]).filter(x=>x!==n); });
+  if(on) DB.tpl[i].labels.push(n);
+  save(); rTpl();
 }
 
 // ===== Tetapan =====
 function rSet(){
-  const s=DB.settings;
+  const s=DB.settings, ss=DB.session;
   $('app').innerHTML=`
-  <div class="card"><h2>Maklumat agent</h2>
-    <div class="grid2">
-      <div><label>Nama</label><input id="s_name" value="${esc(s.agentName)}"></div>
-      <div><label>No. telefon</label><input id="s_phone" type="tel" value="${esc(s.agentPhone)}"></div>
-    </div>
-    <label>Tandatangan mesej (ganti <code>{agent}</code>; kosong = nama + telefon)</label>
-    <textarea id="s_sign" placeholder="cth: Lukman | Ejen Pembiayaan&#10;0123456789">${esc(s.sign)}</textarea>
+  <div class="card"><h2>Akaun ejenplus</h2>
+    ${ss?.refresh?`<div class="small">Disambung sebagai <b>${esc(ss.agentName||ss.email)}</b> ${ss.agentCode?'('+esc(ss.agentCode)+')':''}<br><span class="muted">${esc(ss.agency||'')}</span></div>
+      <div class="row" style="margin-top:10px"><button class="pri" onclick="sync()">⟳ Sync sekarang</button><span class="spacer"></span><button class="danger sm" onclick="logout()">Log keluar</button></div>`
+    :`<p class="small muted">Login sekali sahaja. Password tak disimpan, cuma token sesi dalam phone ni.</p>
+      <label>Email</label><input id="l_email" type="email" autocomplete="username" value="${esc(ss?.email||'')}">
+      <label>Password</label><input id="l_pass" type="password" autocomplete="current-password">
+      <div class="row" style="margin-top:10px"><span class="spacer"></span><button class="pri" id="l_btn" onclick="doLogin()">Login & Sync</button></div>`}
+  </div>
+  <div class="card"><h2>Tandatangan mesej</h2>
+    <div class="row"><div style="flex:1;min-width:140px"><label>Nama</label><input id="s_name" value="${esc(s.agentName)}"></div>
+    <div style="flex:1;min-width:140px"><label>No. telefon</label><input id="s_phone" type="tel" value="${esc(s.agentPhone)}"></div></div>
+    <label>Tandatangan penuh (ganti <code>{agent}</code>; kosong = nama + telefon)</label>
+    <textarea id="s_sign" placeholder="cth: Lukman | Jom Consult Solutions&#10;0123456789">${esc(s.sign)}</textarea>
     <div class="row" style="margin-top:10px"><span class="spacer"></span><button class="pri" onclick="DB.settings={agentName:val('s_name'),agentPhone:val('s_phone'),sign:$('s_sign').value.trim()};save();toast('Disimpan')">Simpan</button></div>
   </div>
-  <div class="card"><h2>Backup data</h2>
-    <p class="small muted">Data klien disimpan dalam browser phone ni sahaja (tak dihantar ke mana-mana). Buat backup selalu, terutama sebelum tukar phone atau clear browser.</p>
-    <div class="row"><button onclick="exportData()">⬇ Backup (.json)</button><button onclick="$('importFile').click()">⬆ Import backup</button></div>
-  </div>
-  <div class="card small muted">${DB.clients.length} klien · ${DB.tpl.length} template</div>`;
+  <div class="card"><h2>Backup</h2>
+    <p class="small muted">Data kes boleh ditarik semula dengan Sync. Backup untuk simpan template, nota saya & rekod siapa dah di-WhatsApp.</p>
+    <div class="row"><button onclick="exportData()">⬇ Backup</button><button onclick="$('importFile').click()">⬆ Import</button></div>
+  </div>`;
+}
+async function doLogin(){
+  const e=val('l_email'), p=$('l_pass').value;
+  if(!e||!p){ toast('Isi email & password'); return; }
+  $('l_btn').disabled=true; $('l_btn').textContent='Login…';
+  try{ await login(e,p); toast('Berjaya login'); go('list'); sync(); }
+  catch(err){ toast('Login gagal: '+err.message,4000); $('l_btn').disabled=false; $('l_btn').textContent='Login & Sync'; }
+}
+function logout(){
+  if(!confirm('Log keluar dari ejenplus? Data kes dalam phone ni akan dipadam (template & nota kekal).')) return;
+  const tok=DB.session?.access; fetch(SB+'/auth/v1/logout',{method:'POST',headers:{apikey:SB_KEY,Authorization:'Bearer '+tok}}).catch(()=>{});
+  DB.session=null; DB.orders={}; DB.lastSync=null; save(); render();
 }
 function exportData(){
-  const blob=new Blob([JSON.stringify(DB,null,1)],{type:'application/json'});
-  const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='klien-loan-'+today()+'.json'; a.click();
+  const {session,orders,...keep}=DB;
+  const blob=new Blob([JSON.stringify(keep,null,1)],{type:'application/json'});
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='klien-loan-backup-'+new Date().toISOString().slice(0,10)+'.json'; a.click();
   setTimeout(()=>URL.revokeObjectURL(a.href),2000);
 }
 $('importFile').onchange=e=>{
   const f=e.target.files[0]; if(!f) return;
   const r=new FileReader(); r.onload=()=>{
-    try{ const d=JSON.parse(r.result); if(!Array.isArray(d.clients)) throw 0;
-      const ids=new Set(DB.clients.map(c=>c.id)); let n=0;
-      d.clients.forEach(c=>{ if(!ids.has(c.id)){DB.clients.push(c);n++;} });
-      if(d.tpl&&confirm('Guna juga template dari fail backup?')) DB.tpl=d.tpl;
-      if(d.settings&&!DB.settings.agentName) DB.settings=d.settings;
-      save(); toast(n+' klien diimport'); render();
+    try{ const d=JSON.parse(r.result);
+      if(d.tpl) DB.tpl=d.tpl; Object.assign(DB.sent,d.sent||{}); Object.assign(DB.notes,d.notes||{}); if(d.settings) DB.settings=d.settings;
+      save(); toast('Backup diimport'); render();
     }catch(err){ toast('Fail tak sah'); }
   }; r.readAsText(f); e.target.value='';
 };
 
 render();
+if(DB.session?.refresh && (!DB.lastSync || Date.now()-new Date(DB.lastSync).getTime()>30*60000)) sync();
 if('serviceWorker' in navigator && window.isSecureContext && location.protocol!=='file:') navigator.serviceWorker.register('sw.js').catch(()=>{});
 </script>
 </body>

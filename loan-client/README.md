@@ -1,15 +1,12 @@
 # Klien Loan
 
-App satu fail (`index.html`) untuk rekod klien pembiayaan yang dihantar melalui ejenplus, dan WhatsApp klien dengan cepat ikut status permohonan.
+App untuk WhatsApp klien ikut status kes dalam **ejenplus** (agent.ejenplus.com).
 
 **Cara guna**
-1. Tekan **+** → isi nama, no. telefon, gaji, komitmen, jumlah mohon & link order ejenplus. App kira anggaran ansuran & DSR.
-2. Buka klien → **Tukar status** (Baru, Dokumen Kurang, Dah Submit, Lulus, Tak Layak, Batal/KIV).
-   - Tak Layak → tanda sebab (DSR tinggi, CCRIS, AKPK, majikan bukan panel…)
-   - Dokumen Kurang → tanda dokumen yang belum ada
-3. Pilih template → mesej siap diisi nama, jumlah, sebab/dokumen → **Hantar WhatsApp**.
-4. **Salin info klien** untuk paste masa isi borang ejenplus.
-5. Template boleh diubah dalam tab **Template WhatsApp**. Isi nama & tandatangan dalam **Tetapan**.
-6. Data disimpan dalam browser phone sahaja — **Backup** selalu.
+1. Tab **Tetapan** → login dengan akaun ejenplus (sekali sahaja; password tak disimpan, cuma token sesi).
+2. Tekan **⟳ Sync** → semua submission, label HQ (Case Layak, Case Tak Layak, Checking Q&A…) dan nota HQ ditarik.
+3. Senarai **Perlu WhatsApp** = klien yang status berubah tapi belum dimaklumkan.
+4. Buka klien → template dipilih automatik ikut label. Nota HQ (sebab tak layak / dokumen diperlukan) masuk sebagai `{nota}`. Edit kalau perlu → **Hantar WhatsApp**.
+5. Ubah template & label mana guna template mana dalam tab **Template WhatsApp**.
 
-Boleh "Add to Home Screen" di iPhone/Android dan guna tanpa internet.
+Data kes disimpan dalam browser phone sahaja dan tak masuk repo ni. App auto-sync bila dibuka (jika > 30 minit sejak sync terakhir).
