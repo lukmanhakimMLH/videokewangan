@@ -31,8 +31,8 @@ html,body{overflow-x:hidden;margin:0;background:var(--bg);color:var(--ink);font:
 header{position:sticky;top:0;z-index:5;background:var(--brand);color:var(--brand-ink);padding:12px 16px;padding-top:max(12px,env(safe-area-inset-top));display:flex;align-items:center;gap:8px}
 header h1{font-size:17px;margin:0;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 header button{background:transparent;color:inherit;border:1px solid currentColor}
-nav.tabs{display:flex;gap:4px;padding:8px 16px;background:var(--card);border-bottom:1px solid var(--line)}
-nav.tabs button{background:transparent;border:0;color:var(--muted);padding:8px 12px;border-radius:8px}
+nav.tabs{display:flex;gap:2px;padding:8px 10px;overflow-x:auto;scrollbar-width:none;background:var(--card);border-bottom:1px solid var(--line)}
+nav.tabs button{background:transparent;border:0;color:var(--muted);padding:8px 4px;border-radius:8px;white-space:nowrap;flex:1 0 auto;justify-content:center;font-size:13px}
 nav.tabs button.on{background:var(--brand-soft);color:var(--brand)}
 main{max-width:760px;margin:0 auto;padding:16px;padding-bottom:calc(40px + env(safe-area-inset-bottom))}
 .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;box-shadow:var(--shadow);margin-bottom:12px}
@@ -62,6 +62,23 @@ h2{font-size:16px;margin:0 0 6px}
 .client .sub{font-size:13px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .client .info{flex:1;min-width:0}
 .st{display:inline-block;font-size:12px;font-weight:700;padding:2px 9px;border-radius:999px;white-space:nowrap;background:var(--chip);color:var(--muted)}
+.wt{display:inline-block;font-size:11px;font-weight:700;padding:1px 7px;border-radius:999px;margin-top:4px}
+.wt.yes{background:#dcf5e6;color:#11763a} .wt.no{background:#fff2d9;color:#8a5300}
+@media (prefers-color-scheme: dark){.wt.yes{background:#11331f;color:#6fe0a0}.wt.no{background:#3a2a0e;color:#f5c26b}}
+.wabar{display:flex;align-items:center;gap:10px;margin-top:12px;padding:10px 12px;border-radius:12px;background:var(--bg)}
+.wabar.done{background:#dcf5e6;color:#11763a}
+@media (prefers-color-scheme: dark){.wabar.done{background:#11331f;color:#6fe0a0}}
+.stg{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:10px}
+.stg button{justify-content:center;font-size:13px;padding:8px 6px;text-align:center}
+.stg button.on.ap{background:var(--pos);border-color:var(--pos);color:#fff}
+.stg button.on.pr{background:var(--warn);border-color:var(--warn);color:#fff}
+.stg button.cx{color:var(--neg)}
+.kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px}
+.kpi{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:8px 10px}
+.kpi .l{font-size:12px;color:var(--muted)} .kpi .v{font-size:17px;font-weight:700;white-space:nowrap}
+.comm{display:flex;gap:8px;align-items:center;margin-top:10px}
+.comm input{flex:1;min-width:0}
+.paid{background:var(--pos);border-color:var(--pos);color:#fff}
 .kv{display:grid;grid-template-columns:auto 1fr;gap:4px 12px;font-size:14px}
 .kv div:nth-child(odd){color:var(--muted)}
 .tpl-pick{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:6px;margin-bottom:8px}
@@ -89,8 +106,10 @@ code{background:var(--chip);padding:1px 5px;border-radius:5px;font-size:13px}
 </header>
 <nav class="tabs" id="tabs">
   <button data-t="list" class="on" onclick="go('list')">Klien</button>
-  <button data-t="tpl" onclick="go('tpl')">Template WhatsApp</button>
+  <button data-t="layak" onclick="go('layak')">Case Layak</button>
+  <button data-t="tpl" onclick="go('tpl')">Template</button>
   <button data-t="set" onclick="go('set')">Tetapan</button>
+  <button data-t="komisen" onclick="go('komisen')">Komisen</button>
 </nav>
 <div id="syncBar" style="display:none;padding:6px 16px;background:var(--card);border-bottom:1px solid var(--line)" class="small"><span id="syncTxt"></span><div class="bar"><div id="syncPct"></div></div></div>
 <main id="app"></main>
@@ -156,7 +175,7 @@ let DB=load();
 function load(){
   let d=null; try{ d=JSON.parse(localStorage.getItem(KEY)); }catch(e){}
   d=d||{};
-  d.orders=d.orders||{}; d.sent=d.sent||{}; d.notes=d.notes||{}; d.labels=d.labels||[];
+  d.orders=d.orders||{}; d.sent=d.sent||{}; if(!d.sentManual){ d.sent={}; d.sentManual=true; } d.notes=d.notes||{}; d.labels=d.labels||[]; d.stage=d.stage||{}; d.comm=d.comm||{};
   d.tpl=d.tpl||structuredClone(DEFAULT_TPL); d.settings=d.settings||{}; d.session=d.session||null;
   return d;
 }
@@ -176,6 +195,33 @@ async function copy(txt){ try{ await navigator.clipboard.writeText(txt); toast('
 const lblName=o=>o.label?.name||'';
 const chip=o=>o.label?`<span class="st" style="background:${esc(o.label.bg)};color:${esc(o.label.fg)}">${esc(o.label.name)}</span>`:`<span class="st">Submitted</span>`;
 const needWa=o=>(o.labelId||'')!==(DB.sent[o.id]??null);
+// Kes tak layak yang dah di-WhatsApp -> Arkib (muncul semula jika HQ tukar label)
+const HIDE_LABELS=['Case Tak Layak','Tidak Berjaya Panel','Loan Reject'];
+// Case Layak yang dah di-WhatsApp -> page Case Layak. Client Cancel -> Arkib.
+const STAGES={proses:'Tengah Proses Loan',approve:'Approve',cancel:'Client Cancel'};
+const stageOf=o=>DB.stage[o.id]?.s||'';
+const archived=o=>stageOf(o)==='cancel'||(!stageOf(o)&&HIDE_LABELS.includes(lblName(o))&&!needWa(o));
+const inLayak=o=>!archived(o)&&(['proses','approve'].includes(stageOf(o))||(lblName(o)==='Case Layak'&&!needWa(o)));
+const stageTag=o=>{const s=stageOf(o);return s==='approve'?'<span class="wt yes">✅ Approve</span>':s==='proses'?'<span class="wt no">⏳ Tengah Proses</span>':s==='cancel'?'<span class="wt" style="background:var(--chip);color:var(--neg)">✖ Client Cancel</span>':'<span class="wt" style="background:var(--brand-soft);color:var(--brand)">Baru</span>';};
+const rmF=n=>'RM'+Number(n||0).toLocaleString('ms-MY',{minimumFractionDigits:2,maximumFractionDigits:2});
+const numV=v=>{const n=parseFloat(String(v??'').replace(/[^0-9.]/g,''));return isNaN(n)?0:n;};
+function setStage(id,st){
+  const o=DB.orders[id];
+  if(st==='cancel'&&!confirm('Client cancel? Kes '+o.name+' akan dipindah ke Arkib.')) return false;
+  if(!st||DB.stage[id]?.s===st) delete DB.stage[id]; else DB.stage[id]={s:st,at:new Date().toISOString()};
+  save();
+  toast(!DB.stage[id]?'Status dibuang':st==='cancel'?'Client cancel · dipindah ke Arkib':st==='approve'?'Approve ✅ · boleh isi komisen dalam tab Komisen':'Tengah proses loan');
+  return true;
+}
+function stageBtns(o,after){
+  const s=stageOf(o);
+  return `<div class="stg">
+    <button class="${s==='approve'?'on ap':''}" onclick="event.stopPropagation();setStage('${o.id}','approve')&&${after}">✅ Approve</button>
+    <button class="${s==='proses'?'on pr':''}" onclick="event.stopPropagation();setStage('${o.id}','proses')&&${after}">⏳ Tengah Proses Loan</button>
+    <button class="cx" onclick="event.stopPropagation();setStage('${o.id}','cancel')&&${after}">✖ Client Cancel</button>
+  </div>`;
+}
+const waTag=o=>needWa(o)?'<span class="wt no">Belum WA</span>':'<span class="wt yes">✓ Dah WA</span>';
 
 // ===== API =====
 async function sbFetch(path,{body,auth=true,method}={}){
@@ -215,7 +261,6 @@ async function sync(){
   if(syncing) return;
   if(!DB.session?.refresh){ toast('Login ejenplus dulu'); go('set'); return; }
   syncing=true; $('syncBtn').disabled=true;
-  const first=!DB.lastSync;
   try{
     progress('Ambil senarai submission…',5);
     try{ const lb=await sbFetch('/rest/v1/rpc/get_agency_labels',{body:{p_agency_id:DB.session.agencyId}}); if(Array.isArray(lb)) DB.labels=lb.map(l=>({id:l.id,name:l.label_name,bg:l.label_colour,fg:l.text_colour})); }catch(e){}
@@ -251,15 +296,11 @@ async function sync(){
       try{ await fetchUpdates(o); }catch(e){}
       done++; progress(`Ambil nota HQ… ${done}/${needUpd.length}`,50+50*done/Math.max(needUpd.length,1));
     });
-    if(first){ // kali pertama: anggap kes lama (>3 hari) dah dimaklumkan
-      const cut=Date.now()-3*864e5;
-      for(const o of Object.values(DB.orders)){ const last=lastUpdate(o)?.at||o.submitted; if(new Date(last).getTime()<cut) DB.sent[o.id]=o.labelId||''; }
-    }
     DB.lastSync=new Date().toISOString(); save();
     const n=Object.values(DB.orders).filter(needWa).length;
     toast(`Sync siap · ${all.length} kes · ${n} perlu WhatsApp`,3000);
   }catch(e){ toast('Sync gagal: '+e.message,4000); }
-  finally{ syncing=false; $('syncBtn').disabled=false; progress(''); render(); }
+  finally{ syncing=false; $('syncBtn').disabled=false; progress(''); if(view!=='detail') render(); }
 }
 async function fetchUpdates(o){
   const u=await sbFetch('/rest/v1/rpc/get_order_updates',{body:{p_order_id:o.id}});
@@ -277,15 +318,16 @@ function hqNote(o){
 function bullets(t){ return String(t||'').split(/\n+/).map(s=>s.replace(/^\s*([-•*·]|\d+[.)])\s*/,'').trim()).filter(s=>s&&!/^[^\p{L}]*(case\s+)?(tidak\s+|tak\s+)?layak[^\p{L}]*$/iu.test(s)).map(s=>'• '+s).join('\n'); }
 
 // ===== Routing =====
-let view='list', curId=null, filter='perlu', q='', tplSel=null;
-function go(v,id){ view=v; if(id!==undefined){ curId=id; tplSel=null; } render(); window.scrollTo(0,0); }
+let view='list', curId=null, filter='perlu', q='', tplSel=null, lfilter='semua', kfilter='semua';
+function go(v,id){ if(v!==view&&v!=='detail'&&view!=='detail') q=''; view=v; if(id!==undefined){ curId=id; tplSel=null; } render(); window.scrollTo(0,0); }
 function render(){
   document.querySelectorAll('#tabs button').forEach(b=>b.classList.toggle('on',b.dataset.t===view));
   const sub=view==='detail';
+  const TT={layak:'Case Layak',komisen:'Komisen'};
   $('tabs').style.display=sub?'none':'flex';
   $('backBtn').style.display=sub?'':'none';
-  $('title').textContent=sub?(DB.orders[curId]?.name||'Klien'):'Klien Loan';
-  ({list:rList,detail:rDetail,tpl:rTpl,set:rSet})[view]();
+  $('title').textContent=sub?(DB.orders[curId]?.name||'Klien'):(TT[view]||'Klien Loan');
+  ({list:rList,detail:rDetail,tpl:rTpl,set:rSet,layak:rLayak,komisen:rKomisen})[view]();
 }
 
 // ===== Senarai =====
@@ -294,23 +336,25 @@ function rList(){
   if(!os.length){
     $('app').innerHTML=`<div class="card empty">${DB.session?.refresh?'Tekan <b>⟳ Sync</b> untuk tarik semua kes dari ejenplus.':'Sambungkan akaun ejenplus dulu.<br><br><button class="pri" onclick="go(\'set\')">Login ejenplus</button>'}</div>`; return;
   }
-  const cnt={}; os.forEach(o=>{const k=o.labelId||'';cnt[k]=(cnt[k]||0)+1;});
-  const nNeed=os.filter(needWa).length;
+  const act=os.filter(o=>!archived(o)&&!inLayak(o)), nArk=os.filter(archived).length;
+  const cnt={}; act.forEach(o=>{const k=o.labelId||'';cnt[k]=(cnt[k]||0)+1;});
+  const nNeed=act.filter(needWa).length;
   const labels=[...DB.labels.filter(l=>cnt[l.id]),...(cnt['']?[{id:'',name:'Submitted (tiada label)'}]:[])];
   $('app').innerHTML=`
   <input id="q" placeholder="Cari nama, no. tel, IC, no. submission…" value="${esc(q)}" oninput="q=this.value;rListBody()" style="margin-bottom:10px">
   <div class="chips">
     <button class="need ${filter==='perlu'?'on':''}" onclick="filter='perlu';rList()">Perlu WhatsApp (${nNeed})</button>
-    <button class="${filter==='semua'?'on':''}" onclick="filter='semua';rList()">Semua (${os.length})</button>
+    <button class="${filter==='semua'?'on':''}" onclick="filter='semua';rList()">Semua (${act.length})</button>
     ${labels.map(l=>`<button class="${filter==='L:'+l.id?'on':''}" onclick="filter='L:${l.id}';rList()">${esc(l.name)} (${cnt[l.id]})</button>`).join('')}
+    ${nArk?`<button class="${filter==='arkib'?'on':''}" onclick="filter='arkib';rList()">🗄 Arkib (${nArk})</button>`:''}
   </div>
   <div class="small muted" style="margin:-4px 0 8px">${DB.lastSync?'Sync terakhir: '+fmtDT(DB.lastSync):''}</div>
   <div id="listBody"></div>`;
   rListBody();
 }
 function rListBody(){
-  let list=Object.values(DB.orders).filter(o=>filter==='semua'?true:filter==='perlu'?needWa(o):('L:'+(o.labelId||''))===filter);
-  if(q){ const k=q.toLowerCase().replace(/[\s-]/g,''); list=list.filter(o=>[o.name,o.phone,o.form?.ic,o.no].join('|').toLowerCase().replace(/[\s-]/g,'').includes(k)); }
+  let list=Object.values(DB.orders).filter(o=>filter==='arkib'?archived(o):!archived(o)&&!inLayak(o)&&(filter==='semua'?true:filter==='perlu'?needWa(o):('L:'+(o.labelId||''))===filter));
+  if(q){ list=Object.values(DB.orders); const k=q.toLowerCase().replace(/[\s-]/g,''); list=list.filter(o=>[o.name,o.phone,o.form?.ic,o.no].join('|').toLowerCase().replace(/[\s-]/g,'').includes(k)); }
   const key=o=>lastUpdate(o)?.at||o.submitted||'';
   list.sort((a,b)=>key(b).localeCompare(key(a)));
   const shown=list.slice(0,200);
@@ -319,9 +363,71 @@ function rListBody(){
       <div class="avatar">${esc((o.name||'?')[0].toUpperCase())}${needWa(o)?'<span class="dot"></span>':''}</div>
       <div class="info"><div class="nm">${esc(o.name)}</div>
         <div class="sub">#${esc(o.no)} · ${esc(o.phone)}</div></div>
-      <div style="text-align:right;flex:none">${chip(o)}<div class="small muted" style="margin-top:3px">${fmtD(key(o))}</div></div>
+      <div style="text-align:right;flex:none">${chip(o)}<div class="small muted" style="margin-top:3px">${fmtD(key(o))}</div>${stageOf(o)==='cancel'?stageTag(o):inLayak(o)?'<span class="wt" style="background:var(--brand-soft);color:var(--brand)">→ Case Layak</span>':waTag(o)}</div>
     </div>`).join('')+(list.length>200?`<div class="empty small">+${list.length-200} lagi… guna carian</div>`:'')
-    :`<div class="empty">${filter==='perlu'?'Semua klien dah dimaklumkan 👍':'Tiada kes.'}</div>`;
+    :`<div class="empty">${filter==='perlu'?'Semua klien dah dimaklumkan 👍':filter==='arkib'?'Arkib kosong.':'Tiada kes.'}</div>`;
+}
+
+// ===== Case Layak =====
+function rLayak(){
+  const all=Object.values(DB.orders).filter(inLayak);
+  const c={semua:all.length,baru:0,proses:0,approve:0}; all.forEach(o=>c[stageOf(o)||'baru']++);
+  const F=[['semua','Semua'],['baru','Baru'],['proses','Tengah Proses'],['approve','Approve']];
+  $('app').innerHTML=`
+  <input id="q" placeholder="Cari nama, no. tel, IC…" value="${esc(q)}" oninput="q=this.value;rLayakBody()" style="margin-bottom:10px">
+  <div class="chips">${F.map(([k,n])=>`<button class="${lfilter===k?'on':''}" onclick="lfilter='${k}';rLayak()">${n} (${c[k]})</button>`).join('')}</div>
+  <div id="listBody"></div>`;
+  rLayakBody();
+}
+function rLayakBody(){
+  let list=Object.values(DB.orders).filter(inLayak).filter(o=>lfilter==='semua'||(stageOf(o)||'baru')===lfilter);
+  if(q){ const k=q.toLowerCase().replace(/[\s-]/g,''); list=list.filter(o=>[o.name,o.phone,o.form?.ic,o.no].join('|').toLowerCase().replace(/[\s-]/g,'').includes(k)); }
+  list.sort((a,b)=>(DB.stage[b.id]?.at||lastUpdate(b)?.at||b.submitted||'').localeCompare(DB.stage[a.id]?.at||lastUpdate(a)?.at||a.submitted||''));
+  $('listBody').innerHTML=list.length?list.map(o=>`
+    <div class="card" style="cursor:pointer" onclick="go('detail','${o.id}')">
+      <div class="row" style="flex-wrap:nowrap"><div class="info" style="flex:1;min-width:0"><div class="nm" style="font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(o.name)}</div>
+        <div class="small muted">#${esc(o.no)} · ${esc(o.phone)}</div></div>
+        <div style="text-align:right;flex:none">${chip(o)}<br>${stageTag(o)}</div></div>
+      ${stageBtns(o,'rLayak()')}
+    </div>`).join(''):`<div class="empty">${Object.values(DB.orders).some(inLayak)?'Tiada kes dalam kategori ni.':'Belum ada Case Layak.<br><span class="small">Case Layak masuk sini selepas kau tanda ✓ Dah WhatsApp.</span>'}</div>`;
+}
+
+// ===== Komisen =====
+function rKomisen(){
+  const recs=Object.values(DB.orders).filter(o=>DB.comm[o.id]||stageOf(o)==='approve');
+  let tot=0,paid=0; recs.forEach(o=>{const c=DB.comm[o.id];const a=numV(c?.amt);tot+=a;if(c?.paid)paid+=a;});
+  const nP=recs.filter(o=>DB.comm[o.id]?.paid).length;
+  $('app').innerHTML=`
+  <div class="kpis">
+    <div class="kpi"><div class="l">Jumlah</div><div class="v">${rmF(tot)}</div></div>
+    <div class="kpi"><div class="l">Dah dibayar</div><div class="v" style="color:var(--pos)">${rmF(paid)}</div></div>
+    <div class="kpi"><div class="l">Belum dibayar</div><div class="v" style="color:var(--warn)">${rmF(tot-paid)}</div></div>
+  </div>
+  <input id="q" placeholder="Cari klien (nama, no. tel, IC)…" value="${esc(q)}" oninput="q=this.value;rKomisenBody()" style="margin-bottom:10px">
+  <div class="chips">${[['semua','Semua ('+recs.length+')'],['belum','Belum bayar ('+(recs.length-nP)+')'],['dibayar','Dibayar ('+nP+')']].map(([k,n])=>`<button class="${kfilter===k?'on':''}" onclick="kfilter='${k}';rKomisen()">${n}</button>`).join('')}</div>
+  <div id="listBody"></div>`;
+  rKomisenBody();
+}
+function rKomisenBody(){
+  let list;
+  if(q){ const k=q.toLowerCase().replace(/[\s-]/g,''); list=Object.values(DB.orders).filter(o=>[o.name,o.phone,o.form?.ic,o.no].join('|').toLowerCase().replace(/[\s-]/g,'').includes(k)).slice(0,50); }
+  else list=Object.values(DB.orders).filter(o=>(DB.comm[o.id]||stageOf(o)==='approve')&&(kfilter==='semua'||(kfilter==='dibayar')===!!DB.comm[o.id]?.paid));
+  list.sort((a,b)=>(!!DB.comm[a.id]?.paid-!!DB.comm[b.id]?.paid)||(DB.stage[b.id]?.at||'').localeCompare(DB.stage[a.id]?.at||''));
+  $('listBody').innerHTML=list.length?list.map(o=>{const c=DB.comm[o.id]||{};return `
+    <div class="card">
+      <div class="row" style="flex-wrap:nowrap"><div style="flex:1;min-width:0;cursor:pointer" onclick="go('detail','${o.id}')"><div style="font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(o.name)}</div>
+        <div class="small muted">#${esc(o.no)} · ${esc(o.phone)}</div></div><div style="flex:none;text-align:right">${stageTag(o)}</div></div>
+      <div class="comm">
+        <input inputmode="decimal" placeholder="Komisen (RM)" value="${esc(c.amt||'')}" onchange="setComm('${o.id}',{amt:this.value.trim()})">
+        <button class="${c.paid?'paid':''}" style="flex:none" onclick="setComm('${o.id}',{paid:!${!!c.paid},paidAt:${c.paid?"''":"new Date().toISOString()"}});rKomisen()">${c.paid?'✓ Dibayar':'Belum bayar'}</button>
+      </div>
+      ${c.paid&&c.paidAt?`<div class="small muted" style="margin-top:4px">Dibayar ${fmtD(c.paidAt)}</div>`:''}
+    </div>`;}).join(''):`<div class="empty">${q?'Tiada klien dijumpai.':'Belum ada komisen.<br><span class="small">Kes yang ditanda ✅ Approve dalam Case Layak masuk sini. Boleh juga cari mana-mana klien.</span>'}</div>`;
+}
+function setComm(id,ch){
+  const c=Object.assign(DB.comm[id]||{amt:'',paid:false,paidAt:''},ch);
+  if(!c.amt&&!c.paid&&stageOf(DB.orders[id])!=='approve') delete DB.comm[id]; else DB.comm[id]=c;
+  save(); if('amt' in ch){ toast('Komisen disimpan'); rKomisen(); }
 }
 
 // ===== Butiran =====
@@ -347,10 +453,12 @@ function rDetail(){
       <button class="sm" onclick="copy(infoText(DB.orders[curId]))">Salin info</button>
       <button class="sm" onclick="refreshOne()">⟳ Nota HQ</button>
     </div>
+    ${needWa(o)?`<div class="wabar"><span style="flex:1"><b>Belum WhatsApp</b><br><span class="small muted">untuk status ${esc(lblName(o)||'Submitted')}</span></span><button class="wa" onclick="markSent(true)">✓ Tanda Dah WhatsApp</button></div>`
+      :`<div class="wabar done"><span style="flex:1"><b>✓ Dah WhatsApp</b>${archived(o)?'<br><span class="small">Kes ni dalam Arkib</span>':inLayak(o)?'<br><span class="small">Kes ni dalam page Case Layak</span>':''}</span><button class="sm" onclick="markSent(false)">Batal</button></div>`}
+    ${inLayak(o)||stageOf(o)?`<div style="margin-top:12px"><b class="small">Status Case Layak:</b> ${stageTag(o)}${stageBtns(o,'rDetail()')}</div>`:''}
   </div>
   <div class="card">
-    <div class="row"><h2 style="margin:0">Hantar WhatsApp</h2><span class="spacer"></span>
-      ${needWa(o)?`<button class="sm" onclick="markSent(true)">Tanda dah WA</button>`:`<span class="small" style="color:var(--pos);font-weight:700">✓ Dah WA untuk status ni</span> <button class="sm" onclick="markSent(false)">Batal</button>`}</div>
+    <h2 style="margin:0">Hantar WhatsApp</h2>
     <div class="tpl-pick" style="margin-top:10px">${DB.tpl.map(t=>`<button class="${t.id===tplSel?'on':''}" onclick="tplSel='${t.id}';rDetail()">${esc(t.nm)}</button>`).join('')}</div>
     <textarea id="msg" style="min-height:220px">${esc(fill(DB.tpl.find(t=>t.id===tplSel).txt,o))}</textarea>
     <div class="row" style="margin-top:8px">
@@ -380,9 +488,14 @@ function sendWa(){
   const o=DB.orders[curId], n=waNum(o.phone);
   if(n.length<10){ toast('No. telefon tak sah'); return; }
   window.open('https://wa.me/'+n+'?text='+encodeURIComponent($('msg').value),'_blank');
-  DB.sent[o.id]=o.labelId||''; save(); setTimeout(rDetail,300);
+  setTimeout(()=>toast('Dah hantar? Tekan ✓ Tanda Dah WhatsApp',3500),800);
 }
-function markSent(on){ const o=DB.orders[curId]; if(on) DB.sent[o.id]=o.labelId||''; else delete DB.sent[o.id]; save(); rDetail(); }
+function markSent(on){
+  const o=DB.orders[curId]; if(on) DB.sent[o.id]=o.labelId||''; else delete DB.sent[o.id]; save();
+  if(on&&archived(o)){ toast('Ditanda dah WhatsApp · dipindah ke Arkib'); go('list'); }
+  else if(on&&inLayak(o)){ toast('Ditanda dah WhatsApp · dipindah ke Case Layak'); go('list'); }
+  else { toast(on?'Ditanda dah WhatsApp':'Ditanda belum WhatsApp'); rDetail(); }
+}
 async function refreshOne(){ const o=DB.orders[curId]; try{ toast('Ambil nota HQ…'); await fetchUpdates(o); save(); tplSel=null; rDetail(); toast('Dikemaskini'); }catch(e){ toast(e.message,3500); } }
 function infoText(o){
   const L=(l,v)=>v?`${l}: ${v}\n`:'';
@@ -432,7 +545,7 @@ function rSet(){
     <div class="row" style="margin-top:10px"><span class="spacer"></span><button class="pri" onclick="DB.settings={agentName:val('s_name'),agentPhone:val('s_phone'),sign:$('s_sign').value.trim()};save();toast('Disimpan')">Simpan</button></div>
   </div>
   <div class="card"><h2>Backup</h2>
-    <p class="small muted">Data kes boleh ditarik semula dengan Sync. Backup untuk simpan template, nota saya & rekod siapa dah di-WhatsApp.</p>
+    <p class="small muted">Data kes boleh ditarik semula dengan Sync. Backup untuk simpan template, nota saya, rekod WhatsApp, status Case Layak & komisen.</p>
     <div class="row"><button onclick="exportData()">⬇ Backup</button><button onclick="$('importFile').click()">⬆ Import</button></div>
   </div>`;
 }
@@ -458,14 +571,18 @@ $('importFile').onchange=e=>{
   const f=e.target.files[0]; if(!f) return;
   const r=new FileReader(); r.onload=()=>{
     try{ const d=JSON.parse(r.result);
-      if(d.tpl) DB.tpl=d.tpl; Object.assign(DB.sent,d.sent||{}); Object.assign(DB.notes,d.notes||{}); if(d.settings) DB.settings=d.settings;
+      if(d.tpl) DB.tpl=d.tpl; Object.assign(DB.sent,d.sent||{}); Object.assign(DB.notes,d.notes||{}); Object.assign(DB.stage,d.stage||{}); Object.assign(DB.comm,d.comm||{}); if(d.settings) DB.settings=d.settings;
       save(); toast('Backup diimport'); render();
     }catch(err){ toast('Fail tak sah'); }
   }; r.readAsText(f); e.target.value='';
 };
 
 render();
-if(DB.session?.refresh && (!DB.lastSync || Date.now()-new Date(DB.lastSync).getTime()>30*60000)) sync();
+// Sync setiap kali app dibuka / kembali ke depan (skip jika baru sync < 1 minit)
+function autoSync(){ if(DB.session?.refresh && !syncing && (!DB.lastSync || Date.now()-new Date(DB.lastSync).getTime()>60000)) sync(); }
+autoSync();
+document.addEventListener('visibilitychange',()=>{ if(document.visibilityState==='visible') autoSync(); });
+window.addEventListener('pageshow',e=>{ if(e.persisted) autoSync(); });
 if('serviceWorker' in navigator && window.isSecureContext && location.protocol!=='file:') navigator.serviceWorker.register('sw.js').catch(()=>{});
 </script>
 </body>
