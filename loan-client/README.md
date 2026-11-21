@@ -5,7 +5,7 @@ App untuk WhatsApp klien ikut status kes dalam **ejenplus** (agent.ejenplus.com)
 **Cara guna**
 1. Tab **Tetapan** → login dengan akaun ejenplus (sekali sahaja; password tak disimpan, cuma token sesi).
 2. Tekan **⟳ Sync** → semua submission, label HQ (Case Layak, Case Tak Layak, Checking Q&A…) dan nota HQ ditarik.
-3. Senarai **Perlu WhatsApp** = klien yang status berubah tapi belum dimaklumkan.
+3. Tab **Klien → Semua**: setiap kes ada tanda Dah WA / Belum WA. Tak Layak yang dah ditanda WA → Arkib; Case Layak → tab Case Layak.
 4. Buka klien → template dipilih automatik ikut label. Nota HQ (sebab tak layak / dokumen diperlukan) masuk sebagai `{nota}`. Edit kalau perlu → **Hantar WhatsApp**.
 5. **Case Layak**: semua kes berlabel Case Layak terus masuk tab **Case Layak**. Tekan ✅ Approve / ⏳ Tengah Proses Loan / ✖ Client Cancel (cancel → Arkib).
 6. **Komisen**: kes Approve masuk sini (atau cari mana-mana klien). Isi jumlah komisen & tanda Dibayar / Belum bayar.

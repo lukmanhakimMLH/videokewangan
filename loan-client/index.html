@@ -297,8 +297,7 @@ async function sync(){
       done++; progress(`Ambil nota HQ… ${done}/${needUpd.length}`,50+50*done/Math.max(needUpd.length,1));
     });
     DB.lastSync=new Date().toISOString(); save();
-    const n=Object.values(DB.orders).filter(needWa).length;
-    toast(`Sync siap · ${all.length} kes · ${n} perlu WhatsApp`,3000);
+    toast(`Sync siap · ${all.length} kes`,3000);
   }catch(e){ toast('Sync gagal: '+e.message,4000); }
   finally{ syncing=false; $('syncBtn').disabled=false; progress(''); if(view!=='detail') render(); }
 }
@@ -318,7 +317,7 @@ function hqNote(o){
 function bullets(t){ return String(t||'').split(/\n+/).map(s=>s.replace(/^\s*([-•*·]|\d+[.)])\s*/,'').trim()).filter(s=>s&&!/^[^\p{L}]*(case\s+)?(tidak\s+|tak\s+)?layak[^\p{L}]*$/iu.test(s)).map(s=>'• '+s).join('\n'); }
 
 // ===== Routing =====
-let view='list', curId=null, filter='perlu', q='', tplSel=null, lfilter='semua', kfilter='semua';
+let view='list', curId=null, filter='semua', q='', tplSel=null, lfilter='semua', kfilter='semua';
 function go(v,id){ if(v!==view&&v!=='detail'&&view!=='detail') q=''; view=v; if(id!==undefined){ curId=id; tplSel=null; } render(); window.scrollTo(0,0); }
 function render(){
   document.querySelectorAll('#tabs button').forEach(b=>b.classList.toggle('on',b.dataset.t===view));
@@ -338,12 +337,10 @@ function rList(){
   }
   const act=os.filter(o=>!archived(o)&&!inLayak(o)), nArk=os.filter(archived).length;
   const cnt={}; act.forEach(o=>{const k=o.labelId||'';cnt[k]=(cnt[k]||0)+1;});
-  const nNeed=act.filter(needWa).length;
   const labels=[...DB.labels.filter(l=>cnt[l.id]),...(cnt['']?[{id:'',name:'Submitted (tiada label)'}]:[])];
   $('app').innerHTML=`
   <input id="q" placeholder="Cari nama, no. tel, IC, no. submission…" value="${esc(q)}" oninput="q=this.value;rListBody()" style="margin-bottom:10px">
   <div class="chips">
-    <button class="need ${filter==='perlu'?'on':''}" onclick="filter='perlu';rList()">Perlu WhatsApp (${nNeed})</button>
     <button class="${filter==='semua'?'on':''}" onclick="filter='semua';rList()">Semua (${act.length})</button>
     ${labels.map(l=>`<button class="${filter==='L:'+l.id?'on':''}" onclick="filter='L:${l.id}';rList()">${esc(l.name)} (${cnt[l.id]})</button>`).join('')}
     ${nArk?`<button class="${filter==='arkib'?'on':''}" onclick="filter='arkib';rList()">🗄 Arkib (${nArk})</button>`:''}
@@ -353,7 +350,7 @@ function rList(){
   rListBody();
 }
 function rListBody(){
-  let list=Object.values(DB.orders).filter(o=>filter==='arkib'?archived(o):!archived(o)&&!inLayak(o)&&(filter==='semua'?true:filter==='perlu'?needWa(o):('L:'+(o.labelId||''))===filter));
+  let list=Object.values(DB.orders).filter(o=>filter==='arkib'?archived(o):!archived(o)&&!inLayak(o)&&(filter==='semua'?true:('L:'+(o.labelId||''))===filter));
   if(q){ list=Object.values(DB.orders); const k=q.toLowerCase().replace(/[\s-]/g,''); list=list.filter(o=>[o.name,o.phone,o.form?.ic,o.no].join('|').toLowerCase().replace(/[\s-]/g,'').includes(k)); }
   const key=o=>lastUpdate(o)?.at||o.submitted||'';
   list.sort((a,b)=>key(b).localeCompare(key(a)));
@@ -365,7 +362,7 @@ function rListBody(){
         <div class="sub">#${esc(o.no)} · ${esc(o.phone)}</div></div>
       <div style="text-align:right;flex:none">${chip(o)}<div class="small muted" style="margin-top:3px">${fmtD(key(o))}</div>${stageOf(o)==='cancel'?stageTag(o):inLayak(o)?'<span class="wt" style="background:var(--brand-soft);color:var(--brand)">→ Case Layak</span>':waTag(o)}</div>
     </div>`).join('')+(list.length>200?`<div class="empty small">+${list.length-200} lagi… guna carian</div>`:'')
-    :`<div class="empty">${filter==='perlu'?'Semua klien dah dimaklumkan 👍':filter==='arkib'?'Arkib kosong.':'Tiada kes.'}</div>`;
+    :`<div class="empty">${filter==='arkib'?'Arkib kosong.':'Tiada kes.'}</div>`;
 }
 
 // ===== Case Layak =====
