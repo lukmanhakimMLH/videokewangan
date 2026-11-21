@@ -9,4 +9,4 @@ App untuk WhatsApp klien ikut status kes dalam **ejenplus** (agent.ejenplus.com)
 4. Buka klien → template dipilih automatik ikut label. Nota HQ (sebab tak layak / dokumen diperlukan) masuk sebagai `{nota}`. Edit kalau perlu → **Hantar WhatsApp**.
 5. Ubah template & label mana guna template mana dalam tab **Template WhatsApp**.
 
-Data kes disimpan dalam browser phone sahaja dan tak masuk repo ni. App auto-sync bila dibuka (jika > 30 minit sejak sync terakhir).
+Data kes disimpan dalam browser phone sahaja dan tak masuk repo ni. App auto-sync setiap kali dibuka atau kembali ke depan (kecuali baru sync < 1 minit).

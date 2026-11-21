@@ -259,7 +259,7 @@ async function sync(){
     const n=Object.values(DB.orders).filter(needWa).length;
     toast(`Sync siap · ${all.length} kes · ${n} perlu WhatsApp`,3000);
   }catch(e){ toast('Sync gagal: '+e.message,4000); }
-  finally{ syncing=false; $('syncBtn').disabled=false; progress(''); render(); }
+  finally{ syncing=false; $('syncBtn').disabled=false; progress(''); if(view!=='detail') render(); }
 }
 async function fetchUpdates(o){
   const u=await sbFetch('/rest/v1/rpc/get_order_updates',{body:{p_order_id:o.id}});
@@ -465,7 +465,11 @@ $('importFile').onchange=e=>{
 };
 
 render();
-if(DB.session?.refresh && (!DB.lastSync || Date.now()-new Date(DB.lastSync).getTime()>30*60000)) sync();
+// Sync setiap kali app dibuka / kembali ke depan (skip jika baru sync < 1 minit)
+function autoSync(){ if(DB.session?.refresh && !syncing && (!DB.lastSync || Date.now()-new Date(DB.lastSync).getTime()>60000)) sync(); }
+autoSync();
+document.addEventListener('visibilitychange',()=>{ if(document.visibilityState==='visible') autoSync(); });
+window.addEventListener('pageshow',e=>{ if(e.persisted) autoSync(); });
 if('serviceWorker' in navigator && window.isSecureContext && location.protocol!=='file:') navigator.serviceWorker.register('sw.js').catch(()=>{});
 </script>
 </body>
