@@ -1,0 +1,454 @@
+<!doctype html>
+<html lang="ms">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#1d4ed8">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Klien Loan">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>Klien Loan</title>
+<style>
+:root{
+  --bg:#f3f5f9; --card:#fff; --ink:#141b2b; --muted:#5f6b80; --line:#dde2ec;
+  --brand:#1d4ed8; --brand-ink:#fff; --brand-soft:#e5ecfc; --chip:#eef1f6;
+  --pos:#15803d; --neg:#c0392b; --warn:#b26a00; --wa:#1fa855;
+  --shadow:0 1px 2px rgba(0,0,0,.06),0 2px 8px rgba(0,0,0,.04);
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    --bg:#0d1119; --card:#161c28; --ink:#e6ebf4; --muted:#98a3b8; --line:#273044;
+    --brand:#6b93f5; --brand-ink:#0b1020; --brand-soft:#1c2740; --chip:#1e2638;
+    --pos:#4fd18b; --neg:#ff7b6b; --warn:#f0b04a; --wa:#34c46e; --shadow:none;
+  }
+}
+*{box-sizing:border-box}
+html,body{overflow-x:hidden;margin:0;background:var(--bg);color:var(--ink);font:15px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+header{position:sticky;top:0;z-index:5;background:var(--brand);color:var(--brand-ink);padding:12px 16px;padding-top:max(12px,env(safe-area-inset-top));display:flex;align-items:center;gap:10px}
+header h1{font-size:17px;margin:0;flex:1}
+header button{background:transparent;color:inherit;border:1px solid currentColor}
+nav.tabs{display:flex;gap:4px;padding:8px 16px;background:var(--card);border-bottom:1px solid var(--line)}
+nav.tabs button{background:transparent;border:0;color:var(--muted);padding:8px 12px;border-radius:8px}
+nav.tabs button.on{background:var(--brand-soft);color:var(--brand)}
+main{max-width:760px;margin:0 auto;padding:16px;padding-bottom:calc(40px + env(safe-area-inset-bottom))}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;box-shadow:var(--shadow);margin-bottom:12px}
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.spacer{flex:1}
+button,.btn{font:inherit;font-weight:600;padding:9px 14px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:6px}
+button.pri{background:var(--brand);border-color:var(--brand);color:var(--brand-ink)}
+button.wa,.btn.wa{background:var(--wa);border-color:var(--wa);color:#fff}
+button.danger{color:var(--neg);border-color:var(--neg);background:transparent}
+button.sm,.btn.sm{padding:5px 10px;font-size:13px}
+input,select,textarea{font:inherit;font-size:16px;width:100%;padding:9px 10px;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink)}
+textarea{resize:vertical;min-height:80px}
+label{display:block;font-size:12px;color:var(--muted);margin:10px 0 3px;font-weight:600}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:0 10px}
+@media (max-width:420px){.grid2{grid-template-columns:1fr}}
+h2{font-size:16px;margin:0 0 6px}
+h3{font-size:14px;margin:14px 0 4px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
+.muted{color:var(--muted)} .small{font-size:13px}
+.chips{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px;margin-bottom:10px;scrollbar-width:none}
+.chips button{flex:none;border-radius:999px;padding:6px 12px;font-size:13px;background:var(--chip);border-color:transparent;color:var(--ink)}
+.chips button.on{background:var(--brand);color:var(--brand-ink)}
+.client{display:flex;align-items:center;gap:12px;cursor:pointer}
+.client:hover{border-color:var(--brand)}
+.avatar{width:40px;height:40px;border-radius:50%;background:var(--brand-soft);color:var(--brand);display:grid;place-items:center;font-weight:700;flex:none}
+.client .nm{font-weight:700}
+.client .sub{font-size:13px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.client .info{flex:1;min-width:0}
+.st{display:inline-block;font-size:12px;font-weight:700;padding:2px 9px;border-radius:999px;white-space:nowrap}
+.st-baru{background:#e5ecfc;color:#1d4ed8}
+.st-dokumen{background:#fff2d9;color:#8a5300}
+.st-submit{background:#ece6fd;color:#5b34c9}
+.st-lulus{background:#dcf5e6;color:#11763a}
+.st-taklayak{background:#fde4e1;color:#b42318}
+.st-batal{background:#eceef2;color:#5f6b80}
+@media (prefers-color-scheme: dark){
+  .st-baru{background:#1c2a4d;color:#9db8ff}.st-dokumen{background:#3a2a0e;color:#f5c26b}
+  .st-submit{background:#2b2150;color:#c2b1ff}.st-lulus{background:#11331f;color:#6fe0a0}
+  .st-taklayak{background:#3d1714;color:#ff9a8c}.st-batal{background:#262c38;color:#a5aec0}
+}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:12px}
+@media (max-width:480px){.kpis{grid-template-columns:repeat(2,1fr)}}
+.kpi{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:8px 10px}
+.kpi .l{font-size:12px;color:var(--muted)} .kpi .v{font-size:18px;font-weight:700}
+.tick{display:flex;flex-wrap:wrap;gap:6px}
+.tick label{margin:0;display:inline-flex;align-items:center;gap:6px;font-size:14px;font-weight:500;color:var(--ink);background:var(--chip);padding:6px 10px;border-radius:999px;cursor:pointer}
+.tick input{width:auto;margin:0}
+.kv{display:grid;grid-template-columns:auto 1fr;gap:4px 12px;font-size:14px}
+.kv div:nth-child(odd){color:var(--muted)}
+.dsr{font-weight:700}
+.dsr.ok{color:var(--pos)} .dsr.mid{color:var(--warn)} .dsr.bad{color:var(--neg)}
+.tpl-pick{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:6px;margin-bottom:8px}
+.tpl-pick button{justify-content:flex-start;font-size:13px;padding:8px 10px}
+.tpl-pick button.on{border-color:var(--brand);background:var(--brand-soft);color:var(--brand)}
+.log{font-size:13px;border-left:2px solid var(--line);padding-left:10px;margin-left:4px}
+.log div{margin-bottom:6px}
+.empty{text-align:center;color:var(--muted);padding:30px 10px}
+#toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:10px;font-size:14px;opacity:0;transition:opacity .2s;pointer-events:none;z-index:20}
+#toast.show{opacity:1}
+.fab{position:fixed;right:18px;bottom:calc(18px + env(safe-area-inset-bottom));width:56px;height:56px;border-radius:50%;font-size:28px;justify-content:center;padding:0;box-shadow:0 4px 14px rgba(0,0,0,.25);z-index:6}
+</style>
+</head>
+<body>
+<header><h1 id="title">Klien Loan</h1><button class="sm" id="backBtn" style="display:none" onclick="go('list')">← Senarai</button></header>
+<nav class="tabs" id="tabs">
+  <button data-t="list" class="on" onclick="go('list')">Klien</button>
+  <button data-t="tpl" onclick="go('tpl')">Template WhatsApp</button>
+  <button data-t="set" onclick="go('set')">Tetapan</button>
+</nav>
+<main id="app"></main>
+<div id="toast"></div>
+<input type="file" id="importFile" accept=".json,application/json" style="display:none">
+
+<script>
+// ===== Data =====
+const KEY='loanClient.v1';
+const STATUS=[
+  {id:'baru',    nm:'Baru / Semak'},
+  {id:'dokumen', nm:'Dokumen Kurang'},
+  {id:'submit',  nm:'Dah Submit'},
+  {id:'lulus',   nm:'Lulus'},
+  {id:'taklayak',nm:'Tak Layak'},
+  {id:'batal',   nm:'Batal / KIV'},
+];
+const SECTOR=['Kerajaan','Badan Berkanun / GLC','Swasta','Bekerja Sendiri','Pesara'];
+const DOCS=['Salinan IC (depan & belakang)','Slip gaji 3 bulan terkini','Penyata bank 3 bulan (gaji masuk)','Surat pengesahan majikan','Penyata KWSP terkini','Borang EA / BE','Bil utiliti (alamat)','Kad kerja / staf'];
+const REASONS=['DSR / komitmen terlalu tinggi','Rekod CCRIS bermasalah (tunggakan)','Rekod CTOS / senarai hitam','Dalam AKPK','Majikan bukan panel / tidak disokong','Gaji tidak mencapai syarat minimum','Tempoh berkhidmat belum cukup','Status kerja kontrak / sementara','Umur tidak menepati syarat','Dokumen tidak lengkap / tidak sah'];
+
+const DEFAULT_TPL=[
+  {id:'baru',nm:'Terima permohonan',txt:`Salam {nama} 😊
+
+Terima kasih sebab berminat nak buat pembiayaan dengan saya. Saya tengah semak kelayakan {nama} sekarang.
+
+Nanti saya update secepat mungkin ya.
+
+{agent}`},
+  {id:'dokumen',nm:'Minta dokumen',txt:`Salam {nama},
+
+Untuk teruskan permohonan, boleh tolong hantar dokumen berikut:
+{dokumen}
+
+Snap gambar yang jelas dan WhatsApp terus ke saya pun boleh. Terima kasih 🙏
+
+{agent}`},
+  {id:'submit',nm:'Dah submit',txt:`Salam {nama},
+
+Permohonan pembiayaan {produk} sebanyak RM{jumlah} telah saya hantar ✅
+
+Proses biasanya ambil beberapa hari bekerja. Kalau pihak bank call, tolong angkat ya. Saya akan update bila ada keputusan.
+
+{agent}`},
+  {id:'lulus',nm:'Lulus 🎉',txt:`Tahniah {nama}! 🎉
+
+Permohonan pembiayaan {produk} anda telah DILULUSKAN sebanyak RM{jumlah_lulus}.
+
+Saya akan maklumkan langkah seterusnya (tandatangan dokumen / pengeluaran) tak lama lagi.
+
+Terima kasih sebab percaya dengan saya 🙏
+{agent}`},
+  {id:'taklayak',nm:'Tak layak',txt:`Salam {nama},
+
+Terima kasih atas kepercayaan {nama}. Selepas semakan, buat masa ini permohonan belum dapat diteruskan sebab:
+{sebab}
+
+Jangan risau, ini bukan muktamad. Bila keadaan dah berubah (contoh: komitmen dah berkurang atau rekod dah bersih), saya boleh tolong semak semula. Kalau ada soalan, WhatsApp je saya.
+
+{agent}`},
+  {id:'followup',nm:'Follow up',txt:`Salam {nama}, sekadar follow up pasal permohonan pembiayaan hari tu. Ada apa-apa yang saya boleh bantu? 😊
+
+{agent}`},
+];
+
+let DB=load();
+function load(){
+  try{ const d=JSON.parse(localStorage.getItem(KEY)); if(d&&d.clients) { d.tpl=d.tpl||structuredClone(DEFAULT_TPL); d.settings=d.settings||{}; return d; } }catch(e){}
+  return {clients:[],tpl:structuredClone(DEFAULT_TPL),settings:{agentName:'',agentPhone:'',sign:''}};
+}
+function save(){ try{ localStorage.setItem(KEY,JSON.stringify(DB)); }catch(e){ toast('Gagal simpan!'); } }
+
+// ===== Helpers =====
+const $=id=>document.getElementById(id);
+const val=id=>($(id)?.value||'').trim();
+const num=v=>{const n=parseFloat(String(v||'').replace(/[^0-9.]/g,''));return isNaN(n)?0:n;};
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const rm=n=>n?Number(num(n)).toLocaleString('ms-MY',{maximumFractionDigits:0}):'0';
+const today=()=>new Date().toISOString().slice(0,10);
+const fmtD=s=>s?new Date(s).toLocaleDateString('ms-MY',{day:'numeric',month:'short',year:'numeric'}):'';
+const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,6);
+const stName=id=>(STATUS.find(s=>s.id===id)||STATUS[0]).nm;
+const stChip=id=>`<span class="st st-${id}">${esc(stName(id))}</span>`;
+function toast(m){const t=$('toast');t.textContent=m;t.classList.add('show');clearTimeout(t._h);t._h=setTimeout(()=>t.classList.remove('show'),1800);}
+function waNum(p){ let n=String(p||'').replace(/\D/g,''); if(n.startsWith('0')) n='6'+n; else if(n.startsWith('1')) n='60'+n; return n; }
+async function copy(txt){ try{ await navigator.clipboard.writeText(txt); toast('Disalin'); }catch(e){ const ta=document.createElement('textarea');ta.value=txt;document.body.appendChild(ta);ta.select();document.execCommand('copy');ta.remove();toast('Disalin'); } }
+function installment(c){ const P=num(c.amount), r=num(c.rate)/100, y=num(c.tenure); if(!P||!y) return 0; return (P+P*r*y)/(y*12); }
+function dsr(c){ const net=num(c.netIncome); if(!net) return null; return (num(c.commitment)+installment(c))/net*100; }
+function dsrCls(d){ return d==null?'':d<=60?'ok':d<=70?'mid':'bad'; }
+
+// ===== Routing =====
+let view='list', curId=null, filter='aktif', q='';
+function go(v,id){ view=v; if(id!==undefined) curId=id; render(); window.scrollTo(0,0); }
+function render(){
+  document.querySelectorAll('#tabs button').forEach(b=>b.classList.toggle('on',b.dataset.t===view));
+  const sub=view==='form'||view==='detail';
+  $('tabs').style.display=sub?'none':'flex';
+  $('backBtn').style.display=sub?'':'none';
+  $('title').textContent=view==='detail'?(getC()?.name||'Klien'):view==='form'?(curId?'Edit Klien':'Klien Baru'):'Klien Loan';
+  ({list:rList,form:rForm,detail:rDetail,tpl:rTpl,set:rSet})[view]();
+}
+const getC=()=>DB.clients.find(c=>c.id===curId);
+
+// ===== Senarai =====
+function rList(){
+  const cs=DB.clients;
+  const cnt=id=>cs.filter(c=>c.status===id).length;
+  const active=c=>['baru','dokumen','submit'].includes(c.status);
+  let list=cs.filter(c=>filter==='semua'?true:filter==='aktif'?active(c):c.status===filter);
+  if(q){const k=q.toLowerCase(); list=list.filter(c=>[c.name,c.phone,c.ic,c.employer,c.product].join(' ').toLowerCase().includes(k));}
+  list.sort((a,b)=>(b.updated||'').localeCompare(a.updated||''));
+  const lulusAmt=cs.filter(c=>c.status==='lulus').reduce((s,c)=>s+num(c.approved||c.amount),0);
+  const chips=[['aktif','Aktif ('+cs.filter(active).length+')'],...STATUS.map(s=>[s.id,s.nm+' ('+cnt(s.id)+')']),['semua','Semua ('+cs.length+')']];
+  $('app').innerHTML=`
+  <div class="kpis">
+    <div class="kpi"><div class="l">Dalam proses</div><div class="v">${cs.filter(active).length}</div></div>
+    <div class="kpi"><div class="l">Lulus</div><div class="v" style="color:var(--pos)">${cnt('lulus')}</div></div>
+    <div class="kpi"><div class="l">Tak layak</div><div class="v" style="color:var(--neg)">${cnt('taklayak')}</div></div>
+    <div class="kpi"><div class="l">Jumlah lulus</div><div class="v">RM${rm(lulusAmt)}</div></div>
+  </div>
+  <input id="q" placeholder="Cari nama, no. tel, IC, majikan…" value="${esc(q)}" oninput="q=this.value;rListBody()" style="margin-bottom:10px">
+  <div class="chips">${chips.map(([id,nm])=>`<button class="${filter===id?'on':''}" onclick="filter='${id}';rList()">${esc(nm)}</button>`).join('')}</div>
+  <div id="listBody"></div>
+  <button class="pri fab" onclick="go('form',null)" aria-label="Tambah klien">+</button>`;
+  rListBody(list);
+}
+function rListBody(list){
+  if(!list){ rList(); $('q').focus(); const v=$('q'); v.setSelectionRange(v.value.length,v.value.length); return; }
+  $('listBody').innerHTML=list.length?list.map(c=>`
+    <div class="card client" onclick="go('detail','${c.id}')">
+      <div class="avatar">${esc((c.name||'?').trim()[0]?.toUpperCase()||'?')}</div>
+      <div class="info"><div class="nm">${esc(c.name)}</div>
+        <div class="sub">${c.amount?'RM'+rm(c.amount)+' · ':''}${esc(c.product||c.employer||c.phone||'')}</div></div>
+      <div style="text-align:right">${stChip(c.status)}<div class="small muted" style="margin-top:3px">${fmtD(c.updated)}</div></div>
+    </div>`).join(''):`<div class="empty">${DB.clients.length?'Tiada klien dalam kategori ni.':'Belum ada klien.<br>Tekan <b>+</b> untuk tambah klien pertama.'}</div>`;
+}
+
+// ===== Borang =====
+function rForm(){
+  const c=getC()||{status:'baru',sector:'Kerajaan',docsMissing:[],reasons:[],date:today()};
+  const opt=(arr,v)=>arr.map(x=>{const id=x.id??x,nm=x.nm??x;return `<option value="${esc(id)}" ${id===v?'selected':''}>${esc(nm)}</option>`;}).join('');
+  const ticks=(name,arr,sel)=>`<div class="tick">${arr.map(x=>`<label><input type="checkbox" name="${name}" value="${esc(x)}" ${sel?.includes(x)?'checked':''}>${esc(x)}</label>`).join('')}</div>`;
+  $('app').innerHTML=`
+  <div class="card">
+    <h2>Maklumat klien</h2>
+    <label>Nama penuh *</label><input id="f_name" value="${esc(c.name)}" autocomplete="off">
+    <div class="grid2">
+      <div><label>No. telefon (WhatsApp) *</label><input id="f_phone" type="tel" value="${esc(c.phone)}" placeholder="0123456789"></div>
+      <div><label>No. IC</label><input id="f_ic" value="${esc(c.ic)}" placeholder="900101-01-1234"></div>
+      <div><label>Majikan</label><input id="f_employer" value="${esc(c.employer)}"></div>
+      <div><label>Sektor</label><select id="f_sector">${opt(SECTOR,c.sector)}</select></div>
+      <div><label>Gaji kasar (RM)</label><input id="f_gross" inputmode="decimal" value="${esc(c.grossIncome)}"></div>
+      <div><label>Gaji bersih (RM)</label><input id="f_net" inputmode="decimal" value="${esc(c.netIncome)}" oninput="calcDsr()"></div>
+      <div><label>Komitmen bulanan sedia ada (RM)</label><input id="f_commit" inputmode="decimal" value="${esc(c.commitment)}" oninput="calcDsr()"></div>
+    </div>
+  </div>
+  <div class="card">
+    <h2>Permohonan</h2>
+    <div class="grid2">
+      <div><label>Produk / Bank</label><input id="f_product" value="${esc(c.product)}" placeholder="cth: Personal Loan Bank X"></div>
+      <div><label>Jumlah mohon (RM)</label><input id="f_amount" inputmode="decimal" value="${esc(c.amount)}" oninput="calcDsr()"></div>
+      <div><label>Kadar untung (% setahun, flat)</label><input id="f_rate" inputmode="decimal" value="${esc(c.rate)}" oninput="calcDsr()"></div>
+      <div><label>Tempoh (tahun)</label><input id="f_tenure" inputmode="decimal" value="${esc(c.tenure)}" oninput="calcDsr()"></div>
+    </div>
+    <div id="dsrBox" class="small" style="margin-top:8px"></div>
+    <label>Link order ejenplus</label><input id="f_link" type="url" value="${esc(c.link)}" placeholder="https://agent.ejenplus.com/orders/…">
+    <div class="grid2">
+      <div><label>Tarikh mohon</label><input id="f_date" type="date" value="${esc(c.date||today())}"></div>
+      <div><label>Status</label><select id="f_status" onchange="toggleSec()">${opt(STATUS,c.status)}</select></div>
+    </div>
+    <div id="sec_dokumen"><label>Dokumen yang belum ada</label>${ticks('doc',DOCS,c.docsMissing)}
+      <label>Dokumen lain</label><input id="f_docOther" value="${esc(c.docOther)}"></div>
+    <div id="sec_taklayak"><label>Sebab tak layak</label>${ticks('rsn',REASONS,c.reasons)}
+      <label>Sebab lain</label><input id="f_rsnOther" value="${esc(c.reasonOther)}"></div>
+    <div id="sec_lulus"><label>Jumlah lulus (RM)</label><input id="f_approved" inputmode="decimal" value="${esc(c.approved)}"></div>
+    <label>Catatan</label><textarea id="f_note">${esc(c.note)}</textarea>
+  </div>
+  <div class="row">
+    ${c.id?`<button class="danger" onclick="delClient()">Padam</button>`:''}
+    <span class="spacer"></span>
+    <button onclick="${c.id?`go('detail')`:`go('list')`}">Batal</button>
+    <button class="pri" onclick="saveClient()">Simpan</button>
+  </div>`;
+  toggleSec(); calcDsr();
+}
+function toggleSec(){ const s=$('f_status').value; ['dokumen','taklayak','lulus'].forEach(k=>$('sec_'+k).style.display=s===k?'':'none'); }
+function formObj(){ return {name:val('f_name'),netIncome:val('f_net'),commitment:val('f_commit'),amount:val('f_amount'),rate:val('f_rate'),tenure:val('f_tenure')}; }
+function dsrHtml(c){
+  const inst=installment(c), d=dsr(c);
+  if(d==null) return `<span class="muted">Isi gaji bersih untuk kira DSR.</span>`;
+  return `${inst?`Anggaran ansuran: <b>RM${rm(inst)}</b>/bulan · `:''}DSR: <span class="dsr ${dsrCls(d)}">${d.toFixed(1)}%</span> <span class="muted">(anggaran; had sebenar ikut bank/produk)</span>`;
+}
+function calcDsr(){ $('dsrBox').innerHTML=dsrHtml(formObj()); }
+function saveClient(){
+  const name=val('f_name'), phone=val('f_phone');
+  if(!name){ toast('Isi nama klien'); $('f_name').focus(); return; }
+  if(!phone){ toast('Isi no. telefon'); $('f_phone').focus(); return; }
+  const checked=n=>[...document.querySelectorAll(`input[name=${n}]:checked`)].map(i=>i.value);
+  const old=getC(); const now=new Date().toISOString();
+  const c=Object.assign(old||{id:uid(),created:now,log:[]},{
+    name,phone,ic:val('f_ic'),employer:val('f_employer'),sector:val('f_sector'),
+    grossIncome:val('f_gross'),netIncome:val('f_net'),commitment:val('f_commit'),
+    product:val('f_product'),amount:val('f_amount'),rate:val('f_rate'),tenure:val('f_tenure'),
+    link:val('f_link'),date:val('f_date'),status:val('f_status'),
+    docsMissing:checked('doc'),docOther:val('f_docOther'),reasons:checked('rsn'),reasonOther:val('f_rsnOther'),
+    approved:val('f_approved'),note:val('f_note'),updated:now});
+  if(!old){ c.log.push({t:now,m:'Klien ditambah · '+stName(c.status)}); DB.clients.push(c); }
+  else if(old._prevStatus!==c.status){ c.log.push({t:now,m:'Status → '+stName(c.status)}); }
+  delete c._prevStatus;
+  save(); toast('Disimpan'); go('detail',c.id);
+}
+function delClient(){ const c=getC(); if(!confirm('Padam '+c.name+'?')) return; DB.clients=DB.clients.filter(x=>x.id!==c.id); save(); toast('Dipadam'); go('list',null); }
+
+// ===== Butiran + WhatsApp =====
+let tplSel=null;
+function rDetail(){
+  const c=getC(); if(!c){ go('list'); return; }
+  c._prevStatus=c.status;
+  const def=DB.tpl.find(t=>t.id===c.status)||DB.tpl[0];
+  if(!tplSel||!DB.tpl.find(t=>t.id===tplSel)) tplSel=def.id;
+  const kv=(l,v)=>v?`<div>${l}</div><div>${v}</div>`:'';
+  $('app').innerHTML=`
+  <div class="card">
+    <div class="row"><h2 style="margin:0">${esc(c.name)}</h2><span class="spacer"></span>${stChip(c.status)}</div>
+    <div class="row" style="margin:10px 0 4px">
+      <select id="quickSt" style="width:auto;flex:1" onchange="quickStatus(this.value)">${STATUS.map(s=>`<option value="${s.id}" ${s.id===c.status?'selected':''}>Tukar status: ${esc(s.nm)}</option>`).join('')}</select>
+      <button onclick="go('form')">Edit</button>
+    </div>
+    <div class="kv" style="margin-top:10px">
+      ${kv('Telefon',`<a href="tel:${esc(c.phone)}">${esc(c.phone)}</a>`)}
+      ${kv('IC',esc(c.ic))}
+      ${kv('Majikan',esc([c.employer,c.sector].filter(Boolean).join(' · ')))}
+      ${kv('Gaji kasar / bersih',(c.grossIncome||c.netIncome)?[c.grossIncome,c.netIncome].map(x=>x?'RM'+rm(x):'-').join(' / '):'')}
+      ${kv('Komitmen',c.commitment?'RM'+rm(c.commitment):'')}
+      ${kv('Produk',esc(c.product))}
+      ${kv('Jumlah mohon',c.amount?'RM'+rm(c.amount)+(c.tenure?` · ${esc(c.tenure)} thn`:'')+(c.rate?` · ${esc(c.rate)}%`:''):'')}
+      ${kv('Jumlah lulus',c.status==='lulus'&&c.approved?'<b>RM'+rm(c.approved)+'</b>':'')}
+      ${kv('Tarikh mohon',fmtD(c.date))}
+      ${kv('Catatan',esc(c.note).replace(/\n/g,'<br>'))}
+    </div>
+    ${c.netIncome?`<div class="small" style="margin-top:8px">${dsrHtml(c)}</div>`:''}
+    <div class="row" style="margin-top:12px">
+      ${c.link?`<a class="btn sm" href="${esc(c.link)}" target="_blank" rel="noopener">Buka order ejenplus ↗</a>`:''}
+      <button class="sm" onclick="copy(infoText(getC()))">Salin info klien</button>
+      <a class="btn sm" href="tel:${esc(c.phone)}">Call</a>
+    </div>
+  </div>
+  <div class="card">
+    <h2>Hantar WhatsApp</h2>
+    <div class="tpl-pick">${DB.tpl.map(t=>`<button class="${t.id===tplSel?'on':''}" onclick="tplSel='${t.id}';rDetail()">${esc(t.nm)}</button>`).join('')}</div>
+    <textarea id="msg" style="min-height:200px">${esc(fill(DB.tpl.find(t=>t.id===tplSel).txt,c))}</textarea>
+    <div class="row" style="margin-top:8px">
+      <button class="sm" onclick="copy(val('msg'))">Salin</button>
+      <span class="spacer"></span>
+      <button class="wa" onclick="sendWa()">Hantar WhatsApp</button>
+    </div>
+    <div class="small muted" style="margin-top:6px">Mesej boleh diedit dulu sebelum hantar. Ubah template asal dalam tab <b>Template WhatsApp</b>.</div>
+  </div>
+  ${c.log?.length?`<div class="card"><h2>Sejarah</h2><div class="log">${[...c.log].reverse().map(l=>`<div><span class="muted">${new Date(l.t).toLocaleString('ms-MY',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'})}</span> · ${esc(l.m)}</div>`).join('')}</div></div>`:''}`;
+}
+function quickStatus(s){
+  const c=getC(); if(s===c.status) return;
+  c.status=s; c._prevStatus=s; c.updated=new Date().toISOString(); c.log=c.log||[]; c.log.push({t:c.updated,m:'Status → '+stName(s)});
+  save(); tplSel=DB.tpl.find(t=>t.id===s)?s:tplSel;
+  if((s==='taklayak'&&!(c.reasons?.length||c.reasonOther))||(s==='dokumen'&&!(c.docsMissing?.length||c.docOther))||(s==='lulus'&&!c.approved)){
+    toast(s==='lulus'?'Isi jumlah lulus':s==='dokumen'?'Tanda dokumen yang kurang':'Tanda sebab tak layak'); go('form'); return;
+  }
+  toast('Status dikemaskini'); rDetail();
+}
+function bullets(arr){ return arr.filter(Boolean).map(x=>'• '+x).join('\n'); }
+function fill(txt,c){
+  const s=DB.settings;
+  const agent=s.sign||[s.agentName,s.agentPhone].filter(Boolean).join('\n');
+  const map={
+    nama:(c.name||'').split(' ').slice(0,2).join(' '), nama_penuh:c.name||'',
+    jumlah:rm(c.amount), jumlah_lulus:rm(c.approved||c.amount), produk:c.product||'',
+    tempoh:c.tenure?c.tenure+' tahun':'', ansuran:installment(c)?'RM'+rm(installment(c)):'',
+    dokumen:bullets([...(c.docsMissing||[]),c.docOther])||'• (sila nyatakan dokumen)',
+    sebab:bullets([...(c.reasons||[]),c.reasonOther])||'• (sila nyatakan sebab)',
+    agent, ic:c.ic||'', majikan:c.employer||''
+  };
+  return txt.replace(/\{(\w+)\}/g,(m,k)=>k in map?map[k]:m).replace(/  +/g,' ').replace(/\n{3,}/g,'\n\n').trim();
+}
+function sendWa(){
+  const c=getC(), n=waNum(c.phone);
+  if(n.length<10){ toast('No. telefon tak sah'); return; }
+  window.open('https://wa.me/'+n+'?text='+encodeURIComponent($('msg').value),'_blank');
+  c.log=c.log||[]; c.log.push({t:new Date().toISOString(),m:'WhatsApp dihantar: '+DB.tpl.find(t=>t.id===tplSel).nm}); save();
+}
+function infoText(c){
+  const L=(l,v)=>v?`${l}: ${v}\n`:'';
+  return (L('Nama',c.name)+L('No. IC',c.ic)+L('No. Tel',c.phone)+L('Majikan',c.employer)+L('Sektor',c.sector)+
+    L('Gaji kasar',c.grossIncome&&'RM'+rm(c.grossIncome))+L('Gaji bersih',c.netIncome&&'RM'+rm(c.netIncome))+
+    L('Komitmen',c.commitment&&'RM'+rm(c.commitment))+L('Produk',c.product)+
+    L('Jumlah mohon',c.amount&&'RM'+rm(c.amount))+L('Tempoh',c.tenure&&c.tenure+' tahun')+L('Catatan',c.note)).trim();
+}
+
+// ===== Template =====
+function rTpl(){
+  $('app').innerHTML=`
+  <div class="card small">Kod yang boleh guna dalam template (akan diganti automatik):<br>
+  <code>{nama}</code> <code>{nama_penuh}</code> <code>{jumlah}</code> <code>{jumlah_lulus}</code> <code>{produk}</code> <code>{tempoh}</code> <code>{ansuran}</code> <code>{dokumen}</code> <code>{sebab}</code> <code>{majikan}</code> <code>{agent}</code></div>
+  ${DB.tpl.map((t,i)=>`<div class="card">
+    <div class="row"><input value="${esc(t.nm)}" onchange="DB.tpl[${i}].nm=this.value;save()" style="flex:1;font-weight:700">
+    ${DEFAULT_TPL.some(d=>d.id===t.id)?'':`<button class="sm danger" onclick="DB.tpl.splice(${i},1);save();rTpl()">Padam</button>`}</div>
+    <textarea style="min-height:150px;margin-top:8px" onchange="DB.tpl[${i}].txt=this.value;save();toast('Template disimpan')">${esc(t.txt)}</textarea>
+  </div>`).join('')}
+  <div class="row"><button onclick="if(confirm('Kembalikan semua template asal?')){DB.tpl=structuredClone(DEFAULT_TPL);save();rTpl();}">Reset template asal</button>
+  <span class="spacer"></span><button class="pri" onclick="DB.tpl.push({id:uid(),nm:'Template baru',txt:'Salam {nama},\\n\\n\\n{agent}'});save();rTpl()">+ Template baru</button></div>`;
+}
+
+// ===== Tetapan =====
+function rSet(){
+  const s=DB.settings;
+  $('app').innerHTML=`
+  <div class="card"><h2>Maklumat agent</h2>
+    <div class="grid2">
+      <div><label>Nama</label><input id="s_name" value="${esc(s.agentName)}"></div>
+      <div><label>No. telefon</label><input id="s_phone" type="tel" value="${esc(s.agentPhone)}"></div>
+    </div>
+    <label>Tandatangan mesej (ganti <code>{agent}</code>; kosong = nama + telefon)</label>
+    <textarea id="s_sign" placeholder="cth: Lukman | Ejen Pembiayaan&#10;0123456789">${esc(s.sign)}</textarea>
+    <div class="row" style="margin-top:10px"><span class="spacer"></span><button class="pri" onclick="DB.settings={agentName:val('s_name'),agentPhone:val('s_phone'),sign:$('s_sign').value.trim()};save();toast('Disimpan')">Simpan</button></div>
+  </div>
+  <div class="card"><h2>Backup data</h2>
+    <p class="small muted">Data klien disimpan dalam browser phone ni sahaja (tak dihantar ke mana-mana). Buat backup selalu, terutama sebelum tukar phone atau clear browser.</p>
+    <div class="row"><button onclick="exportData()">⬇ Backup (.json)</button><button onclick="$('importFile').click()">⬆ Import backup</button></div>
+  </div>
+  <div class="card small muted">${DB.clients.length} klien · ${DB.tpl.length} template</div>`;
+}
+function exportData(){
+  const blob=new Blob([JSON.stringify(DB,null,1)],{type:'application/json'});
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='klien-loan-'+today()+'.json'; a.click();
+  setTimeout(()=>URL.revokeObjectURL(a.href),2000);
+}
+$('importFile').onchange=e=>{
+  const f=e.target.files[0]; if(!f) return;
+  const r=new FileReader(); r.onload=()=>{
+    try{ const d=JSON.parse(r.result); if(!Array.isArray(d.clients)) throw 0;
+      const ids=new Set(DB.clients.map(c=>c.id)); let n=0;
+      d.clients.forEach(c=>{ if(!ids.has(c.id)){DB.clients.push(c);n++;} });
+      if(d.tpl&&confirm('Guna juga template dari fail backup?')) DB.tpl=d.tpl;
+      if(d.settings&&!DB.settings.agentName) DB.settings=d.settings;
+      save(); toast(n+' klien diimport'); render();
+    }catch(err){ toast('Fail tak sah'); }
+  }; r.readAsText(f); e.target.value='';
+};
+
+render();
+if('serviceWorker' in navigator && window.isSecureContext && location.protocol!=='file:') navigator.serviceWorker.register('sw.js').catch(()=>{});
+</script>
+</body>
+</html>
