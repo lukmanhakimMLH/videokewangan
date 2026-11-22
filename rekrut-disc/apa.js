@@ -15,6 +15,11 @@ const CONTEST_CONTOH = [
   {id:'iron', nama:'Iron Club',         sasaran:0,      jenis:'kes', dari:1, hingga:12},
   {id:'sa',  nama:'Summit South Africa', sasaran:180000, jenis:'ace', dari:1, hingga:12},
 ];
+/* Borang untuk dimuat turun (fail dalam folder borang/ di laman web) */
+const FORMS = [
+  {kod:'FCV', nama:'FORM CLOSING GOV (FCV)', fail:'borang/FCV.pdf',
+   isi:'Surat Kebenaran Maklumat Kredit (SPeKAR) · Ulasan Pelanggan · Biro ANGKASA (potongan gaji) · Butiran Ahli & Pewaris'},
+];
 const STATUS = {pledge:'Pledge', fu:'Follow-up', closed:'Closed'};
 const NOW = new Date(), YEAR = NOW.getFullYear(), CUR_M = NOW.getMonth()+1;
 
@@ -163,7 +168,13 @@ function dashboardHTML(doc, readonly){
 }
 
 function vDash(){
-  $('#app').innerHTML = tabs('') + dashboardHTML(S.me) + contestCards(S.me, true);
+  $('#app').innerHTML = tabs('') + `<button style="width:100%;margin-bottom:12px" onclick="go('#/apa/borang')">📄 Download Borang</button>` + dashboardHTML(S.me) + contestCards(S.me, true);
+}
+function vBorang(){
+  $('#app').innerHTML = tabs('') + `<h2>📄 Download Borang</h2>` + FORMS.map(f=>`
+    <a class="btn btn-primary" style="display:block;text-align:center;text-decoration:none;padding:16px;margin-bottom:6px;font-size:16px" href="${f.fail}" download="${f.kod}.pdf" target="_blank">⬇️ ${esc(f.nama)}</a>
+    <p class="small muted" style="margin:0 0 16px">${esc(f.isi)}</p>`).join('') +
+    `<button style="width:100%" onclick="go('#/apa')">← Kembali</button>`;
 }
 
 function vBulan(m){
@@ -438,12 +449,13 @@ const APA = window.APA = {
       return vAhli(a);
     }
     if(!S.me) return;
-    if(needSetup() && a!=='tetapan') return vSetup();
+    if(needSetup() && a!=='tetapan' && a!=='borang') return vSetup();
     if(a==='bulan') return vBulan(b);
     if(a==='kes') return vKes(b, c);
     if(a==='p100') return b ? vP100Form(b) : vP100();
     if(a==='contest') return vContest();
     if(a==='tetapan') return vTetapan();
+    if(a==='borang') return vBorang();
     return vDash();
   },
 };
