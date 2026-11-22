@@ -109,6 +109,7 @@ function showProfile(u){
         <label>Nama penuh *</label><input id="nm">
         <label>Kod ejen</label><input id="kd">
         <label>No. tel *</label><input id="tl" type="tel" inputmode="tel">
+        <label>Direkrut oleh (nama upline)</label><input id="rk" placeholder="cth: Lukman">
         <p class="small err" id="err"></p>
         <button class="btn-primary" style="width:100%" id="go">Hantar untuk kelulusan</button>
       </div>
@@ -120,7 +121,7 @@ function showProfile(u){
     if (!nama || !tel) { $('#err').textContent = 'Nama dan no. tel wajib.'; return; }
     $('#go').disabled = true;
     try {
-      await setDoc(doc(fs, 'users', u.uid), { nama, kod: $('#kd').value.trim(), tel, emel: u.email, status: 'pending', createdAt: Date.now() });
+      await setDoc(doc(fs, 'users', u.uid), { nama, kod: $('#kd').value.trim(), tel, perekrut: $('#rk').value.trim(), emel: u.email, status: 'pending', createdAt: Date.now() });
       afterLogin(u);
     } catch (e) { $('#err').textContent = 'Gagal simpan (' + (e.code || e.message) + ')'; $('#go').disabled = false; }
   };

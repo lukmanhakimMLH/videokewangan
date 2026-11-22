@@ -65,6 +65,12 @@ async function compute(){
   let rekrut = []; try{ rekrut = await DB.all(); }catch{}
   const codedMonth = r => { const c=(r.history||[]).find(x=>x.status==='coded'); if(!c) return 0; const d=new Date(c.date); return d.getFullYear()===Y() ? d.getMonth()+1 : 0; };
   const nrAuto = Array(12).fill(0); rekrut.forEach(r=>{ const m=codedMonth(r); if(m) nrAuto[m-1]++; });
+  // Rekrut oleh ejen yang leader sahkan "kira NR" (dan belum diimport ke Rekrut leader)
+  const imported = new Set(rekrut.map(r=>r.dariApa).filter(Boolean));
+  (h.S.team||[]).forEach(a=>(a.p100||[]).forEach(p=>{ const key=a.uid+':'+p.id;
+    if(p.jenis!=='rekrut' || p.status!=='coded' || imported.has(key) || !D.nrConfirm?.[key]) return;
+    const c=(p.history||[]).filter(x=>x.status==='coded').pop(), d=new Date(c?c.date:(p.updatedAt||0));
+    if(d.getFullYear()===Y()) nrAuto[d.getMonth()]++; }));
   let manP = D.base, manA = D.base;
   const rows = Array(12).fill(0).map((_,i)=>{
     const p = D.plan[i], mn = D.manual[i] || {};
@@ -235,6 +241,8 @@ function vTetapan(){
 
 window.MAPA = {
   init, tabs,
+  isNR: key => !!M.doc?.nrConfirm?.[key],
+  async setNR(key, on){ if(!M.doc) return; M.doc.nrConfirm = {...(M.doc.nrConfirm||{}), [key]: !!on}; await save(); toast(on?'Dikira NR dalam MAPA ✓':'Tidak dikira NR'); },
   route(a, b, c){
     ensureYear();
     if(!M.loaded){ $('#app').innerHTML = '<div class="card empty muted">Memuatkan MAPA…</div>'; return; }

@@ -53,11 +53,12 @@ async function init({db, uid, role}){
     });
     db.doc('config/contests').onSnapshot(s=>{ S.contests = s.exists ? (s.data().list||[]) : []; notify(); }, ()=>{ S.contests=[]; });
     if(role==='owner') window.MAPA?.init(db);
+    if(role==='agent') window.PASUKAN?.initAgent(db, uid);
     if(role==='owner' && window.__HOSTED){
-      db.collection('users').onSnapshot(s=>{ S.users = s.docs.map(d=>({uid:d.id, ...clone(d.data())})); notify(); }, ()=>{});
+      db.collection('users').onSnapshot(s=>{ S.users = s.docs.map(d=>({uid:d.id, ...clone(d.data())})); notify(); window.PASUKAN?.scheduleSync(); }, ()=>{});
     }
     if(role==='owner'){
-      db.collection('apa').onSnapshot(s=>{ S.team = s.docs.map(d=>({uid:d.id, ...clone(d.data())})); S.teamErr=null; notify(); },
+      db.collection('apa').onSnapshot(s=>{ S.team = s.docs.map(d=>({uid:d.id, ...clone(d.data())})); S.teamErr=null; notify(); window.PASUKAN?.scheduleSync(); },
         e=>{ S.teamErr = e.code; notify(); });
     }
   } else {
@@ -112,7 +113,7 @@ function contestProgress(c, C){
 const bar = (p, color='var(--S)') => `<div class="progress" style="height:10px;margin:4px 0"><div style="width:${Math.max(0,Math.min(100,p))}%;background:${color}"></div></div>`;
 const colorFor = p => p>=100 ? 'var(--S)' : p>=70 ? 'var(--I)' : 'var(--D)';
 function tabs(active){
-  const t = [['','📊','Dashboard'],['bulan','🗓','Bulanan'],['p100','👥','P100'],['contest','🏆','Contest'],['borang','📄','Borang'],['tetapan','⚙︎','Tetapan']];
+  const t = [['','📊','Utama'],['bulan','🗓','Bulanan'],['p100','👥','P100'],['pasukan','🌳','Pasukan'],['contest','🏆','Contest'],['borang','📄','Borang'],['tetapan','⚙︎','Tetapan']];
   return `<div class="tabs">${t.map(([k,i,l])=>`<button class="${active===k?'on':''}" onclick="go('#/apa${k?'/'+k:''}')"><span>${i}</span>${l}</button>`).join('')}</div>`;
 }
 function needSetup(){ return !S.me.profile?.nama || !yearOf(S.me).goal; }
@@ -376,6 +377,7 @@ async function vPasukan(){
   $('#app').innerHTML = `
     ${window.MAPA?MAPA.tabs('ejen'):''}
     ${approvalsHTML()}
+    <details class="card" open><summary><b>🌳 Peta pasukan</b></summary><div style="margin-top:10px">${await PASUKAN.leaderMapHTML()}</div></details>
     <div class="stats" style="margin-bottom:12px">
       <div class="stat"><b>${team.length}</b><span class="small muted">Ejen aktif</span></div>
       <div class="stat"><b style="font-size:15px">${RM(sum('achieve'))}</b><span class="small muted">Achieve ${YEAR}</span></div>
@@ -388,16 +390,24 @@ async function vPasukan(){
           ${bar(p, colorFor(pct(C.achieve,C.ytdBudget)))}
           <div class="small muted">${RM(C.achieve)} / ${RM(C.goal)} (${p}%) · ${BLN[CUR_M-1]}: ${pct(r.achieve,r.budget)}% · P100: ${(a.p100||[]).length}</div>
         </div></div>`; }).join('') : `<div class="card empty muted">Belum ada ejen isi APA. ${window.__HOSTED?'Kongsi link app kepada ejen — mereka daftar, anda luluskan di atas.':'Kongsi link app ini kepada ejen (Share → Contributor).'}</div>`}
-    <h3>Calon rekrut dari ejen (${leads.length})</h3>
+    <h3>Rekrut oleh ejen (${leads.length})</h3>
     ${leads.length ? leads.map(({p,a,key})=>`<div class="card agent" style="padding:10px 14px;cursor:default">
-        <div class="grow"><b>${esc(p.nama)}</b><div class="small muted">${[p.tel,p.umur&&p.umur+' thn',p.kerja].filter(Boolean).map(esc).join(' · ')}<br>dari ${esc(a.profile.nama)}</div></div>
+        <div class="grow"><b>${esc(p.nama)}</b><div class="small muted">${[p.tel,p.umur&&p.umur+' thn',p.kerja].filter(Boolean).map(esc).join(' · ')}<br>dari ${esc(a.profile.nama)} · <span class="badge ${p.status==='coded'?'S':''}">${PASUKAN.STN[p.status||'prospek']}</span></div>
+        ${p.status==='coded'&&!imported.has(key)?`<label class="small row" style="gap:4px;margin:6px 0 0;font-weight:600"><input type="checkbox" style="width:auto" data-nr="${esc(key)}" ${window.MAPA?.isNR(key)?'checked':''}> Kira NR dalam MAPA (bawah anda)</label>`:''}</div>
         ${imported.has(key) ? '<span class="badge S">✓ Dalam Rekrut</span>' : `<button class="btn-sm btn-primary" data-imp="${esc(key)}">→ Rekrut</button>`}
       </div>`).join('') : '<div class="card empty muted small">Ejen boleh tanda nama Project 100 sebagai "Calon Rekrut".</div>'}
 `;
   document.querySelectorAll('[data-lulus]').forEach(b=>b.onclick=async()=>{
     const [id, st] = b.dataset.lulus.split('|');
-    try{ await S.db.doc('users/'+id).update({status:st, reviewedAt:Date.now()}); toast(st==='approved'?'Diluluskan ✓':'Ditolak'); }catch{ toast('Gagal kemaskini'); }
+    const sel = document.querySelector(`.upsel[data-uid="${id}"]`), upd = {status:st, reviewedAt:Date.now()};
+    if(st==='approved' && sel) upd.upline = sel.value;
+    try{ await S.db.doc('users/'+id).update(upd); toast(st==='approved'?'Diluluskan ✓':'Ditolak'); }catch{ toast('Gagal kemaskini'); }
   });
+  document.querySelectorAll('.upsel').forEach(sel=>sel.onchange=async()=>{
+    const u=(S.users||[]).find(x=>x.uid===sel.dataset.uid); if(!u || u.status!=='approved') return;
+    try{ await S.db.doc('users/'+u.uid).update({upline:sel.value}); toast('Upline dikemaskini'); }catch{ toast('Gagal kemaskini'); }
+  });
+  document.querySelectorAll('[data-nr]').forEach(cb=>cb.onchange=()=>window.MAPA?.setNR(cb.dataset.nr, cb.checked));
   document.querySelectorAll('[data-imp]').forEach(b=>b.onclick=async()=>{
     const L = leads.find(l=>l.key===b.dataset.imp), now=Date.now();
     const rec = {id:uid(), nama:L.p.nama, tel:L.p.tel||'', ic:'', alamat:'', pendidikan:'SPM', status:'prospek', foto:'',
@@ -411,10 +421,11 @@ function approvalsHTML(){
   const pend = S.users.filter(u=>u.status==='pending'), lulus = S.users.filter(u=>u.status==='approved');
   const row = (u, btns) => `<div class="card agent" style="padding:10px 14px;cursor:default">
       <div class="grow"><b>${esc(u.nama)}</b> <span class="small muted">${esc(u.kod||'')}</span>
-      <div class="small muted">${esc(u.emel||'')} · ${esc(u.tel||'')}</div></div>${btns}</div>`;
+      <div class="small muted">${esc(u.emel||'')} · ${esc(u.tel||'')}${u.perekrut?' · direkrut oleh: '+esc(u.perekrut):''}</div>
+      <div style="margin-top:6px">${PASUKAN.uplineSelect(u)}</div></div>${btns}</div>`;
   return (pend.length ? `<h3>🔔 Permohonan akaun baru (${pend.length})</h3>` + pend.map(u=>row(u,
       `<div class="row" style="gap:6px"><button class="btn-sm btn-primary" data-lulus="${esc(u.uid)}|approved">Lulus</button><button class="btn-sm btn-danger" data-lulus="${esc(u.uid)}|rejected">Tolak</button></div>`)).join('') : '')
-    + (lulus.length ? `<details class="card small"><summary><b>Akaun ejen diluluskan (${lulus.length})</b></summary>${lulus.map(u=>`<div class="row" style="margin-top:8px"><span class="grow">${esc(u.nama)} <span class="muted">${esc(u.emel||'')}</span></span><button class="btn-sm btn-danger" data-lulus="${esc(u.uid)}|rejected">Sekat</button></div>`).join('')}</details>` : '');
+    + (lulus.length ? `<details class="card small"><summary><b>Akaun ejen diluluskan (${lulus.length})</b></summary>${lulus.map(u=>`<div class="row" style="margin-top:8px"><span class="grow">${esc(u.nama)} <span class="muted">${esc(u.emel||'')}</span></span>${PASUKAN.uplineSelect(u)}<button class="btn-sm btn-danger" data-lulus="${esc(u.uid)}|rejected">Sekat</button></div>`).join('')}</details>` : '');
 }
 function vAhli(id){
   const a = (S.team||[]).find(x=>x.uid===id); if(!a) return go('#/pasukan');
@@ -461,12 +472,12 @@ function vContestSetup(){
 /* ---------------- ROUTER ---------------- */
 const APA = window.APA = {
   init, S,
-  h: { S, calc, RM, pct, num, bar, colorFor, BULAN, BLN, PROP_ASAL, THIS_Y, get CUR_M(){ return CUR_M; }, get YEAR(){ return YEAR; } },
+  h: { S, calc, tabs, save, RM, pct, num, bar, colorFor, BULAN, BLN, PROP_ASAL, THIS_Y, get CUR_M(){ return CUR_M; }, get YEAR(){ return YEAR; } },
   setYear, get YEAR(){ return YEAR; }, THIS_Y,
   years(){ const ys=new Set([THIS_Y-1, THIS_Y, THIS_Y+1, YEAR, ...Object.keys(S.me?.years||{}).map(Number)]); return [...ys].filter(Boolean).sort(); },
   route(parts, fromRemote){
     const [view, a, b, c] = parts;
-    const editing = /\/(kes|p100\/|tetapan|contest$)/.test(location.hash) && location.hash!=='#/apa/p100' && location.hash!=='#/apa/contest';
+    const editing = /\/(kes|p100\/|rekrut\/|tetapan|contest$)/.test(location.hash) && location.hash!=='#/apa/p100' && location.hash!=='#/apa/contest';
     if(fromRemote && (editing || /^#\/pasukan\/(contest|.*\/edit)/.test(location.hash))) return;   // jangan ganggu borang
     if(view==='pasukan'){
       if(S.role==='agent') return go('#/apa');
@@ -483,6 +494,8 @@ const APA = window.APA = {
     if(a==='contest') return vContest();
     if(a==='tetapan') return vTetapan();
     if(a==='borang') return vBorang();
+    if(a==='pasukan') return PASUKAN.vPasukan();
+    if(a==='rekrut') return PASUKAN.vRekrutForm(b);
     return vDash();
   },
 };
