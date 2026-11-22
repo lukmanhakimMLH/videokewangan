@@ -21,7 +21,10 @@ const FORMS = [
    isi:'Surat Kebenaran Maklumat Kredit (SPeKAR) · Ulasan Pelanggan · Biro ANGKASA (potongan gaji) · Butiran Ahli & Pewaris'},
 ];
 const STATUS = {pledge:'Pledge', fu:'Follow-up', closed:'Closed'};
-const NOW = new Date(), YEAR = NOW.getFullYear(), CUR_M = NOW.getMonth()+1;
+const NOW = new Date(), THIS_Y = NOW.getFullYear(), THIS_M = NOW.getMonth()+1;
+let YEAR = THIS_Y, CUR_M = THIS_M;          // tahun yang dipilih (boleh tukar di tajuk)
+function setYear(y){ YEAR = +y || THIS_Y; CUR_M = YEAR<THIS_Y ? 12 : YEAR>THIS_Y ? 1 : THIS_M; try{ localStorage.setItem('qz-year', YEAR); }catch{} }
+try{ const sy = +localStorage.getItem('qz-year'); if(sy) setYear(sy); }catch{}
 
 const RM = n => { const v=Math.round(+n||0); return (v<0?'-':'')+'RM '+Math.abs(v).toLocaleString('en-MY'); };
 const pct = (a,b) => b ? Math.round(a/b*1000)/10 : 0;
@@ -95,7 +98,7 @@ function calc(doc, y=YEAR){
   });
   let acc=0; rows.forEach(r=>{ acc+=r.variance; r.acc=acc; });
   const tot = k => rows.reduce((s,r)=>s+r[k],0);
-  const ytdBudget = rows.filter(r=>r.m<=CUR_M || y<YEAR).reduce((s,r)=>s+r.budget,0);
+  const ytdBudget = rows.filter(r=>r.m<=CUR_M || y<THIS_Y).reduce((s,r)=>s+r.budget,0);
   return { Y, rows, goal:Y.goal||0, achieve:tot('achieve'), pledge:tot('pledge'), kes:tot('kes'), ytdBudget,
     propSum: (Y.prop||[]).reduce((s,v)=>s+num(v),0) };
 }
@@ -109,7 +112,7 @@ function contestProgress(c, C){
 const bar = (p, color='var(--S)') => `<div class="progress" style="height:10px;margin:4px 0"><div style="width:${Math.max(0,Math.min(100,p))}%;background:${color}"></div></div>`;
 const colorFor = p => p>=100 ? 'var(--S)' : p>=70 ? 'var(--I)' : 'var(--D)';
 function tabs(active){
-  const t = [['','📊','Dashboard'],['bulan','🗓','Bulanan'],['p100','👥','P100'],['contest','🏆','Contest'],['tetapan','⚙︎','Tetapan']];
+  const t = [['','📊','Dashboard'],['bulan','🗓','Bulanan'],['p100','👥','P100'],['contest','🏆','Contest'],['borang','📄','Borang'],['tetapan','⚙︎','Tetapan']];
   return `<div class="tabs">${t.map(([k,i,l])=>`<button class="${active===k?'on':''}" onclick="go('#/apa${k?'/'+k:''}')"><span>${i}</span>${l}</button>`).join('')}</div>`;
 }
 function needSetup(){ return !S.me.profile?.nama || !yearOf(S.me).goal; }
@@ -168,13 +171,22 @@ function dashboardHTML(doc, readonly){
 }
 
 function vDash(){
-  $('#app').innerHTML = tabs('') + `<button style="width:100%;margin-bottom:12px" onclick="go('#/apa/borang')">📄 Download Borang</button>` + dashboardHTML(S.me) + contestCards(S.me, true);
+  const P = S.me.profile||{}, ME = window.__ME||{};
+  $('#app').innerHTML = tabs('') + `
+    <div class="card agent" style="cursor:default">
+      <div class="avatar">${esc(initials(P.nama))}</div>
+      <div class="grow"><b style="font-size:17px">${esc(P.nama)}</b>
+        <div class="small muted">${[P.kod&&('Kod '+P.kod), P.tel, ME.emel].filter(Boolean).map(esc).join(' · ')}</div>
+        <div class="small muted">APA ${YEAR}${S.me.updatedAt?' · kemaskini '+fmtDate(S.me.updatedAt):''}</div></div>
+      <button class="btn-sm" onclick="go('#/apa/tetapan')">✏️</button>
+    </div>
+    <h3>📈 Prestasi terkini</h3>` + dashboardHTML(S.me) + contestCards(S.me, true);
 }
 function vBorang(){
-  $('#app').innerHTML = tabs('') + `<h2>📄 Download Borang</h2>` + FORMS.map(f=>`
+  $('#app').innerHTML = tabs('borang') + `<h2>📄 Download Borang</h2>` + FORMS.map(f=>`
     <a class="btn btn-primary" style="display:block;text-align:center;text-decoration:none;padding:16px;margin-bottom:6px;font-size:16px" href="${f.fail}" download="${f.kod}.pdf" target="_blank">⬇️ ${esc(f.nama)}</a>
     <p class="small muted" style="margin:0 0 16px">${esc(f.isi)}</p>`).join('') +
-    `<button style="width:100%" onclick="go('#/apa')">← Kembali</button>`;
+'';
 }
 
 function vBulan(m){
@@ -436,7 +448,9 @@ function vContestSetup(){
 /* ---------------- ROUTER ---------------- */
 const APA = window.APA = {
   init, S,
-  h: { S, calc, RM, pct, num, bar, colorFor, BULAN, BLN, PROP_ASAL, CUR_M, YEAR },
+  h: { S, calc, RM, pct, num, bar, colorFor, BULAN, BLN, PROP_ASAL, THIS_Y, get CUR_M(){ return CUR_M; }, get YEAR(){ return YEAR; } },
+  setYear, get YEAR(){ return YEAR; }, THIS_Y,
+  years(){ const ys=new Set([THIS_Y-1, THIS_Y, THIS_Y+1, YEAR, ...Object.keys(S.me?.years||{}).map(Number)]); return [...ys].filter(Boolean).sort(); },
   route(parts, fromRemote){
     const [view, a, b, c] = parts;
     const editing = /\/(kes|p100\/|tetapan|contest$)/.test(location.hash) && location.hash!=='#/apa/p100' && location.hash!=='#/apa/contest';
