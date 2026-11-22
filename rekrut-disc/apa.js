@@ -174,7 +174,7 @@ function vDash(){
   const P = S.me.profile||{}, ME = window.__ME||{};
   $('#app').innerHTML = tabs('') + `
     <div class="card agent" style="cursor:default">
-      <div class="avatar">${esc(initials(P.nama))}</div>
+      ${avatar({nama:P.nama, foto:P.foto})}
       <div class="grow"><b style="font-size:17px">${esc(P.nama)}</b>
         <div class="small muted">${[P.kod&&('Kod '+P.kod), P.tel, ME.emel].filter(Boolean).map(esc).join(' · ')}</div>
         <div class="small muted">APA ${YEAR}${S.me.updatedAt?' · kemaskini '+fmtDate(S.me.updatedAt):''}</div></div>
@@ -326,6 +326,14 @@ function vContest(){ $('#app').innerHTML = tabs('contest') + contestCards(S.me, 
 function vTetapan(){
   const P=S.me.profile, Y=yearOf(S.me);
   $('#app').innerHTML = tabs('tetapan') + `
+    <div class="card" style="text-align:center">
+      <div id="fprev" style="display:flex;justify-content:center">${avatar({nama:P.nama, foto:P.foto},'lg')}</div>
+      <div class="row" style="justify-content:center;margin-top:8px">
+        <label class="btn btn-sm" style="margin:0">📷 Selfie<input type="file" accept="image/*" capture="user" class="hidden fin"></label>
+        <label class="btn btn-sm" style="margin:0">🖼 Pilih Gambar<input type="file" accept="image/*" class="hidden fin"></label>
+        ${P.foto?'<button class="btn-sm btn-danger" id="fdel">Buang</button>':''}
+      </div>
+    </div>
     <div class="card">
       <label>Nama</label><input id="nama" value="${esc(P.nama)}">
       <div class="row"><div class="grow"><label>Kod ejen</label><input id="kod" value="${esc(P.kod)}"></div><div class="grow"><label>No. tel</label><input id="tel" value="${esc(P.tel)}"></div></div>
@@ -341,6 +349,11 @@ function vTetapan(){
     <button class="btn-primary" style="width:100%" id="sv">Simpan</button>`;
   const sum = () => { const s=[...document.querySelectorAll('.prop')].reduce((a,el)=>a+num(el.value),0); $('#psum').textContent = (Math.round(s*100)/100)+'%'; $('#psum').className = Math.abs(s-100)<0.05?'ok':'err'; return s; };
   document.querySelectorAll('.prop').forEach(el=>el.oninput=sum); sum();
+  document.querySelectorAll('.fin').forEach(inp=>inp.onchange=async e=>{
+    const f=e.target.files[0]; if(!f) return;
+    try{ P.foto = await resizeImage(f, 240); }catch{ return toast('Gambar tak dapat dibaca'); }
+    $('#fprev').innerHTML = avatar({nama:P.nama, foto:P.foto},'lg'); await save(); toast('Gambar disimpan ✓'); });
+  $('#fdel') && ($('#fdel').onclick=async()=>{ P.foto=''; await save(); toast('Gambar dibuang'); vTetapan(); });
   $('#asal').onclick=()=>{ document.querySelectorAll('.prop').forEach((el,i)=>el.value=PROP_ASAL[i]); sum(); };
   $('#rata').onclick=()=>{ document.querySelectorAll('.prop').forEach((el,i)=>el.value=i<11?8.33:8.37); sum(); };
   $('#sv').onclick = async () => {
@@ -370,7 +383,7 @@ async function vPasukan(){
     </div>
     ${team.length ? team.map(({a,C})=>{ const r=C.rows[CUR_M-1], p=pct(C.achieve,C.goal);
       return `<div class="card agent" onclick="go('#/pasukan/${a.uid}')">
-        <div class="avatar">${esc(initials(a.profile.nama))}</div>
+        ${avatar({nama:a.profile.nama, foto:a.profile.foto})}
         <div class="grow"><b>${esc(a.profile.nama)}</b> <span class="small muted">${esc(a.profile.kod||'')}</span>
           ${bar(p, colorFor(pct(C.achieve,C.ytdBudget)))}
           <div class="small muted">${RM(C.achieve)} / ${RM(C.goal)} (${p}%) · ${BLN[CUR_M-1]}: ${pct(r.achieve,r.budget)}% · P100: ${(a.p100||[]).length}</div>
@@ -407,7 +420,7 @@ function vAhli(id){
   const a = (S.team||[]).find(x=>x.uid===id); if(!a) return go('#/pasukan');
   const C = calc(a);
   $('#app').innerHTML = `
-    <div class="row"><h2 class="grow">${esc(a.profile.nama)}</h2><button class="btn-sm" onclick="go('#/pasukan/ejen')">← Ejen</button></div>
+    <div class="row">${avatar({nama:a.profile.nama, foto:a.profile.foto})}<h2 class="grow">${esc(a.profile.nama)}</h2><button class="btn-sm" onclick="go('#/pasukan/ejen')">← Ejen</button></div>
     <div class="small muted" style="margin:-8px 0 10px">${esc(a.profile.kod||'')} ${a.profile.tel?`· <a target="_blank" href="https://wa.me/${esc(waNum(a.profile.tel))}">${esc(a.profile.tel)}</a>`:''} · kemaskini ${a.updatedAt?fmtDate(a.updatedAt):'-'}</div>
     ${dashboardHTML(a, true)}
     ${contestCards(a, true)}
