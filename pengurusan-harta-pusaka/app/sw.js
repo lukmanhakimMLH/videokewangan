@@ -1,6 +1,6 @@
 // Service worker: simpan fail app supaya boleh dibuka tanpa internet.
 // Tiada data pelanggan disimpan di sini; hanya fail app.
-const CACHE = 'harta-pusaka-d29d110fa4';
+const CACHE = 'harta-pusaka-c0c5e15b80';
 const FILES = [
   './',
   'index.html',
@@ -52,5 +52,9 @@ self.addEventListener('fetch', e => {
     return;
   }
 
-  e.respondWith(caches.match(req).then(hit => hit || fetch(req)));
+  // Fail app lain (termasuk enjin OCR): guna simpanan, jika tiada ambil dan simpan.
+  e.respondWith(caches.match(req).then(hit => hit || fetch(req).then(res => {
+    if(res && res.ok){ const copy = res.clone(); caches.open(CACHE).then(c => c.put(req, copy)); }
+    return res;
+  })));
 });

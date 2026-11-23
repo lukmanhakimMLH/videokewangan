@@ -1,8 +1,16 @@
 # Pengurusan Harta Pusaka
 
-Web app untuk ejen: muat naik laporan kredit (CCRIS / CTOS / Experian / CBM), senaraikan hutang dan aset, kira kos pengurusan pusaka dan keperluan hibah, simulasi faraid, dan jana laporan PDF bertandatangan untuk pelanggan.
+Web app untuk ejen: muat naik laporan kredit (CCRIS / CTOS / Experian / CBM), SPEKA Angkasa dan slip gaji (PDF atau gambar), senaraikan hutang dan aset, kira kos pengurusan pusaka dan keperluan hibah, simulasi faraid, dan jana laporan PDF bertandatangan untuk pelanggan.
 
 **Privasi:** semua pemprosesan berlaku dalam peranti pengguna. Laporan kredit, data pelanggan dan tandatangan pelanggan tidak dihantar atau disimpan di mana-mana server. Hanya nama, no. telefon dan tandatangan perunding diingat dalam pelayar peranti itu.
+
+## Dokumen yang dibaca
+
+1. **Laporan kredit** (wajib): hutang, baki, ansuran, tunggakan.
+2. **SPEKA Angkasa** (pilihan): potongan gaji. Pinjaman koperasi ditambah ke hutang dengan anggaran baki = ansuran × baki bulan; insurans/takaful dan simpanan disenaraikan. Nama organisasi daripada senarai kod Angkasa (402 kod, 11 Julai 2023).
+3. **Slip gaji** (pilihan): gaji pokok, kasar, bersih dan potongan. Pinjaman boleh ditambah ke hutang; gaji bersih boleh dijadikan komitmen bulanan.
+
+Gambar dibaca dengan OCR (Tesseract) yang disimpan dalam `app/lib/ocr/`, dalam peranti sahaja. Tangkapan skrin lebih tepat daripada foto skrin.
 
 ## Fail
 

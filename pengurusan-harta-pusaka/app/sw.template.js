@@ -52,5 +52,9 @@ self.addEventListener('fetch', e => {
     return;
   }
 
-  e.respondWith(caches.match(req).then(hit => hit || fetch(req)));
+  // Fail app lain (termasuk enjin OCR): guna simpanan, jika tiada ambil dan simpan.
+  e.respondWith(caches.match(req).then(hit => hit || fetch(req).then(res => {
+    if(res && res.ok){ const copy = res.clone(); caches.open(CACHE).then(c => c.put(req, copy)); }
+    return res;
+  })));
 });

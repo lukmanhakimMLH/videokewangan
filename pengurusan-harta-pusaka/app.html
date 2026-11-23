@@ -147,6 +147,32 @@ section.step.sim-a{border-top:4px solid var(--bad)}
 .slegend{display:flex;flex-wrap:wrap;gap:6px 14px;margin-top:8px;font-size:13px}
 .slegend b{display:inline-block;width:11px;height:11px;border-radius:3px;margin-right:5px;vertical-align:-1px}
 .slegend em{font-style:normal;font-weight:700}
+.docs{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px}
+.docs .drop{position:relative;padding:16px 14px 14px;gap:4px;align-content:start}
+.dnum{width:28px;height:28px;border-radius:50%;display:grid;place-items:center;background:var(--accent);color:#fff;font-weight:800;font-size:14px}
+.tag{font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:2px 9px;background:var(--surface)}
+.tag.req{color:#fff;background:var(--navy-2);border-color:var(--navy-2)}
+.dsum{border:1px solid var(--line);border-radius:14px;padding:14px;display:grid;gap:12px;background:var(--surface)}
+.dhead{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.dhead small{display:block;font-size:11px;font-weight:800;letter-spacing:.08em;color:var(--gold-ink)}
+.dhead b{display:block;font-family:var(--f-display);font-size:16px}
+.dhead span{font-size:12.5px;color:var(--muted)}
+.dtot{text-align:right;display:grid;justify-items:end;gap:3px}
+.dtot b{font-size:20px;color:var(--navy-2)}
+.dkv{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px}
+.dkv div{background:var(--surface-2);border-radius:10px;padding:8px 10px}
+.dkv small{display:block;font-size:11.5px;color:var(--muted);font-weight:700}
+.dkv b{font-variant-numeric:tabular-nums}
+.dsec h4{margin:0 0 4px;font-size:13px;letter-spacing:.04em;text-transform:uppercase;color:var(--muted)}
+.dsec ul{list-style:none;margin:0;padding:0;display:grid}
+.dsec li{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--line)}
+.dsec li:last-child{border-bottom:0}
+.dsec li span{flex:1;min-width:0;font-weight:600;font-size:14px}
+.dsec li small{display:block;font-weight:500;color:var(--muted);font-size:12px}
+.dsec li b{font-variant-numeric:tabular-nums;white-space:nowrap}
+.dsec li em{font-style:normal}
+.chip.src{background:var(--surface-2);color:var(--navy-2);border-color:var(--line)}
+.debt-note{font-size:12.5px;color:var(--muted);margin-top:-4px}
 .big-btn{width:100%;padding:13px 16px;font-size:16px}
 .inl{display:inline-flex;align-items:center;gap:4px;margin-left:4px;font-weight:600}
 .ledger div.stack{align-items:flex-start}
@@ -224,15 +250,30 @@ footer .wrap{padding-block:0 32px}
       <!-- 1. Laporan -->
       <section class="step" id="s-report">
         <div class="step-head">
-          <h2><span class="step-no">LANGKAH 1</span> Laporan Kredit</h2>
+          <h2><span class="step-no">LANGKAH 1</span> Dokumen Pelanggan</h2>
           <span class="chip sample" id="sampleChip">Data contoh</span>
         </div>
-        <label class="drop" id="drop" for="file">
-          <strong>Pilih atau seret fail PDF laporan kredit</strong>
-          <span class="hint">PDF asal yang dimuat turun (bukan imej / imbasan)</span>
-          <div class="chips"><span class="chip">CCRIS</span><span class="chip">CTOS</span><span class="chip">EXPERIAN</span><span class="chip">CBM</span></div>
-          <input type="file" id="file" accept="application/pdf,.pdf" hidden>
-        </label>
+        <p class="hint">Muat naik PDF atau gambar (tangkapan skrin). PDF asal paling tepat. Semua dokumen dibaca dalam peranti ini sahaja.</p>
+        <div class="docs">
+          <label class="drop" id="drop" for="file">
+            <span class="dnum">1</span><strong>Laporan Kredit</strong>
+            <span class="hint">CCRIS / CTOS / Experian / CBM</span>
+            <span class="tag req">Wajib</span>
+            <input type="file" id="file" accept="application/pdf,.pdf,image/*" hidden>
+          </label>
+          <label class="drop" id="speka-drop" for="speka-file">
+            <span class="dnum">2</span><strong>SPEKA Angkasa</strong>
+            <span class="hint">Potongan gaji: koperasi, insurans, simpanan</span>
+            <span class="tag">Pilihan</span>
+            <input type="file" id="speka-file" accept="application/pdf,.pdf,image/*" hidden>
+          </label>
+          <label class="drop" id="slip-drop" for="slip-file">
+            <span class="dnum">3</span><strong>Slip Gaji</strong>
+            <span class="hint">Gaji, potongan dan pinjaman</span>
+            <span class="tag">Pilihan</span>
+            <input type="file" id="slip-file" accept="application/pdf,.pdf,image/*" hidden>
+          </label>
+        </div>
         <div id="pwBox" class="row-actions" hidden>
           <label class="f" style="flex:1 1 200px">KATA LALUAN PDF (biasanya No. IC)
             <input type="password" id="pw" autocomplete="off">
@@ -240,6 +281,10 @@ footer .wrap{padding-block:0 32px}
           <button class="primary" id="pwBtn" type="button" style="align-self:end">Buka</button>
         </div>
         <div class="status" id="status">Memaparkan contoh berdasarkan laporan CBM dalam slaid taklimat. Muat naik laporan pelanggan untuk menggantikannya.</div>
+        <div class="status" id="speka-status" hidden></div>
+        <div class="dsum" id="speka-sum" hidden></div>
+        <div class="status" id="slip-status" hidden></div>
+        <div class="dsum" id="slip-sum" hidden></div>
 
         <div class="client">
           <label class="f">NAMA PELANGGAN<input id="c-name" type="text"></label>
@@ -402,7 +447,7 @@ const ASSET_TYPES = ['Hartanah','Kenderaan','Simpanan Bank','KWSP','ASB / Unit A
 
 /* ---------- State ---------- */
 let uid = 1;
-const state = { client:{name:'',ic:'',source:'',date:''}, debts:[], assets:[], rate:5, monthly:0, months:12, prep:{name:'', contact:'', sig:''}, clientSig:'', reportTotal:null,
+const state = { client:{name:'',ic:'',source:'',date:''}, debts:[], assets:[], rate:5, monthly:0, months:12, prep:{name:'', contact:'', sig:''}, clientSig:'', isSample:false, speka:null, slip:null, reportTotal:null,
   faraid:{gender:'L', spouse:1, sons:2, daughters:1, father:false, mother:true} };
 
 function sample(){
@@ -413,6 +458,7 @@ function sample(){
     mkDebt({code:'PCPASCAR', lender:'CB', capacity:'Own', limit:57900, balance:57363, installment:686, col:'MVehs', arrears:0})
   ];
   state.reportTotal = 236474;
+  state.isSample = true;
   state.monthly = 3000;
   state.assets = suggestAssets(state.debts);
   state.assets.push(mkAsset({type:'KWSP', desc:'Akaun 1 & 2 (contoh)', value:85000}));
@@ -666,6 +712,8 @@ function renderDebts(){
           ${d.capacity?`<span class="chip">${esc(d.capacity)}</span>`:''}
           ${d.saa?'<span class="chip bad">Perhatian Khas</span>':''}
           ${d.rescheduled?'<span class="chip bad">Dijadual semula</span>':''}
+          ${d.src?`<span class="chip src">${esc(d.src)}</span>`:''}
+          ${d.maybeCcris?'<span class="chip sample">Semak: mungkin sudah dalam laporan kredit</span>':''}
           ${d.arrears>0?`<span class="chip bad">Pernah tertunggak ${d.arrears} bln (12 bln lepas)</span>`:(d.code||d.lender?'<span class="chip ok">Bayaran teratur</span>':'')}
         </div>
         <button class="x" type="button" data-del-debt="${d.id}" aria-label="Buang hutang">Buang</button>
@@ -676,6 +724,7 @@ function renderDebts(){
         <label class="f">ANSURAN/BULAN<input id="d-${d.id}-installment" data-f="installment" class="money" inputmode="decimal" value="${fmt(d.installment)}"></label>
         <label class="f">HAD ASAL<input id="d-${d.id}-limit" data-f="limit" class="money" inputmode="decimal" value="${fmt(d.limit)}"></label>
       </div>
+      ${d.srcNote?`<div class="debt-note">${esc(d.srcNote)}</div>`:''}
       <label class="check"><input type="checkbox" id="d-${d.id}-covered" data-f="covered" ${d.covered?'checked':''}> Dilindungi MRTA / MRTT / Takaful</label>
     </div>`).join('');
 }
@@ -733,7 +782,11 @@ function renderSummary(){
   $('b-cost').textContent = rm(r.cost);
   $('b-extra').textContent = rm(r.E);
   const inst = state.debts.reduce((s,d)=>s+(+d.installment||0),0);
-  $('instHint').textContent = inst ? 'Rujukan: jumlah ansuran hutang dalam laporan ' + rm(inst) + '/bulan, tambah belanja rumah, bil, persekolahan.' : 'Masukkan belanja bulanan rumah, bil, persekolahan dan lain-lain.';
+  const refs = [];
+  if(inst) refs.push('ansuran hutang ' + rm(inst) + '/bulan');
+  if(state.speka) refs.push('potongan SPEKA ' + rm(state.speka.total != null ? state.speka.total : state.speka.sum) + '/bulan');
+  if(state.slip && state.slip.net) refs.push('gaji bersih ' + rm(state.slip.net) + '/bulan');
+  $('instHint').textContent = refs.length ? 'Rujukan: ' + refs.join(', ') + '. Tambah belanja rumah, bil, persekolahan.' : 'Masukkan belanja bulanan rumah, bil, persekolahan dan lain-lain.';
   $('b-total').textContent = rm(r.H);
   $('b-verdict').innerHTML = `<strong>Aset ${rm(r.A)} kekal utuh</strong>Hutang dan kos dibayar dengan wang hibah, jadi semua aset dibahagi penuh ikut faraid${r.E ? ', dan keluarga ada ' + rm(r.E) + ' tunai untuk sara hidup ' + state.months + ' bulan sementara faraid selesai' : ''}.`;
 
@@ -899,7 +952,7 @@ function renderFaraidInputs(){
   $('f-father').checked = h.father; $('f-mother').checked = h.mother;
 }
 
-function renderAll(){ renderClient(); renderDebts(); renderAssets(); renderFaraidInputs(); renderSummary(); }
+function renderAll(){ renderClient(); renderDebts(); renderAssets(); renderFaraidInputs(); renderSummary(); if(typeof renderSpekaSummary === 'function'){ renderSpekaSummary(); renderSlipSummary(); } }
 
 /* ---------- Events ---------- */
 ['name','ic','source','date'].forEach(k => $('c-'+k).addEventListener('input', e => { state.client[k] = e.target.value; if(k === 'name') renderSummary(); }));
@@ -947,38 +1000,387 @@ $('monthly').addEventListener('input', e => { state.monthly = parseMoney(e.targe
 $('monthly').addEventListener('focusout', e => { e.target.value = fmt(parseMoney(e.target.value)); });
 $('months').addEventListener('input', e => { state.months = Math.max(0, Math.min(60, parseInt(e.target.value,10) || 0)); renderSummary(); });
 
+/* ---------- OCR (gambar) ---------- */
+let ocrWorkerP = null;
+function loadScript(src){
+  return new Promise((res, rej) => { const s = document.createElement('script'); s.src = src; s.onload = res; s.onerror = () => rej(new Error('Gagal memuatkan ' + src)); document.head.appendChild(s); });
+}
+function getOcr(onProgress){
+  if(!ocrWorkerP){
+    ocrWorkerP = (async () => {
+      const base = new URL('lib/ocr/', location.href).href;
+      if(typeof Tesseract === 'undefined') await loadScript(base + 'tesseract.min.js');
+      return Tesseract.createWorker('eng', 1, {
+        workerPath: base + 'worker.min.js', corePath: base, langPath: base.replace(/\/$/, ''),
+        gzip: true, cacheMethod: 'none',
+        logger: m => { if(ocrProgress && m && typeof m.progress === 'number') ocrProgress(m); }
+      });
+    })().catch(e => { ocrWorkerP = null; throw e; });
+  }
+  ocrProgress = onProgress;
+  return ocrWorkerP;
+}
+let ocrProgress = null;
+function cleanOcrLine(l){
+  return l.replace(/[‘’“”`´]/g, "'").replace(/^['".,:;|_\-\s]+/, '').replace(/\s+/g, ' ').trim();
+}
+async function ocrImage(img, onProgress){
+  const w = await getOcr(onProgress);
+  const r = await w.recognize(img);
+  return r.data.text.split(/\n+/).map(cleanOcrLine).filter(Boolean);
+}
+async function ocrPdfPages(data, password, onProgress){
+  const doc = await pdfjsLib.getDocument({data, password: password || undefined, isEvalSupported:false}).promise;
+  const out = [];
+  for(let p = 1; p <= Math.min(doc.numPages, 6); p++){
+    const page = await doc.getPage(p);
+    const vp = page.getViewport({scale: 2});
+    const cv = document.createElement('canvas'); cv.width = vp.width; cv.height = vp.height;
+    await page.render({canvasContext: cv.getContext('2d'), viewport: vp}).promise;
+    const lines = await ocrImage(cv, m => onProgress && onProgress(m, p, doc.numPages));
+    out.push(...lines);
+  }
+  return out;
+}
+function isImage(file){ return /^image\//i.test(file.type) || /\.(jpe?g|png|heic|heif|webp)$/i.test(file.name); }
+function isPdf(file){ return /pdf$/i.test(file.type) || /\.pdf$/i.test(file.name); }
+
+/* Baca apa-apa fail (PDF teks, PDF imbasan, gambar) menjadi baris teks. */
+async function fileToLines(file, opts){
+  opts = opts || {};
+  const say = opts.status || (() => {});
+  const prog = (m, p, n) => { if(m.status === 'recognizing text') say('Membaca gambar' + (n > 1 ? ' (halaman ' + p + '/' + n + ')' : '') + '… ' + Math.round(m.progress * 100) + '%'); else if(/load|initializ/i.test(m.status)) say('Menyediakan pembaca gambar…'); };
+  if(isImage(file)){
+    say('Menyediakan pembaca gambar…');
+    return {lines: await ocrImage(file, prog), ocr: true};
+  }
+  if(!isPdf(file)) throw {user: 'Jenis fail tidak disokong. Muat naik PDF atau gambar (JPG / PNG).'};
+  if(typeof pdfjsLib === 'undefined') throw {user: 'Pembaca PDF gagal dimuatkan. Semak sambungan internet dan cuba lagi.'};
+  const buf = opts.buf || await file.arrayBuffer();
+  const lines = await pdfToLines(buf.slice(0), opts.password);
+  if(lines.join('').replace(/\s/g, '').length >= 40) return {lines, ocr: false};
+  say('PDF ini imbasan. Membaca sebagai gambar…');
+  return {lines: await ocrPdfPages(buf.slice(0), opts.password, prog), ocr: true};
+}
+
+/* ---------- Kod organisasi Angkasa ---------- */
+const ANGKASA_CODES = {"50250":"KOPERASI KOGUMA BERHAD","A0204":"KOPERASI PEGAWAI-PEGAWAI KERAJAAN TAPAH BERHAD","A0207":"KOPERASI ANGGOTA KERAJAAN IPOH BERHAD","A0208":"KOPERASI PEKERJA-PEKERJA KERAJAAN (KOSPEK) HILIR","A0209":"KOPERASI PEGAWAI-PEGAWAI KERAJAAN KUALA KANGSAR","A0214":"KOPERASI GURU-GURU SEKOLAH MALAYSIA BERHAD","A0216":"KOPERASI GURU-GURU MELAYU LARUT MATANG SELAMA DAN","A0217":"KOPERASI ORANG MELAYU KERAJAAN","A0219":"KOPERASI PEGAWAI-PEGAWAI KERAJAAN TAIPING BERHAD","A0224":"KOPERASI GURU-GURU MELAYU KUALA KANGSAR & HULU","A0226":"KOPERASI JABATAN PENJARA MALAYSIA BERHAD","A0227":"KOPERASI GURU-GURU SEKOLAH INDIA PERAK BERHAD","A0230":"KOPERASI GURU-GURU PENDIDIKAN ISLAM PERAK BHD","A0231":"KOPERASI GURU-GURU MELAYU KRIAN & SELAMA BERHAD","A0234":"KOPERASI GURU MELAYU PERAK BERHAD","A0236":"KOPERASI KAKITANGAN KERAJAAN HULU PERAK BHD","A0257":"KOPERASI SEJATI BERHAD","AL533":"KESATUAN PERKHIDMATAN PERGURUAN KEBANGSAAN","AL538":"KESATUAN SEKERJA KAKITANGAN MAKMAL (KSKM)","AL565":"KESATUAN KEBANGSAAN GURU-GURU AGAMA MALAYSIA","AL579":"KESATUAN KEBANGSAAN GURU-GURU SEKOLAH TAMIL MALAYA","AL619":"PERTUBUHAN FAEDAH BERSAMA JABATAN","AL634":"YAYASAN PEMBANGUNAN EKONOMI MALAYSIA","B0013":"KOPERASI SERBAGUNA PERTANIAN PERUSAHAAN KEMAJUAN","B0014":"KOPERASI SERBAGUNA PEKERJA-PEKERJA MALAYSIA BERHAD","B0018":"KOPERASI MUSLIMIN MALAYSIA BERHAD","B0030":"KOPERASI SERBAGUNA IMAN MALAYSIA BHD","B0036":"KOPERASI KONSUMER MALAYSIA BERHAD","B0044":"KOPERASI YATRA HINDU (M) BERHAD","B0050":"KOPERASI KONSUMER MALAYSIA BERHAD","B0107":"KOPERASI KOBARU BERHAD","B0115":"KOPERASI SHAMELIN BERHAD","B0120":"KOPERASI SERBAGUNA PEKERJA-PEKERJA MALAYSIA BERHAD","B0121":"KOPERASI SERBAGUNA PEKERJA-PEKERJA (M) BHD","B0122":"KOPERASI SERBAGUNA PEKERJA-PEKERJA (M) BHD","B0129":"KOPERASI SHAMELIN BERHAD","B0134":"KOPERASI PERDANAJAYA MALAYSIA BHD","B0202":"KOPERASI SERBAGUNA PEKERJA-PEKERJA KERAJAAN SABAK","B0205":"KOP KOSWIP MALAYSIA BERHAD","B0207":"KOPERASI KIJANG MAS BERHAD","B0209":"KOPERASI SERBAGUNA N.U.T BERHAD","B0210":"KOPERASI CUEPACS BERHAD (SAHAM)","B0212":"KOPERASI SERBAGUNA GURU-GURU MELAYU","B0216":"KOPERASI PEGAWAI-PEGAWAI MELAYU MALAYSIA BERHAD","B0219":"KOPERASI GURU GURU MALAYSIA BERHAD","B0225":"KOPERASI GURU-GURU KERAJAAN BERHAD","B0226":"KOPERASI KESATUAN GURU-GURU MELAYU MALAYSIA BARAT","B0230":"KOPERASI GURU-GURU AGAMA ISLAM SELANGOR BERHAD","B0231":"KOPERASI ANGKATAN TENTERA MALAYSIA BERHAD","B0237":"KOPERASI MAJU EKONOMI PEKERJA BERHAD","B0239":"KOPERASI PEKERJA-PEKERJA JABATAN PERDANA MENTERI","B0241":"KOPERASI KASTAM MALAYSIA BERHAD","B0242":"KOPERASI PERKASA (MALAYSIA) BERHAD","B0244":"KOPERASI GURU-GURU SEKOLAH TAMIL SELANGOR (BERHAD)","B0250":"KOPERASI KOGUMA BERHAD","B0258":"KOPERASI PEKERJA BOMBA DAN PENYELAMAT MALAYSIA","B0263":"KOPERASI PERKHIDMATAN PELAJARAN NASIONAL BERHAD","B0270":"KOPERASI CUEPACS BHD (INSURAN)","B0279":"KOPERASI SEJATI BERHAD","B0281":"KOPERASI KAKITANGAN KEMENTERIAN PERTANIAN MALAYSIA","B0292":"KOPERASI JABATAN PENJARA KUALA LUMPUR BERHAD","B0302":"KOPERASI MAJU EKONOMI PEKERJA BHD","B0303":"KOPERASI MAJU EKONOMI PEKERJA BHD","B0312":"KOPERASI PERKHIDMATAN PERGURUAN KEBANGSAAN BHD","B0320":"KOPERASI PENDIDIKAN KUALA SELANGOR","B0326":"KOPERASI KOBESI KUALA LUMPUR BERHAD","B0332":"KOPERASI SERBAGUNA IMAN MALAYSIA BHD","B0334":"KOPERASI SERBAGUNA PERTANIAN PERUSAHAAN KEMAJUAN","B0337":"KOPERASI PERKHIDMATAN SETIA BERHAD","B0339":"KOPERASI WARGA WAWASAN MALAYSIA BERHAD","B0340":"KOPERASI PEMBANGUNAN USAHAWAN NASIONAL BERHAD","B0344":"KOPERASI MUDA MAJU JAYA MALAYSIA BHD","B0345":"KOPERASI GEMILANG SISWAZAH MALAYSIA BERHAD","B0347":"KOPERASI PERDANA JAYA MALAYSIA BERHAD","B0350":"KOPERASI PEMBANGUNAN USAHAWAN NASIONAL","B0354":"KOPERASI SERBAGUNA PEKERJA-PEKERJA MALAYSIA BERHAD","B0356":"KOPERASI SERBAGUNA PEKERJA-PEKERJA (M) BHD","B0361":"KOPERASI SERBAGUNA IMAN MALAYSIA BHD","B0364":"KOPERASI GEMILANG SISWAZAH MALAYSIA BERHAD","B0366":"KOPERASI KESATUAN GURU-GURU MELAYU MALAYSIA BARAT BERHAD","B0367":"KOPERASI MUDA MAJU JAYA MALAYSIA BERHAD","B0369":"KOPERASI WARGA WAWASAN MALAYSIA BERHAD","B0374":"KOPERASI PEMBANGUNAN USAHAWAN NASIONAL BERHAD","B0375":"KOPERASI SERBAGUNA PEKERJA-PEKERJA (M) BERHAD","BA266":"KOPERASI PERKHIDMATAN PENDIDIKAN","BL276":"KESATUAN PEGAWAI EKSEKUTIF SEMENANJUNG MALAYSIA","BL504":"KESATUAN PERKHIDMATAN PERGURUAN KEBANGSAAN","BL506":"KESATUAN PEMBANTU PERANGKAAN KERAJAAN SEMENANJUNG","BL509":"GABONGAN KESATUAN PEKERJA-PEKERJA DALAM PERKHIDMAT","BL512":"KESATUAN KEBANGSAN PEKERJA -PEKERJA JABATAN KERJA","BL517":"KESATUAN PEGAWAI-PEGAWAI KASTAM","BL520":"KESATUAN PERKHIDMATAN IMIGRESEN PERSEKUTUAN TANAH","BL521":"KESATUAN PERKHIDMATAN TEKNIK MALAYSIA","BL533":"PERSATUAN KHAIRAT KEMATIAN DAN KEBAJIKAN AM ISLAM","BL548":"KELAB JABATAN PERKHIDMATAN AWAM","BL588":"KESATUAN GURU-GURU MELAYU MALAYSIA BARAT BERHAD","BL600":"PERSATUAN PEGAWAI-PEGAWAI KANAN KASTAM MALAYSIA","BL606":"KESATUAN PERKHIDMATAN PERGURUAN KEBANGSAAN","BL615":"MALAYAN NURSES UNION","BL647":"PERSATUAN SUKAN, KEBAJIKAN DAN KEBUDAYAAN ANGGOTA","BL658":"PERSATUAN PEGAWAI-PEGAWAI PENJARA","BL665":"BADAN KEBAJIKAN ISLAM KASTAM MALAYSIA (BAKISKA)","BL675":"KELAB SUKAN KEBAJIKAN & KEBUDAYAAN IBU PEJABAT","BL694":"KESATUAN PEMBANTU AM RENDAH PERKHIDMATAN AWAM","BL696":"YAYASAN AL AIM","BL698":"KELAB PEGAWAI PENJARA, PENJARA PUSAT SELANGOR","BL705":"PERSATUAN KEBAJIKAN JAB. PERKHIDAMATAN BOMBA M'SIA","BL710":"KESATUAN PEMBANTU TADBIR & PEMBANTU TADBIR RENDAH","BL717":"YAYASAN GURU MALAYSIA BERHAD","BL719":"YAYASAN AL AIM","BL723":"BADAN KEBAJIKAN ISLAM AKIB NEGARA MALAYSIA (BA'IS)","BL740":"YAYASAN KEBAJIKAN KASTAM MALAYSIA","BL759":"KONGRES KESATUAN PEKERJA-PEKERJA DI DALAM","BL771":"PERBADANAN WAKAF SELANGOR","BL773":"DERMA KHAIRAT KEBAJIKAN JABATAN PENJARA MALAYSIA","BL777":"MAJLIS SUKAN PENJARA MALAYSIA","BL782":"BADAN KHAIRAT KEMATIAN JAB. BOMBA & PENYELAMAT","BL796":"YAYASAN TEGUH IMAN","BL798":"MYANGKASA AMANAH BERHAD","BL801":"PERSATUAN GURU-GURU VOKASIONAL DAN TEKNIK MALAYSIA","BL812":"MCCM RESOURCES SDN BHD","BL815":"MYANGKASA AMANAH BERHAD (MUKMIN 50)","C0201":"KOPERASI PERKHIDMATAN PENDIDIKAN MELAYU PAHANG","C0202":"KOPERASI GURU-GURU MELAYU PAHANG BARAT BHD","C0203":"KOPERASI PEGAWAI-PEGAWAI KERAJAAN NEGERI PAHANG","C0204":"KOPERASI GURU MELAYU PAHANG SELATAN BERHAD","C0210":"KOPERASI GURU-GURU LEPASAN MAKTAB","C0212":"KOPERASI GURU-GURU DAN PEGAWAI AGAMA PAHANG BERHAD","C0213":"KOPERASI KAUM INDIA PAHANG SELATAN BERHAD","C1511":"KESATUAN PERKHIDMATAN PERGURUAN KEBANGSAAN","CL511":"KESATUAN PERKHIDMATAN PERGURUAN KEBANGSAAN","CL531":"PERSATUAN KEBAJIKAN KELUARGA DAN KOMPUTER","CL533":"KESATUAN KEBANGSAAN GURU-GURU UGAMA MALAYSIA BARAT","CL544":"KESATUAN PEMBANTU PENGURUSAN MURID","D0201":"KOPERASI GURU MELAYU KELANTAN BERHAD","D0206":"KOPERASI GURU-GURU DTC MALAYSIA BERHAD","D0209":"KOPERASI GURU-GURU UGAMA KELANTAN BERHAD","D0214":"KOPERASI KESATUAN KEBANGSAAN GURU LEPASAN","D0222":"KOPERASI WAWASAN MALAYSIA BERHAD","D0224":"KOPERASI GURU-GURU WANITA MELAYU BERHAD","D0229":"KOPERASI GURU-GURU MUSLIM KELANTAN BERHA","D0238":"KOPERASI PENDIDIKAN USAHAWAN BERHAD","D0243":"KOPERASI PENDIDIKAN USAHAWAN BERHAD","DL506":"KESATUAN PERKHIDMATAN PERGURUAN KEBANGSAAN","DL508":"KESATUAN KEBANGSAAN GURU-GURU LEPASAN MAKTAB","DL521":"YAYASAN KEBAJIKAN ANAK-ANAK YATIM KELANTAN","DL525":"KESATUAN KEBANGSAAN GURU-GURU AGAMA (M) BARAT","E0203":"KOPERASI GURU-GURU BUMIPUTERA SABAH","E0214":"KOPERASI PEMBANGUNAN USAHASAMA MASYARAKAT MAJU","E0221":"KOPERASI BORNEO MALAYSIA BERHAD","E0223":"KOPERASI TANJUNG KERAMAT KOTA KINABALU","E0224":"KOPERASI PEMBANGUNAN USAHASAMA MASYARAKAT","E0225":"KOPERASI PEMBANGUNAN USAHASAMA MASYARAKAT","E0227":"KOPERASI BORNEO BHD","E0228":"KOPERASI TANJONG KERAMAT MALAYSIA BERHAD","EL502":"KESATUAN GURU-GURU SABAH","EL505":"SABAH GOVERMENT TEACHER'S UNION","EL518":"KELAB SUKAN DAN KEBAJIKAN","EL519":"PERMODALAN CAPITAL BERHAD","J0200":"KOPERASI KAKITANGAN KERAJAAN DAERAH SEGAMAT BERHAD","J0202":"KOPERASI KAKITANGAN KERAJAAN MERSING BERHAD","J0203":"KOPERASI ANGGOTA-ANGGOTA KERAJAAN BATU PAHAT BHD","J0204":"KOPERASI KAKITANGAN KERAJAAN DAERAH KLUANG BERHAD","J0208":"KOPERASI KAKITANGAN PERKHIDMATAN PENDIDIKAN JOHOR","J0210":"KOPERASI PEGAWAI PERKHIDMATAN KERAJAAN","J0215":"KOPERASI GURU-GURU JOHOR BERHAD","J0216":"KOPERASI KAKITANGAN JABATAN KERJA RAYA DAERAH","J0218":"KOPERASI GURU-GURU MELAYU MUAR BERHAD","J0219":"KOPERASI PERNIAGAAN GURU-GURU MUAR BERHAD","J0220":"KOPERASI PEGAWAI DAN KAKITANGAN PENDIDIKAN DAERAH","J0239":"KOPERASI PERUNDING PERUNDING TAKAFUL IKHLAS MALAYSIA BHD","JL503":"KESATUAN KEBANGSAAN GURU-GURU AGAMA MALAYSIA BARAT","JL505":"KESATUAN PERKHIDMATAN PERGURUAN SEMENANJUNG","JL529":"PERSATUAN SUKAN & KEBAJIKAN PERKHIDMATAN BOMBA","JL563":"KELAB SUKAN DAN KEBAJIKAN ANGGOTA-ANGGOTA PENJARA","JL571":"TABUNG PEMBANGUNAN MASJID DAN AMAL JARIAH JOHOR","JL582":"YAYASAN RAJA ZARITH SOFIAH NEGERI JOHOR","K0201":"KOPERSI PEGAWAI-PEGAWAI KERAJAAN BALING KEDAH","K0202":"KOPERASI GURU-GURU MELAYU KEDAH BERHAD","K0204":"KOPERASI JC&PW PEGAWAI-PEGAWAI KERAJAAN DAERAH","K0209":"KOPERASI PEGAWAI2 KERAJAAN NG KEDAH DARUL AMAN","K0214":"KOPERASI PEGAWAI-PEGAWAI KERAJAAN BANDAR BHARU","K0217":"KOPERASI SEKOLAH-SEKOLAH TAMIL KEDAH BERHAD","K0221":"KOPERATIF PEGAWAI-PEGAWAI PEJABAT UGAMA KEDAH","K0225":"KOPERASI GURU-GURU LEPASAN MAKTAB NEGERI KEDAH","K0228":"KOPERASI PERMODALAN DAN KEBAJIKAN GURU-GURU","K0229":"KOPERASI SERBAGUNA KEBANGSAAN BERHAD","KL509":"KESATUAN PERKHIDMATAN PERGURUAN KEBANGSAAN","KL510":"PERSATUAN GURU-GURU MELAYU KEDAH","KL524":"KESATUAN KEBANGSAAN GURU UGAMA MALAYSIA BARAT","M0001":"KOPERASI PEKERJA-PEKERJA MELAYU MELAKA BERHAD","M0200":"KOPERASI PEGAWAI KERAJAAN NEGERI MELAKA BERHAD","M0201":"KOPERASI GURU-GURU MELAYU MELAKA BERHAD (KAGUM)","M0211":"KOPERASI KEMAS MELAKA BERHAD","M0219":"KOPERASI BERSATU TENAGA MALAYSIA BERHAD","M0223":"KOPERASI BERSATU TENAGA MALAYSIA BHD","M0224":"KOPERASI PEMBANGUNAN USAHAWAN & PENGGUNA","M0225":"KOPERASI KEMAS MELAKA BERHAD","ML507":"KESATUAN PERKHIDMATAN PERGURUAN KEBANGSAAN","ML508":"KELAB SUKAN JABATAN PARIT DAN TALIAIR MELAKA","ML549":"PERTUBUHAN KEGIATAN DAKWAH ISLAMIYAH SEKOLAH","ML550":"KELAB SUKAN DAN KEBAJIKAN KAKITANGAN AWAM","N0201":"KOPERASI GURU-GURU MELAYU NEGERI SEMBILAN BERHAD","N0210":"KOPERASI SERBAGUNA GURU-GURU TAMIL NEGERI","N0222":"KOPERASI GRADUAN NEGERI SEMBILAN BERHAD","NL501":"KESATUAN PERKHIDMATAN PERGURUAN KEBANGSAAN","NL506":"PERSEKUTUAN GURU-GURU AGAMA NEGERI SEMBILAN","NL507":"PERSATUAN KEBAJIKAN KAKITANGAN JABATAN PERTANIAN","NL518":"KELAB BOMBA NEGERI SEMBILAN","NL519":"KELAB KAKITANGAN AWAM KEMENTERIAN PERTAHANAN","PL512":"KESATUAN PERKHIDMATAN PERGURUAN KEBANGSAAN","PL533":"PERSATUAN GURU-GURU MELAYU PULAU PINANG","PS214":"KOPERASI CO-OPBANK PERTAMA MALAYSIA BERHAD","PS219":"KOPERASI CO-OPBANK PERTAMA MALAYSIA BERHAD","PS220":"KOPERASI CO-OPBANK PERTAMA MALAYSIA BERHAD","PS223":"KOPERASI CO-OPBANK PERTAMA MALAYSIA BERHAD","PS224":"KOPERASI CO-OPBANK PERTAMA MALAYSIA BERHAD","PS225":"KOPERASI CO-OPBANK PERTAMA MALAYSIA BERHAD","PS226":"KOPERASI CO-OPBANK PERTAMA MALAYSIA BERHAD","PS228":"KOPERASI CO-OPBANK PERTAMA MALAYSIA BERHAD","PS229":"KOPERASI CO-OPBANK PERTAMA MALAYSIA BERHAD","PS234":"KOPERASI CO-OPBANK PERTAMA MALAYSIA BERHAD","PS238":"KOPERASI CO-OPBANK PERTAMA MALAYSIA BERHAD","PS240":"KOPERASI CO-OPBANK PERTAMA MALAYSIA BERHAD","R0200":"KOPERASI PEGAWAI - PEGAWAI KERAJAAN NEGERI PERLIS","R0201":"KOPERASI GURU-GURU MELAYU PERLIS BHD","R0207":"KOPERASI PERMODALAN GURU-GURU MELAYU PERLIS BERHAD","RL504":"KESATUAN PERKHIDMATAN PERGURUAN KEBANGSAAN M'SIA","RL507":"KESATUAN KEBANGSAAAN GURU-GURU LEPASAN MAKTAB","RL511":"YAYASAN DEWAN PERNIAGAAN MELAYU PERLIS BHD","S0203":"KOPERASI GURU BUMIPUTERA SARAWAK BERHAD","S0223":"KOPERSI POLIS DIRAJA MALAYSIA SARAWAK BERHAD","SL523":"KESATUAN GURU-GURU BUMIPUTRA SARAWAK","SL526":"KESATUAN PEGAWAI-PEGAWAI SEMENANJUNG PERKHIDMATAN","T0200":"KOPERASI KAKITANGAN KERAJAAN & BADAN-BADAN","T0201":"KOPERASI KAKITANGAN KERAJAAN TERENGGANU BERHAD","T0203":"KOPERASI WARGA PENDIDIKAN TERENGGANU BERHAD","T0204":"KOPERASI GURU-GURU MELAYU BESUT","T0208":"KOPERASI PERMODALAN GURU-GURU MELAYU TERENGGANU","T0213":"KOPERASI MESRA-NET TERENGGANU BERHAD","TL505":"KESATUAN PERKHIDMATAN PERGURUAN KEBANGSAAN","TL510":"PERSATUAN SUKAN DAN KEBAJIKAN ANGGOTA-ANGGOTA","W0002":"KOPERASI UKHWAH MALAYSIA BERHAD","W0003":"KOPERASI USAHAWAN MUDA MALAYSIA BERHAD","W0006":"KOPERASI WAWASAN PEKERJA-PEKERJA BHD","W0010":"KOPERASI JABATAN KERJA RAYA NEGERI SELANGOR","W0011":"KOPERASI UKHWAH MALAYSIA BERHAD","W0012":"KOPERASI SEJATI BERHAD","W0015":"KOPERERASI PUTRI TERBILANG MALAYSIA BHD","W0017":"KOPERASI PERDANA NASIONAL MALAYSIA BERHAD","W0023":"KOPERASI WAWASAN MALAYSIA BERHAD","W0026":"KOPERASI PENGUSAHA PEKERJA MALAYSIA BERHAD","W0027":"KOPERASI BELIA NASIONAL BERHAD","W0029":"KOPERASI UKHWAH MALAYSIA BERHAD","W0031":"KOPERASI SIMPANAN DAN KREDIT BERSATU MALAYSIA","W0034":"KOPERASI WAWASAN PEKERJA-PEKERJA BHD (KOWAJA)","W0035":"KOPERASI UKHWAH MALAYSIA BERHAD","W0036":"KOPERASI PUTRI TERBILANG MALAYSIA BERHAD","W0037":"KOPERASI YAYASAN GURU MALAYSIA BERHAD","W0040":"KOPERASI BERSATU TENAGA MALAYSIA BERHAD","W0051":"KOPERASI SUJANA MALAYSIA BERHAD","W0054":"KOPERASI WAWASAN MALAYSIA BERHAD","W0055":"KOPERASI WAWASAN MALAYSIA BERHAD","W0058":"KOPERASI SIMPANAN DAN KREDIT BERSATU MALAYSIA","W0060":"KOPERASI PUTRI TERBILANG MALAYSIA BERHAD","W0065":"KOPERASI PERKHIDMATAN BERHAD (KOHIDMAS)","W0066":"KOPERASI UKHWAH MALAYSIA BERHAD","W0072":"KOPERASI PERDANA NASIONAL MALAYSIA BERHAD","W0074":"KOPERASI SUJANA MALAYSIA BERHAD","WL501":"NUTP IBU PEJABAT","WL514":"KELAB KEBAJIKAN DAN SUKAN PARLIMEN MALAYSIA","WL530":"AMANAH RAYA CAPITAL SDN BHD","WL548":"KESATUAN PERKHIDMATAN PERGURUAN KEBANGSAAN M'SIA","WL560":"KOPERASI UKHWAH MALAYSIA BERHAD","WL561":"YAYASAN KEBAJIKAN OKB","WL566":"KONGRES KESATUAN PEKERJA-PEKERJA DIDALAM","WL571":"YAYASAN PEMBANGUNAN AGROTANI MALAYSIA","WL573":"YAYASAN KUMPULAN MAKMAL SAINS BERDAFTAR","WL581":"KESATUAN PERKHIDMATAN PERGURUAN KEBANGSAAN","WL588":"KESATUAN PERKHIDMATAN PERGURUAN KEBANGSAAN","WL592":"KESATUAN PERKIDMATAN PERGURUAN KEBANGSAAN MALAYSIA","WL607":"FWD TAKAFUL BERHAD","WL608":"YAYASAN WARGA TUA MALAYSIA","WL610":"KONGRES KESATUAN PEKERJA-PEKERJA DIDALAM","WL613":"YAYASAN TEGUH IMAN","B0001":"MCIS INSURANS","BL583":"PUSAT PUNGUTAN ZAKAT","BL683":"AIA BERHAD","BL689":"ZURICH INSURANCE MALAYSIA BERHAD","BL692":"AXA AFFIN LIFE INSURANCE BERHAD","BL707":"AMMETLIFE INSURANCE BERHAD","BL714":"ETIQAH TAKAFUL","BL725":"TOKIO MARINE LIFE INSURANCE MALAYSIA BERHAD","BL760":"ALLIANZ LIFE INSURANS","BL774":"GREAT EASTERN LIFE","BL785":"AMMETLIFE INSURANCE BERHAD","BL797":"MCCM RESOURCES SDN BHD","BL813":"BUMIJEZ SDN BHD","BL822":"MYANGKASA AMANAH BERHAD (TAKAFUL/INSURAN)","BL824":"MCCM RESOURCES SDN BHD","EL525":"ETIQA TAKAFUL BERHAD","ML520":"PUSAT ZAKAT MELAKA","PS227":"BANK PERSATUAN MALAYSIA BERHAD CAWANGAN MELAKA","SL507":"SARAWAK TEACHER'S UNION","SL519":"PETRONESA SDN BHD","SL530":"ETIQA TAKAFUL BHD","SL544":"PETRONESA SDN BHD","WL513":"TAKAFUL IKHLAS BERHAD","WL529":"ZURICH TAKAFUL","WL532":"HONG LEONG MSIG TAKAFUL BERHAD","WL540":"PRU TAKAFUL","WL550":"ETIQA TAKAFUL BERHAD","WL552":"GREAT EASTERN TAKAFUL","WL553":"I DESTINASI SDN BHD","WL579":"GREAT EASTERN TAKAFUL BERHAD","WL580":"RHB INSURANCE BERHAD","WL585":"ETIQA TAKAFUL BERHAD","WL598":"PRUDENTIAL BSN TAKAFUL BERHAD","WL602":"I DESTINASI SDN BHD","ASB02":"AMANAH SAHAM NASIONAL BERHAD","BL724":"GIBRALTAR BSN LIFE BERHAD","BL762":"MEDISCREEN SDN.BHD","BP005":"AGROBANK CAWANGAN JITRA","BP007":"AGROBANK CAWANGAN ALOR SETAR","BP011":"AGROBANK CAWANGAN GUAR CHEMPEDAK","BP018":"AGROBANK CAWANGAN KANGAR","BP024":"AGROBANK CAWANGAN KUALA KANGSAR","BP044":"AGROBANK CAWANGAN SEBERANG PERAK","BP047":"AGROBANK CAWANGAN CAMERON HIGHLANDS","BP062":"AGROBANK CAWANGAN JASIN","BP068":"AGROBANK CAWANGAN KUALA KELAWANG","BP095":"AGROBANK CAWANGAN SEGAMAT","BP106":"AGROBANK CAWANGAN KOTA TINGGI","BP131":"AGROBANK CAWANGAN JENGKA","BP141":"AGROBANK CAWANGAN KUALA TERENGGANU","BP144":"AGROBANK CAWANGAN DUNGUN","BP149":"AGROBANK CAWANGAN KEMAMAN","BP156":"AGROBANK CAWANGAN BUKIT PAYONG","BP166":"AGROBANK CAWANGAN PASIR PUTIH","BP215":"AGROBANK CAWANGAN KEPALA BATAS","BP220":"AGROBANK CAWANGAN SHAH ALAM","BP221":"AGROBANK CAWANGAN GRIK","BP244":"AGROBANK CAWANGAN BANDAR TASIK SELATAN","BP249":"AGROBANK CAWANGAN TUARAN","BP251":"AGROBANK CAWANGAN KULIM","BP252":"AGROBANK CAWANGAN JERANTUT","BP258":"AGROBANK CAWANGAN RTC KOTA BHARU","BR102":"BANK RAKYAT CAWANGAN KOTA BELUD","BR104":"BANK RAKYAT CAWANGAN NILAI","BR107":"BANK RAKYAT (CAW SRI ISKANDAR)","BR108":"BANK RAKYAT CAWANGAN MUADZAM SHAH","BR109":"BANK RAKYAT CAWANGAN GUA MUSANG","BR114":"BANK RAKYAT CAWANGAN INDERA MAHKOTA","BR116":"BANK RAKYAT CAWANGAN AYER KEROH","BR117":"BANK RAKYAT CAWANGAN GONG BADAK","BR119":"BANK RAKYAT CAWANGAN WAKAF CHE YEH","BR123":"BANK RAKYAT CAWANGAN KEPALA BATAS","BR126":"BANK RAKYAT CAWANGAN BERA","BR131":"BANK RAKYAT CAWANGAN GRIK","BR135":"BANK RAKYAT CAWANGAN KUALA LIPIS","BR139":"BANK RAKYAT CAWANGAN CYBERJAYA","BR141":"BANK RAKYAT CAWANGAN NUSAJAYA","BR144":"BANK RAKYAT CAWANGAN MARANG","BR146":"BANK RAKYAT (CAW. LABIS)","BRT02":"BANK RAKYAT (CAW.KANGAR)","BRT03":"BANK RAKYAT (CAW.ALOR SETAR)","BRT05":"BANK RAKYAT (CAW.BALING)","BRT06":"BANK RAKYAT ( CAW. IPOH)","BRT13":"BANK RAKYAT (CAW.MELAKA)","BRT19":"BANK RAKYAT (CAW. KUANTAN)","BRT20":"BANK RAKYAT (CAW.TEMERLOH)","BRT21":"BANK RAKYAT (CAW. SEREMBAN)","BRT23":"BANK RAKYAT (CAW.BATU PAHAT)","BRT32":"BANK RAKYAT (CAW.MERONG)","BRT33":"BANK RAKYAT (CAW.KOTA TINGGI)","BRT36":"BANK RAKYAT (CAW. MANJUNG)","BRT37":"BANK RAKYAT (CAW.MINI SEGAMAT)","BRT40":"BANK RAKYAT (CAW. KEMAMAN)","BRT43":"BANK RAKYAT (CAW. BANGSAR)","BRT48":"BANK RAKYAT (CAW. PETALING JAYA)","BRT51":"BANK RAKYAT CAW DESA PANDAN","BRT66":"BANK RAKYAT (CAW.MINI MIRI)","BRT70":"BANK RAKYAT (CAW.SKUDAI)","BRT77":"BANK RAKYAT CAW. P.J STATE","BRT78":"BANK RAKYAT (CAW. TAMPIN)","BRT80":"BANK RAKYAT (CAW. MASAI)","BRT84":"BANK RAKYAT (CAW. K.KANGSAR)","BRT85":"BANK RAKYAT ( CAW. SIBU)","BRT86":"BANK RAKYAT CAWANGAN KUALA SELANGOR","BRT90":"BANK RAKYAT CAWANGAN PASIR MAS","BRT92":"BANK RAKYAT CAWANGAN JASIN","BRT93":"BANK RAKYAT (CAW. YONG PENG)","BSC01":"BANK SIMPANAN NASIONAL","BSI11":"BANK SIMPANAN NASIONAL","PS217":"BANK PERSATUAN MALAYSIA BERHAD (CAW. BAYAN BARU)","PS218":"BANK PERSATUAN MALAYSIA BERHAD (CAW.SUNGAI PETANI)","PS222":"BANK PERSATUAN CAWANGAN KANGAR , PERLIS","PS232":"BANK PERSATUAN MALAYSIA BERHAD CAWANGAN SEREMBAN","WL521":"MBSB BANK BERHAD","WL549":"BANK PERUSAHAAN KECIL & SEDERHANA MALAYSIA BHD","WL620":"EVERGREEN CREDIT EXPRESS SDN BHD","YPEIM":"YAYASAN PEMBANGUNAN EKONOMI ISLAM MALAYSIA"};
+function fixCode(c){
+  c = String(c || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
+  if(ANGKASA_CODES[c]) return c;
+  const m = c.match(/^([A-Z]{1,3})(.+)$/);
+  if(m){
+    const map = {O:'0', Q:'0', D:'0', I:'1', L:'1', T:'7', Z:'2', S:'5', B:'8', G:'6', E:'6'};
+    for(let k = 1; k <= Math.min(3, c.length - 2); k++){
+      const pre = c.slice(0, k), rest = c.slice(k).replace(/[A-Z]/g, ch => map[ch] || ch);
+      if(ANGKASA_CODES[pre + rest]) return pre + rest;
+    }
+  }
+  return c;
+}
+function titleCase(s){ return String(s || '').toLowerCase().replace(/\b([a-z])/g, (m, c) => c.toUpperCase()).replace(/\bBhd\b/g, 'Bhd').replace(/\b(M)\b/g, 'M'); }
+
+/* Wang daripada OCR: "27442" → 274.42, "1.19872" → 1198.72 */
+function ocrMoney(t){
+  t = String(t || '').trim();
+  if(/^\d{1,3}(,\d{3})*\.\d{2}$/.test(t) || /^\d+\.\d{2}$/.test(t)) return parseMoney(t);
+  const d = t.replace(/[^\d]/g, '');
+  return d ? parseInt(d, 10) / 100 : 0;
+}
+function fixDates(l){ return l.replace(/\b(\d{2})[17lI|\\](19\d{2}|20\d{2}|9999)\b/g, '$1/$2'); }
+const MONTHS = {jan:1,feb:2,mar:3,apr:4,may:5,mei:5,jun:6,jul:7,aug:8,ogo:8,ogos:8,sep:9,oct:10,okt:10,nov:11,dec:12,dis:12};
+
+/* ---------- SPEKA (Angkasa) ---------- */
+function parseSpeka(rawLines){
+  const lines = rawLines.map(l => fixDates(cleanOcrLine(l)));
+  const flat = lines.join(' ');
+  const res = {client:{name:'', ic:''}, month:null, monthLabel:'', employer:'', salaryNo:'', groups:[], total:null};
+  const icM = flat.match(/\b(\d{2})(0[1-9]|1[0-2])([0-2]\d|3[01])-?(\d{2})-?(\d{4})\b/);
+  if(icM) res.client.ic = icM[1]+icM[2]+icM[3]+'-'+icM[4]+'-'+icM[5];
+  for(const l of lines){
+    const m = l.match(/^Name(?:\s+of\s+Subject)?\s*:?\s*([A-Z][A-Z@'.\/ -]{3,80}?)(?:\s+Status\b.*)?$/i);
+    if(m && !/subject$/i.test(m[1])){ res.client.name = m[1].trim(); break; }
+  }
+  const mM = flat.match(/Month\s+of\s+Deduction\s*:?\s*([A-Za-z]{3,9})\s+(\d{4})/i);
+  if(mM){ const mo = MONTHS[mM[1].toLowerCase().slice(0, mM[1].length > 4 ? 4 : 3)] || MONTHS[mM[1].toLowerCase().slice(0,3)];
+    if(mo){ res.month = (+mM[2]) * 12 + mo; res.monthLabel = mM[1].slice(0,3) + ' ' + mM[2]; } }
+  const sM = flat.match(/Salary\s+No\s*:?\s*(\d{5,})/i); if(sM) res.salaryNo = sM[1];
+  for(let i = lines.length - 1; i >= 0; i--){ if(/^Addresses$/i.test(lines[i]) && lines[i+1]){ res.employer = lines[i+1].replace(/^['"]/, ''); break; } }
+  const tM = flat.match(/TOTAL\s+DEDUCTION\s*:?\s*([\d.,]{3,})/i); if(tM) res.total = ocrMoney(tM[1]);
+
+  let g = null, started = false;
+  for(const l of lines){
+    if(/PENDING\s+DEDUCTION/i.test(l)) break;
+    if(/SECTION\s+B|MONTHLY\s+DEDUCTION/i.test(l)) { started = true; continue; }
+    if(!started) continue;
+    const gm = l.match(/^(\d{1,2})\s+([A-Z][A-Z]{2,}(?:\s+[A-Z]{3,})?)\s+([A-Za-z0-9]{4,6})\b(.*)$/);
+    if(gm && !/\d{2}\/\d{4}/.test(l)){
+      const code = fixCode(gm[3]);
+      const amts = gm[4].match(/[\d][\d.,]*\d/g);
+      g = {no:+gm[1], org:gm[2].trim(), code, name: ANGKASA_CODES[code] ? titleCase(ANGKASA_CODES[code]) : titleCase(gm[2]), total: amts ? ocrMoney(amts[amts.length-1]) : null, items:[]};
+      res.groups.push(g); continue;
+    }
+    const im = l.match(/^(.*?)\s*(\d{2})\/(\d{4})\s+(\d{2})\/(\d{4})\s+([\d][\d.,]*)\s*$/);
+    if(im && g){
+      const end = (+im[5]) === 9999 ? null : (+im[5]) * 12 + (+im[4]);
+      const item = {type: im[1].replace(/^['"]/, '').trim(), begin: im[2] + '/' + im[3], end: end === null ? 'berterusan' : im[4] + '/' + im[5], endIdx: end, amount: ocrMoney(im[6])};
+      item.active = end === null || res.month === null || end >= res.month;
+      item.months = (end !== null && res.month !== null) ? Math.max(0, end - res.month + 1) : null;
+      item.cat = spekaCat(g, item);
+      g.items.push(item);
+    }
+  }
+  res.groups.forEach(gr => { gr.sum = gr.items.filter(i => i.active).reduce((s, i) => s + i.amount, 0); });
+  res.sum = res.groups.reduce((s, gr) => s + gr.sum, 0);
+  return res;
+}
+const COVER_RE = /TAKAFUL|INSURAN|INSURANCE|ASSURANCE|\bLIFE\b|ETIQA|PRUDENTIAL|\bAIA\b|ALLIANZ|GREAT EASTERN|ZURICH|\bFWD\b|TOKIO|SUN LIFE|MANULIFE|AMMETLIFE|MCIS/i;
+function spekaCat(g, item){
+  const all = g.name + ' ' + g.org + ' ' + item.type;
+  if(/insuran|takaful/i.test(item.type) || COVER_RE.test(g.name)) return 'cover';
+  if(/pinjaman|pembiayaan|loan|financ|hutang|rahnu|murabahah|tawarruq|kenderaan|perabot|kredit|tunai|\bbai\b/i.test(item.type)) return 'loan';
+  if(/\bBANK\b|AGROBANK|\bBSN\b|MBSB/i.test(g.name) && !/saham|simpanan/i.test(item.type)) return 'loan';
+  if(/AMANAH SAHAM|TABUNG HAJI|\bASNB\b/i.test(all) || /saham|syer/i.test(item.type)) return 'save';
+  return 'other';
+}
+
+/* ---------- Slip gaji ---------- */
+const SLIP_GROSS = /jumlah\s+pendapatan|jumlah\s+gaji\s+kasar|gaji\s+kasar|pendapatan\s+kasar|gross\s*(pay|salary|income|earnings?)?|total\s+(earnings?|income)/i;
+const SLIP_NET = /gaji\s+bersih|pendapatan\s+bersih|jumlah\s+bersih|amaun\s+bersih|net\s*(pay|salary|income)|take\s*home/i;
+const SLIP_DED = /jumlah\s+potongan|total\s+deductions?/i;
+const SLIP_BASIC = /gaji\s+pokok|basic\s*(pay|salary)?/i;
+const SLIP_EARN = /elaun|allowance|imbuhan|bitara|bonus|overtime|lebih\s+masa|insentif|incentive|\bcola\b|bantuan|\bitk\b|\bitp\b|\bbsh\b|tunggakan\s+gaji|komisen|commission/i;
+function slipCat(label){
+  const code = (label.match(/\b([A-Z]{1,3}\d{2,4})\b/) || [])[1];
+  const nm = code && ANGKASA_CODES[fixCode(code)] ? ANGKASA_CODES[fixCode(code)] : '';
+  const all = label + ' ' + nm;
+  if(/kwsp|\bepf\b|perkeso|socso|\bsip\b|\beis\b|\bpcb\b|\bmtd\b|cukai|lhdn|income\s+tax|zakat|pencen|kwap/i.test(all)) return 'statutory';
+  if(/insuran|takaful|insurance/i.test(all) || COVER_RE.test(nm)) return 'cover';
+  if(/pinjaman|loan|lppsa|perumahan|housing|pembiayaan|financ|koperasi|\bkoop?\b|angkasa|\bbsn\b|\bbank\b|rakyat|ptptn|kenderaan|\bcar\b|motor|rahnu|mbsb/i.test(all)) return 'loan';
+  if(/\basb\b|amanah\s+saham|tabung\s+haji|\bth\b|simpanan|saving/i.test(all)) return 'save';
+  return 'other';
+}
+function parseSlip(rawLines){
+  const lines = rawLines.map(cleanOcrLine);
+  const flat = lines.join(' ');
+  const res = {client:{name:'', ic:''}, gross:null, net:null, basic:null, totalDed:null, items:[], employer:''};
+  const icM = flat.match(/\b(\d{2})(0[1-9]|1[0-2])([0-2]\d|3[01])-?(\d{2})-?(\d{4})\b/);
+  if(icM) res.client.ic = icM[1]+icM[2]+icM[3]+'-'+icM[4]+'-'+icM[5];
+  for(const l of lines){
+    const m = l.match(/\b(?:Nama|Name)\s*:?\s*([A-Z][A-Z@'.\/ -]{3,60}?)(?=\s{2,}|\s+(?:No\.?|K\/P|KP|IC|Jawatan|Gred|Bulan|Month)\b|$)/);
+    if(m){ res.client.name = m[1].trim(); break; }
+  }
+  let section = '';
+  const seen = new Set();
+  const PAIR = /([A-Za-z][A-Za-z0-9 .&()\/'’,:-]*?[A-Za-z)])\s*:?\s*(?:RM\s*)?(-?\d{1,3}(?:,\d{3})*\.\d{2}|-?\d+\.\d{2})(?!\d)/g;
+  for(const l of lines){
+    const hasAmt = /\d\.\d{2}\b/.test(l);
+    if(!hasAmt){
+      if(/potongan|deduction/i.test(l)) section = 'ded';
+      else if(/pendapatan|earning|income|elaun/i.test(l)) section = 'earn';
+      continue;
+    }
+    let m; PAIR.lastIndex = 0;
+    while((m = PAIR.exec(l))){
+      const label = m[1].replace(/\s+/g, ' ').trim(), amt = Math.abs(parseMoney(m[2]));
+      if(!amt || label.length < 2) continue;
+      if(SLIP_NET.test(label)){ res.net = amt; continue; }
+      if(SLIP_DED.test(label)){ res.totalDed = amt; section = ''; continue; }
+      if(SLIP_GROSS.test(label)){ res.gross = amt; continue; }
+      if(SLIP_BASIC.test(label)){ res.basic = amt; continue; }
+      if(SLIP_EARN.test(label)) continue;
+      let cat = slipCat(label);
+      if(cat === 'other' && section !== 'ded') continue;
+      const key = label.toLowerCase() + '|' + amt;
+      if(seen.has(key)) continue; seen.add(key);
+      const code = (label.match(/\b([A-Z]{1,3}\d{2,4})\b/) || [])[1];
+      const org = code && ANGKASA_CODES[fixCode(code)] ? titleCase(ANGKASA_CODES[fixCode(code)]) : '';
+      res.items.push({label, amount: amt, cat, org});
+    }
+  }
+  res.sumDed = res.items.reduce((s, i) => s + i.amount, 0);
+  return res;
+}
+
+/* ---------- Gabung ke dalam app ---------- */
+function normIc(s){ return String(s || '').replace(/\D/g, ''); }
+function leaveSample(){
+  if(!state.isSample) return;
+  state.isSample = false;
+  state.client = {name:'', ic:'', source:'', date:''};
+  state.debts = []; state.assets = []; state.reportTotal = null; state.monthly = 0;
+  $('sampleChip').hidden = true;
+  $('status').textContent = 'Belum ada laporan kredit dimuat naik.'; $('status').className = 'status';
+}
+function fillClient(c){
+  if(c.name && !state.client.name) state.client.name = c.name;
+  if(c.ic && !state.client.ic){
+    state.client.ic = c.ic;
+    const last = (c.ic.match(/(\d)$/) || [])[1]; if(last) state.faraid.gender = (+last % 2) ? 'L' : 'P';
+  }
+}
+function differentClient(ic){
+  return ic && state.client.ic && normIc(ic) !== normIc(state.client.ic);
+}
+const CAT_LABEL = {loan:'Pinjaman', cover:'Insurans / takaful', save:'Simpanan / saham', statutory:'Potongan wajib', other:'Lain-lain'};
+
+function applySpeka(r){
+  leaveSample();
+  if(differentClient(r.client.ic)){
+    state.debts = state.debts.filter(d => d.src !== 'Slip gaji'); state.slip = null;
+  }
+  fillClient(r.client);
+  state.speka = r;
+  state.debts = state.debts.filter(d => d.src !== 'SPEKA');
+  state.assets = state.assets.filter(a => a.src !== 'SPEKA');
+  r.groups.forEach(g => g.items.filter(i => i.active).forEach(i => {
+    if(i.cat === 'loan'){
+      const bal = i.months ? i.amount * i.months : 0;
+      const orgWord = /koperasi|kop\b/i.test(g.name + g.org) ? 'koperasi' : /bank/i.test(g.name) ? 'bank' : g.org.toLowerCase();
+      state.debts.push(mkDebt({
+        code:'', label:'Pinjaman ' + orgWord + ' (potongan gaji)', lender: g.name, installment: i.amount, balance: bal,
+        src:'SPEKA', srcIc: r.client.ic, maybeCcris: /\bBANK\b|AGROBANK|\bBSN\b|MBSB/i.test(g.name),
+        srcNote: i.months ? `${i.type || 'Pinjaman'} · anggaran baki ${rm(i.amount)} × ${i.months} bulan hingga ${i.end}` : `${i.type || 'Pinjaman'} · tempoh tidak dinyatakan, isi baki sebenar`
+      }));
+    } else if(i.cat === 'save' && /AMANAH SAHAM|TABUNG HAJI|ASNB/i.test(g.name) || (i.cat === 'save' && /koperasi/i.test(g.name))){
+      state.assets.push(mkAsset({type: /AMANAH SAHAM|ASNB/i.test(g.name) ? 'ASB / Unit Amanah' : /TABUNG HAJI/i.test(g.name) ? 'Simpanan Bank' : 'Saham',
+        desc: `${g.name}: simpanan ${rm(i.amount)}/bulan melalui Angkasa (isi baki semasa)`, value: 0, est: true, src:'SPEKA'}));
+    }
+  }));
+  renderAll();
+}
+
+function applySlip(r){
+  leaveSample();
+  if(differentClient(r.client.ic)){
+    state.debts = state.debts.filter(d => d.src !== 'SPEKA'); state.assets = state.assets.filter(a => a.src !== 'SPEKA'); state.speka = null;
+  }
+  fillClient(r.client);
+  state.debts = state.debts.filter(d => d.src !== 'Slip gaji');
+  state.slip = r;
+  renderAll();
+}
+
+function renderSpekaSummary(){
+  const el = $('speka-sum'), r = state.speka;
+  if(!r){ el.hidden = true; return; }
+  el.hidden = false;
+  const act = r.groups.flatMap(g => g.items.filter(i => i.active).map(i => Object.assign({g}, i)));
+  const byCat = c => act.filter(i => i.cat === c);
+  const row = i => `<li><span>${esc(i.g.name)}<small>${esc(i.type || '-')}${i.cat === 'loan' && i.months ? ' · hingga ' + esc(i.end) : ''}</small></span><b>${rm(i.amount)}</b></li>`;
+  const block = (c, note) => byCat(c).length ? `<div class="dsec"><h4>${CAT_LABEL[c]}</h4>${note ? `<p class="hint">${note}</p>` : ''}<ul>${byCat(c).map(row).join('')}</ul></div>` : '';
+  const matches = r.total != null && Math.abs(r.total - r.sum) < 0.05;
+  el.innerHTML = `<div class="dhead"><div><small>SPEKA ${esc(r.monthLabel || '')}</small><b>${esc(r.client.name || '-')}</b><span>${esc(r.employer || '')}</span></div>
+      <div class="dtot"><small>Jumlah potongan</small><b>${rm(r.total != null ? r.total : r.sum)}</b><span class="chip ${matches ? 'ok' : 'bad'}">${matches ? 'Sepadan' : 'Semak: dibaca ' + rm(r.sum)}</span></div></div>
+    ${block('loan', 'Ditambah ke Senarai Hutang dengan anggaran baki = ansuran × baki bulan.')}
+    ${block('cover', 'Perlindungan sedia ada. Semak nilai perlindungan polisi ini, ia mungkin boleh mengurangkan keperluan hibah.')}
+    ${block('save', 'Aset simpanan ditambah ke Senarai Aset. Isi baki semasa.')}
+    ${block('other')}`;
+}
+
+function renderSlipSummary(){
+  const el = $('slip-sum'), r = state.slip;
+  if(!r){ el.hidden = true; return; }
+  el.hidden = false;
+  const cats = ['loan','cover','save','statutory','other'];
+  const added = new Set(state.debts.filter(d => d.src === 'Slip gaji').map(d => d.slipKey));
+  const spekaLoan = new Set(state.speka ? state.speka.groups.filter(g => g.items.some(i => i.active && i.cat === 'loan')).map(g => g.code) : []);
+  const inSpeka = i => { const c = (i.label.match(/\b([A-Z]{1,3}\d{2,4})\b/) || [])[1]; return (c && spekaLoan.has(fixCode(c))) || (i.org && state.speka && state.speka.groups.some(g => g.name === i.org && spekaLoan.has(g.code))); };
+  const row = (i, idx) => `<li><span>${esc(i.label)}${i.org ? `<small>${esc(i.org)}</small>` : ''}</span><b>${rm(i.amount)}</b>${i.cat === 'loan' ? (added.has(idx) ? '<em class="chip ok">Ditambah</em>' : inSpeka(i) ? '<em class="chip src">Sudah dari SPEKA</em>' : `<button type="button" class="x" data-slip-add="${idx}">+ Hutang</button>`) : ''}</li>`;
+  const blocks = cats.map(c => { const it = r.items.map((i, idx) => [i, idx]).filter(([i]) => i.cat === c); return it.length ? `<div class="dsec"><h4>${CAT_LABEL[c]}</h4><ul>${it.map(([i, idx]) => row(i, idx)).join('')}</ul></div>` : ''; }).join('');
+  const kv = (k, v) => v != null ? `<div><small>${k}</small><b>${rm(v)}</b></div>` : '';
+  el.innerHTML = `<div class="dhead"><div><small>SLIP GAJI</small><b>${esc(r.client.name || state.client.name || '-')}</b></div></div>
+    <div class="dkv">${kv('Gaji pokok', r.basic)}${kv('Gaji kasar', r.gross)}${kv('Jumlah potongan', r.totalDed != null ? r.totalDed : r.sumDed)}${kv('Gaji bersih', r.net)}</div>
+    ${blocks || '<p class="hint">Tiada senarai potongan dapat dibaca. Semak gambar atau isi secara manual.</p>'}
+    ${r.net ? `<button type="button" class="primary" id="slipUseNet">Guna gaji bersih ${rm(r.net)} sebagai komitmen bulanan</button>` : ''}`;
+}
+
+function setDocStatus(id, msg, cls){ const s = $(id); s.hidden = false; s.className = 'status ' + (cls || ''); s.textContent = msg; }
+
+async function handleSpeka(file){
+  if(!file) return;
+  const say = m => setDocStatus('speka-status', m);
+  try {
+    say('Membaca SPEKA…');
+    const {lines, ocr} = await fileToLines(file, {status: say});
+    const r = parseSpeka(lines);
+    if(!r.groups.length){ setDocStatus('speka-status', 'Tiada potongan Angkasa dapat dibaca. Pastikan ini penyata SPEKA dan gambar jelas (tangkapan skrin lebih baik daripada foto skrin).', 'err'); return; }
+    applySpeka(r);
+    const loans = r.groups.flatMap(g => g.items).filter(i => i.active && i.cat === 'loan').length;
+    setDocStatus('speka-status', `SPEKA dibaca${ocr ? ' daripada gambar' : ''}: ${r.groups.length} organisasi, potongan ${rm(r.total != null ? r.total : r.sum)}/bulan, ${loans} pinjaman ditambah ke Senarai Hutang.${ocr ? ' Semak angka dengan dokumen asal.' : ''}`, 'ok');
+  } catch(e){ console.error(e); setDocStatus('speka-status', e && e.user ? e.user : e && e.pw ? 'PDF ini berkata laluan. Buka dan simpan semula tanpa kata laluan, atau muat naik tangkapan skrin.' : 'Fail tidak dapat dibaca: ' + (e && e.message || 'ralat tidak diketahui') + '.', 'err'); }
+}
+async function handleSlip(file){
+  if(!file) return;
+  const say = m => setDocStatus('slip-status', m);
+  try {
+    say('Membaca slip gaji…');
+    const {lines, ocr} = await fileToLines(file, {status: say});
+    const r = parseSlip(lines);
+    if(r.gross == null && r.net == null && !r.items.length){ setDocStatus('slip-status', 'Maklumat gaji tidak dapat dibaca. Cuba tangkapan skrin yang lebih jelas.', 'err'); return; }
+    applySlip(r);
+    setDocStatus('slip-status', `Slip gaji dibaca${ocr ? ' daripada gambar' : ''}: ${r.items.length} potongan dikesan.${ocr ? ' Semak angka dengan slip asal.' : ''}`, 'ok');
+  } catch(e){ console.error(e); setDocStatus('slip-status', e && e.user ? e.user : e && e.pw ? 'PDF ini berkata laluan. Muat naik tangkapan skrin slip gaji.' : 'Fail tidak dapat dibaca: ' + (e && e.message || 'ralat tidak diketahui') + '.', 'err'); }
+}
+function bindDrop(dropId, inputId, fn){
+  const d = $(dropId);
+  $(inputId).addEventListener('change', e => { fn(e.target.files[0]); e.target.value = ''; });
+  ['dragenter','dragover'].forEach(ev => d.addEventListener(ev, e => { e.preventDefault(); d.classList.add('over'); }));
+  ['dragleave','drop'].forEach(ev => d.addEventListener(ev, e => { e.preventDefault(); d.classList.remove('over'); }));
+  d.addEventListener('drop', e => fn(e.dataTransfer.files[0]));
+}
+bindDrop('speka-drop', 'speka-file', handleSpeka);
+bindDrop('slip-drop', 'slip-file', handleSlip);
+document.addEventListener('click', e => {
+  const b = e.target.closest('[data-slip-add]');
+  if(b && state.slip){
+    const idx = +b.dataset.slipAdd, i = state.slip.items[idx];
+    state.debts.push(mkDebt({code:'', label: /lppsa|perumahan|housing/i.test(i.label) ? 'Pinjaman Perumahan (potongan gaji)' : 'Pinjaman (potongan gaji)', lender: i.org || i.label, installment: i.amount, balance: 0,
+      src:'Slip gaji', slipKey: idx, srcIc: state.slip.client.ic, srcNote: i.label + ' · isi baki pinjaman sebenar'}));
+    renderAll();
+  }
+  if(e.target.id === 'slipUseNet' && state.slip && state.slip.net){
+    state.monthly = state.slip.net; renderAll();
+    setDocStatus('slip-status', 'Komitmen bulanan di Simulasi B ditetapkan kepada gaji bersih ' + rm(state.slip.net) + '.', 'ok');
+  }
+});
+
 /* ---------- Upload ---------- */
 let pendingBuf = null;
 function setStatus(msg, cls){ const s = $('status'); s.className = 'status ' + (cls||''); s.textContent = msg; }
 
+let pendingFile = null;
 async function handleFile(file){
   if(!file) return;
-  if(!/pdf$/i.test(file.type) && !/\.pdf$/i.test(file.name)){ setStatus('Fail ini bukan PDF. Muat naik PDF laporan kredit asal.', 'err'); return; }
-  pendingBuf = await file.arrayBuffer();
+  pendingFile = file;
+  pendingBuf = isPdf(file) ? await file.arrayBuffer() : null;
   await processPdf();
 }
 async function processPdf(password){
-  if(typeof pdfjsLib === 'undefined'){ setStatus('Pembaca PDF gagal dimuatkan. Semak sambungan internet dan cuba lagi.', 'err'); return; }
   setStatus('Membaca laporan…');
   try{
-    const lines = await pdfToLines(pendingBuf.slice(0), password);
+    const {lines, ocr} = await fileToLines(pendingFile, {buf: pendingBuf, password, status: m => setStatus(m)});
     $('pwBox').hidden = true;
     if(lines.join('').replace(/\s/g,'').length < 40){
-      setStatus('PDF ini tiada teks (mungkin imbasan atau tangkapan skrin). Gunakan PDF asal dari CTOS / Experian / CBM, atau isi hutang secara manual di bawah.', 'err');
+      setStatus('Tiada teks dapat dibaca daripada fail ini. Gunakan PDF asal dari CTOS / Experian / CBM, atau isi hutang secara manual di bawah.', 'err');
       return;
     }
     const r = parseReport(lines);
+    const wasSample = state.isSample;
+    leaveSample();
+    if(r.client.ic && differentClient(r.client.ic)){ state.speka = null; state.slip = null; state.debts = []; state.assets = []; }
+    const keepD = wasSample ? [] : state.debts.filter(d => d.src), keepA = wasSample ? [] : state.assets.filter(a => a.src);
     state.client = Object.assign({name:'',ic:'',source:'',date:''}, r.client);
-    state.debts = r.debts;
+    state.debts = r.debts.concat(keepD);
     state.reportTotal = r.total;
-    state.assets = suggestAssets(r.debts);
+    state.assets = suggestAssets(r.debts).concat(keepA);
     if(typeof clientSig !== 'undefined') clientSig.clear();
     const icLast = (r.client.ic.match(/(\d)$/) || [])[1];
     if(icLast) state.faraid.gender = (+icLast % 2) ? 'L' : 'P';
     $('sampleChip').hidden = true;
     renderAll();
     const D = r.debts.reduce((s,d)=>s+d.balance,0);
-    if(r.debts.length) setStatus(`${r.client.source}: ${r.debts.length} kemudahan kredit dikesan, jumlah baki ${rm(D)}. Semak setiap baris sebelum guna.`, 'ok');
+    if(r.debts.length) setStatus(`${r.client.source}${ocr ? ' (daripada gambar)' : ''}: ${r.debts.length} kemudahan kredit dikesan, jumlah baki ${rm(D)}. Semak setiap baris sebelum guna.`, 'ok');
     else setStatus(`${r.client.source}: tiada kemudahan kredit aktif dapat dibaca. Jika pelanggan ada hutang, tambah secara manual.`, 'err');
   } catch(e){
     if(e && e.pw){
@@ -987,7 +1389,7 @@ async function processPdf(password){
       $('pw').focus();
     } else {
       console.error(e);
-      setStatus('Fail tidak dapat dibaca: ' + (e && e.message ? e.message : 'ralat tidak diketahui') + '.', 'err');
+      setStatus(e && e.user ? e.user : 'Fail tidak dapat dibaca: ' + (e && e.message ? e.message : 'ralat tidak diketahui') + '.', 'err');
     }
   }
 }
@@ -1122,6 +1524,7 @@ function buildPdf(){
     if(d.saa) s.push('Perhatian khas');
     if(d.rescheduled) s.push('Dijadual semula');
     if(d.arrears > 0) s.push('Pernah tertunggak ' + d.arrears + ' bln');
+    if(d.src) s.push('Dari ' + d.src + (d.src === 'SPEKA' && d.balance ? ' (baki anggaran)' : ''));
     return s.length ? s.join(', ') : (d.code || d.lender ? 'Teratur' : '-');
   };
   doc.autoTable(Object.assign({}, tableBase, {
@@ -1350,6 +1753,6 @@ $('pdfBtn').addEventListener('click', async () => {
 
 sample();
 renderAll();
-window.__parseReport = parseReport; window.__faraid = faraid;
+window.__parseReport = parseReport; window.__faraid = faraid; window.__parseSlip = parseSlip; window.__parseSpeka = parseSpeka;
 })();
 </script>
