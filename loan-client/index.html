@@ -124,7 +124,7 @@ code{background:var(--chip);padding:1px 5px;border-radius:5px;font-size:13px}
 <input type="file" id="importFile" accept=".json,application/json" style="display:none">
 
 <script>
-const APP_VER='v12 · 23 Nov';
+const APP_VER='v13 · 23 Nov';
 // ===== ejenplus (Supabase) =====
 const SB='https://zpryhnhsmxrxwmybcqyt.supabase.co';
 const SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpwcnlobmhzbXhyeHdteWJjcXl0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjI5MjMyNzksImV4cCI6MjA3ODQ5OTI3OX0.5PBRGD99pGDyF7abqin6cyFywU3u6a-hL6H0urhDKVc';
@@ -500,7 +500,7 @@ function rDetail(){
       :`<div class="wabar done"><span style="flex:1"><b>✓ Dah WhatsApp</b>${archived(o)?'<br><span class="small">Kes ni dalam Arkib</span>':inLayak(o)?'<br><span class="small">Kes ni dalam page Case Layak</span>':''}</span><button class="sm" onclick="markSent(false)">Batal</button></div>`}
     ${stageOf(o)==='takminat'?`<div class="wabar" style="margin-top:8px"><span style="flex:1"><b style="color:var(--neg)">✖ Client Tak Berminat</b><br><span class="small muted">Kes ni dalam Arkib</span></span><button class="sm" onclick="setStage(curId,'takminat')&&rDetail()">Batal</button></div>`
       :inLayak(o)||stageOf(o)?`<div style="margin-top:12px"><b class="small">Status Case Layak:</b> ${stageTag(o)}${stageBtns(o,'rDetail()')}</div>`
-      :`<div class="row" style="margin-top:8px"><span class="spacer"></span><button class="sm danger" onclick="setStage(curId,'takminat')&&go('list')">✖ Client Tak Berminat</button></div>`}
+      :`<div class="row" style="margin-top:8px"><span class="spacer"></span><button class="sm danger" onclick="setStage(curId,'takminat')&&goBack()">✖ Client Tak Berminat</button></div>`}
   </div>
   <div class="card">
     <h2 style="margin:0">Hantar WhatsApp</h2>
@@ -537,8 +537,8 @@ function sendWa(){
 }
 function markSent(on){
   const o=DB.orders[curId]; if(on){ DB.sent[o.id]=o.labelId||''; clearNotifs(o.id); } else delete DB.sent[o.id]; save();
-  if(on&&archived(o)){ toast('Ditanda dah WhatsApp · dipindah ke Arkib'); go('list'); }
-  else if(on&&inLayak(o)){ toast('Ditanda dah WhatsApp · dipindah ke Case Layak'); go('list'); }
+  if(on&&archived(o)){ toast('Ditanda dah WhatsApp · dipindah ke Arkib'); goBack(); }
+  else if(on&&inLayak(o)){ toast('Ditanda dah WhatsApp · dipindah ke Case Layak'); goBack(); }
   else { toast(on?'Ditanda dah WhatsApp':'Ditanda belum WhatsApp'); rDetail(); }
 }
 async function refreshOne(){ const o=DB.orders[curId]; try{ toast('Ambil nota HQ…'); await fetchUpdates(o); save(); tplSel=null; rDetail(); toast('Dikemaskini'); }catch(e){ toast(e.message,3500); } }
