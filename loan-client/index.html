@@ -124,7 +124,7 @@ code{background:var(--chip);padding:1px 5px;border-radius:5px;font-size:13px}
 <input type="file" id="importFile" accept=".json,application/json" style="display:none">
 
 <script>
-const APP_VER='v11 · 21 Nov';
+const APP_VER='v12 · 23 Nov';
 // ===== ejenplus (Supabase) =====
 const SB='https://zpryhnhsmxrxwmybcqyt.supabase.co';
 const SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpwcnlobmhzbXhyeHdteWJjcXl0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjI5MjMyNzksImV4cCI6MjA3ODQ5OTI3OX0.5PBRGD99pGDyF7abqin6cyFywU3u6a-hL6H0urhDKVc';
@@ -340,8 +340,9 @@ function bullets(t){ return String(t||'').split(/\n+/).map(s=>s.replace(/^\s*([-
 
 // ===== Routing =====
 let backTo='list', view='list', curId=null, filter='semua', q='', tplSel=null, lfilter='semua', kfilter='semua';
-function goBack(){ go(backTo&&backTo!=='detail'?backTo:'list'); }
-function go(v,id){ if((v==='detail'||v==='notif')&&view!=='detail'&&view!=='notif') backTo=view; if(v==='detail'&&view==='notif') backTo='notif'; if(v!==view&&v!=='detail'&&view!=='detail') q=''; view=v; if(id!==undefined){ curId=id; tplSel=null; } render(); window.scrollTo(0,0); }
+const scrollPos={};
+function goBack(){ go(backTo&&backTo!=='detail'?backTo:'list',undefined,true); }
+function go(v,id,restore){ scrollPos[view]=window.scrollY; if((v==='detail'||v==='notif')&&view!=='detail'&&view!=='notif') backTo=view; if(v==='detail'&&view==='notif') backTo='notif'; if(v!==view&&v!=='detail'&&view!=='detail') q=''; view=v; if(id!==undefined){ curId=id; tplSel=null; } render(); window.scrollTo(0,restore?(scrollPos[v]||0):0); }
 function render(){
   document.querySelectorAll('#tabs button').forEach(b=>b.classList.toggle('on',b.dataset.t===view));
   const sub=view==='detail'||view==='notif';
