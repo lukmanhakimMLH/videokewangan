@@ -36,6 +36,11 @@ service cloud.firestore {
       allow read: if isLeader() || isSelf(uid);
       allow write: if isLeader() || (isSelf(uid) && approved());
     }
+    // Dokumen IC pelanggan
+    match /apa/{uid}/fail/{f} {
+      allow read: if isLeader() || isSelf(uid);
+      allow write: if isLeader() || (isSelf(uid) && approved());
+    }
 
     // Hierarki: ejen baca peta pasukan dia sahaja; leader tulis
     match /hierarki/{uid} {

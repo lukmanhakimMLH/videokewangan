@@ -20,6 +20,7 @@ html = html.replace('<meta name="theme-color"', head + '<meta name="theme-color"
 shutil.copy(here / 'apa.js', out / 'apa.js')
 shutil.copy(here / 'mapa.js', out / 'mapa.js')
 shutil.copy(here / 'pasukan.js', out / 'pasukan.js')
+shutil.copy(here / 'klien.js', out / 'klien.js')
 shutil.copy(here / 'web' / 'fb.js', out / 'fb.js')
 for f in ['manifest.json', 'icon-192.png', 'icon-512.png']:
     shutil.copy(here / 'web' / f, out / f)

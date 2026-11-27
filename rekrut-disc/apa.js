@@ -181,6 +181,7 @@ function vDash(){
         <div class="small muted">APA ${YEAR}${S.me.updatedAt?' · kemaskini '+fmtDate(S.me.updatedAt):''}</div></div>
       <button class="btn-sm" onclick="go('#/apa/tetapan')">✏️</button>
     </div>
+    ` + KLIEN.dueHTML(S.me) + `
     <h3>📈 Prestasi terkini</h3>` + dashboardHTML(S.me) + contestCards(S.me, true);
 }
 function vBorang(){
@@ -211,7 +212,7 @@ function vBulan(m){
     <h3>Pelanggan (${r.list.length})</h3>
     ${r.list.length ? r.list.map(e=>`
       <div class="card agent" onclick="go('#/apa/kes/${m}/${e.id}')" style="padding:10px 14px">
-        <div class="grow"><b>${esc(e.nama)}</b><div class="small muted">Pledge ${RM(e.budget)}${e.nota?' · '+esc(e.nota):''}</div></div>
+        <div class="grow"><b>${esc(e.nama)}</b><div class="small muted">${[e.produk, e.polisi&&('Polisi '+e.polisi)].filter(Boolean).map(esc).join(' · ')}${e.produk||e.polisi?'<br>':''}Pledge ${RM(e.budget)}${e.nota?' · '+esc(e.nota):''}${(e.fail||[]).length?' · 📄'+e.fail.length:''}</div></div>
         <div style="text-align:right">${num(e.achieve)?`<b class="ok">${RM(e.achieve)}</b>`:''}<div><span class="badge">${STATUS[e.status]||'Pledge'}</span></div></div>
       </div>`).join('') : `<div class="card empty muted">Belum ada pelanggan bulan ini.</div>`}
     <button class="btn-primary" style="width:100%" onclick="go('#/apa/kes/${m}/baru')">+ Tambah Pelanggan</button>`;
@@ -489,7 +490,8 @@ const APA = window.APA = {
     if(!S.me) return;
     if(needSetup() && a!=='tetapan' && a!=='borang') return vSetup();
     if(a==='bulan') return vBulan(b);
-    if(a==='kes') return vKes(b, c);
+    if(a==='kes') return KLIEN.vKes(b, c);
+    if(a==='due') return KLIEN.vDue();
     if(a==='p100') return b ? vP100Form(b) : vP100();
     if(a==='contest') return vContest();
     if(a==='tetapan') return vTetapan();
